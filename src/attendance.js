@@ -15,7 +15,7 @@ import {
   SectionTitle,
   usePost,
 } from './helpers';
-import settings from './settings.json';
+import settings from '../settings.json';
 import Account from './account';
 
 const Attendance = ({

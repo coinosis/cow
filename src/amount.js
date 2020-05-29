@@ -7,7 +7,6 @@ import {
   ETH,
   USD,
 } from './coinosis';
-import settings from './settings.json';
 import { environment, ToolTip } from './helpers.js';
 
 const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {

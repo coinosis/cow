@@ -1,14 +1,13 @@
 {
   "name": "coinosis",
   "private": true,
-  "version": "1.1.0",
   "description": "Knowledge-sharing dapp",
   "author": "@e18r",
   "license": "GPL-3.0-or-later",
   "scripts": {
     "postinstall": "webpack -p --define process.env.ENVIRONMENT=\"'testing'\"",
     "start": "http-server dist/ -p $PORT",
-    "start:dev": "./start.dev.sh"
+    "start:dev": "webpack-dev-server"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -18,13 +17,8 @@
     "babel-plugin-styled-components": "^1.10.7",
     "css-loader": "^3.5.3",
     "file-loader": "^6.0.0",
-    "ganache-cli": "^6.9.1",
     "html-webpack-plugin": "^4.0.4",
-    "node-fetch": "^2.6.0",
     "style-loader": "^1.2.1",
-    "truffle": "^5.1.20",
-    "truffle-assertions": "^0.9.2",
-    "truffle-flattener": "^1.4.3",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
@@ -34,8 +28,6 @@
     "@fortawesome/free-brands-svg-icons": "^5.13.0",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.9",
-    "@openzeppelin/contracts": "^2.5.0",
-    "@truffle/hdwallet-provider": "^1.0.34",
     "date-fns": "^2.13.0",
     "http-server": "^0.12.3",
     "react": "^16.13.1",
