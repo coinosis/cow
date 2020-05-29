@@ -1,7 +1,7 @@
 {
-  "name": "coinosis",
+  "name": "cow",
   "private": true,
-  "description": "Knowledge-sharing dapp",
+  "description": "front-end for coinosis",
   "author": "@e18r",
   "license": "GPL-3.0-or-later",
   "scripts": {
