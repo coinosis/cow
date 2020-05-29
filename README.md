@@ -22,7 +22,7 @@ Point your browser to `http://localhost:9000`, point Metamask to `localhost:8545
 
 1. Commit & push to the `dev` branch
 2. Create a pull request targeting the `test` branch
-3. Once accepted, check everything is working in [the test deployment](https://coinosis-front.herokuapp.com)
+3. Once accepted, check everything is working in [the test deployment](https://testing-cow.herokuapp.com)
 4. Create a pull request targeting the `master` branch
 5. Once accepted the code will be running live in [the production deployment](https://coinosis.github.io)
 
