@@ -1,7 +1,7 @@
 ## Prerequisites
 
-Install and run [owl](https://github.com/coinosis/owl), the centralized back-end of coinosis.
-Install and run [coinosis](https://github.com/coinosis/coinosis), the decentralized back-end of coinosis.
+* Install and run [coinosis](https://github.com/coinosis/coinosis)
+* Install and run [owl](https://github.com/coinosis/owl)
 
 ## Development
 
