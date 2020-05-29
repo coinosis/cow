@@ -11,7 +11,7 @@
   },
   "testing": {
     "id": "testing",
-    "backend": "https://coinosis-test.herokuapp.com",
+    "backend": "https://testing-owl.herokuapp.com",
     "payU": {
       "gateway": "https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/",
       "merchantId": 508029,
