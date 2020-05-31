@@ -166,6 +166,8 @@ export const usePost = () => {
       }).catch(err => {
         callback(err, null);
       });
+    }).catch(err => {
+      callback(err, null);
     });
   }, [account, backendURL, web3]);
 }
