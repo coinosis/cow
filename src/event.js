@@ -31,6 +31,7 @@ const Event = () => {
   const [url, setUrl] = useState();
   const [id, setId] = useState();
   const [fee, setFee] = useState();
+  const [feeWei, setFeeWei] = useState();
   const [beforeStart, setBeforeStart] = useState();
   const [afterEnd, setAfterEnd] = useState();
   const [organizer, setOrganizer] = useState();
@@ -83,6 +84,7 @@ const Event = () => {
         name,
         url,
         fee,
+        feeWei,
         beforeStart,
         afterEnd,
         organizer,
@@ -93,6 +95,7 @@ const Event = () => {
         setName(name);
         setUrl(url);
         setFee(fee);
+        setFeeWei(feeWei);
         setBeforeStart(new Date(beforeStart));
         setAfterEnd(new Date(afterEnd));
         setOrganizer(organizer);
@@ -118,6 +121,7 @@ const Event = () => {
             eventName={name}
             event={url}
             fee={fee}
+            feeWei={feeWei}
             organizer={organizer}
             attendees={attendees}
             beforeStart={beforeStart}

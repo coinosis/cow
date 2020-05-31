@@ -22,6 +22,7 @@ const Attendance = ({
   eventName,
   event,
   fee,
+  feeWei,
   organizer,
   attendees,
   beforeStart,
@@ -251,10 +252,10 @@ const Attendance = ({
         </div>
         <div
           css={`
-              margin: 0 5px 10px;
-            `}
+            margin: 0 5px 10px;
+          `}
         >
-          <Amount usd={feeUSDWei} />
+          <Amount usd={feeUSDWei} eth={feeWei} />
         </div>
         <div>
           para participar.

@@ -30,16 +30,19 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
         rateWei = web3.utils.toWei(rate);
       }
       if (!usdWei) {
-        usdWei = String(Math.round(web3.utils.fromWei(
-          String(BigInt(wei) * BigInt(rateWei))
-        )));
+        usdWei = BigInt(wei) * BigInt(rateWei) / BigInt(1e18);
       }
       else if (!wei) {
-        wei = String(BigInt(usdWei) * BigInt(1e18) / BigInt(rateWei));
+        wei = BigInt(usdWei) * BigInt(1e18) / BigInt(rateWei);
       }
-      setUSD(Number(web3.utils.fromWei(usdWei)).toFixed(2) + ' USD');
-      setETH(Number(web3.utils.fromWei(wei)).toFixed(3) + ' ETH');
-      setRate(Number(web3.utils.fromWei(rateWei)).toFixed(2) + ' USD/ETH');
+      const usdRounded = Number(web3.utils.fromWei(String(usdWei))).toFixed(2);
+      const ethRounded = Number(web3.utils.fromWei(String(wei))).toFixed(3);
+      const rateRounded = Number(
+        web3.utils.fromWei(String(rateWei))
+      ).toFixed(2);
+      setUSD(`${usdRounded} USD`);
+      setETH(`${ethRounded} ETH`);
+      setRate(`${rateRounded} USD/ETH`);
     }
     setValues();
   }, [ usdWei, wei, rateWei ]);
