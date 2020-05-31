@@ -20,7 +20,7 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
   const getETHPrice = useETHPrice();
 
   const [usd, setUSD] = useState();
-  const [eth, setETH] = useState();
+  const [eth, setETH] = useState('_.___ ETH');
   const [currency, setCurrency] = useState();
   const [rate, setRate] = useState();
   const [displayRate, setDisplayRate] = useState(false);
@@ -28,10 +28,7 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
 
   useEffect(() => {
     const setValues = async () => {
-      if (!usdWei && !wei) {
-        setETH('_.___ ETH');
-        return;
-      }
+      if (!usdWei && !wei) return;
       if (!rateWei) {
         const rate = await getETHPrice();
         rateWei = web3.utils.toWei(rate);
@@ -88,7 +85,7 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
           border-radius: 4px;
           outline: none;
           cursor: pointer;
-          width: 90px;
+          min-width: 90px;
         `}
         { ...props }
       >
