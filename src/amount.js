@@ -7,13 +7,14 @@ import {
   ETH,
   USD,
 } from './coinosis';
-import { environment, ToolTip } from './helpers.js';
+import { environment, ToolTip, useETHPrice } from './helpers.js';
 
 const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
 
   const web3 = useContext(Web3Context);
   const backendURL = useContext(BackendContext);
   const [currencyType, setCurrencyType] = useContext(CurrencyContext);
+  const getETHPrice = useETHPrice();
 
   const [usd, setUSD] = useState();
   const [eth, setETH] = useState();
@@ -25,18 +26,7 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
     const setValues = async () => {
       if (!usdWei && !wei) return;
       if (!rateWei) {
-        let rate;
-        let response;
-        try {
-          response = await fetch(`${backendURL}/eth/price`);
-          if (!response.ok) {
-            throw new Error(response.status);
-          }
-          const data = await response.json();
-          rate = data;
-        } catch (err) {
-          rate = '200';
-        }
+        const rate = await getETHPrice();
         rateWei = web3.utils.toWei(rate);
       }
       if (!usdWei) {

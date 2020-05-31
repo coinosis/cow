@@ -1,3 +1,4 @@
+import "regenerator-runtime/runtime";
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -186,3 +187,18 @@ export const SectionTitle = styled.div`
   margin-top: 70px;
   margin-bottom: 15px;
 `
+
+export const useETHPrice = () => {
+
+  const backendURL = useContext(BackendContext);
+
+  return useCallback(async () => {
+    const response = await fetch(`${backendURL}/eth/price`);
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    const data = await response.json();
+    return data;
+  }, [ backendURL ]);
+
+}
