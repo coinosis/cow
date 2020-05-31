@@ -121,16 +121,16 @@ const AddEvent = ({ setEvents }) => {
     setMinutesAfter(natural);
   });
 
-  const addToBackend = useCallback(address => {
+  const addToBackend = useCallback((address, id, feeWei) => {
     const organizer = account;
     const beforeStart = subMinutes(start, minutesBefore);
     const afterEnd = addMinutes(end, minutesAfter);
     const object = {
       address,
       name,
-      url,
+      url: id,
       description,
-      fee,
+      feeWei,
       start,
       end,
       beforeStart,
@@ -159,9 +159,7 @@ const AddEvent = ({ setEvents }) => {
     });
   }, [
     name,
-    url,
     description,
-    fee,
     start,
     end,
     minutesBefore,
@@ -200,12 +198,14 @@ const AddEvent = ({ setEvents }) => {
           }).on('receipt', receipt => {
             setStatus('usa Metamask para firmar el contrato.');
           });
-    return instance._address;
+    const actualId = await instance.methods.id().call();
+    const actualFeeWei = await instance.methods.fee().call();
+    return {address: instance._address, id: actualId, feeWei: actualFeeWei };
   }, [ web3, contractJson, url, fee, getETHPrice, account, getGasPrice ]);
 
   const add = useCallback(async () => {
-    const address = await deployContract();
-    addToBackend(address);
+    const { address, id, feeWei } = await deployContract();
+    addToBackend(address, id, feeWei);
   }, [ addToBackend, deployContract ]);
 
   return (
