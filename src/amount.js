@@ -9,6 +9,9 @@ import {
 } from './coinosis';
 import { environment, ToolTip, useETHPrice } from './helpers.js';
 
+const ethColor = '#97b9ca';
+const usdColor = '#97cab3';
+
 const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
 
   const web3 = useContext(Web3Context);
@@ -21,10 +24,14 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
   const [currency, setCurrency] = useState();
   const [rate, setRate] = useState();
   const [displayRate, setDisplayRate] = useState(false);
+  const [color, setColor] = useState();
 
   useEffect(() => {
     const setValues = async () => {
-      if (!usdWei && !wei) return;
+      if (!usdWei && !wei) {
+        setETH('_.___ ETH');
+        return;
+      }
       if (!rateWei) {
         const rate = await getETHPrice();
         rateWei = web3.utils.toWei(rate);
@@ -49,25 +56,39 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
 
   useEffect(() => {
     setCurrency(currencyType === ETH ? eth : usd);
+    setColor(currencyType === ETH ? ethColor : usdColor);
   }, [ currencyType, eth, usd ]);
 
   const switchCurrencyType = useCallback(() => {
     setCurrencyType(currencyType => currencyType === ETH ? USD : ETH);
   }, []);
 
+  const onMouseOver = useCallback(() => {
+    setDisplayRate(true);
+    setCurrency(currencyType === ETH ? usd : eth);
+    setColor(currencyType === ETH ? usdColor : ethColor);
+  }, [ switchCurrencyType, currencyType, ETH, eth, usd ]);
+
+  const onMouseOut = useCallback(() => {
+    setDisplayRate(false);
+    setCurrency(currencyType === ETH ? eth : usd);
+    setColor(currencyType === ETH ? ethColor : usdColor);
+  }, [ switchCurrencyType, currencyType, ETH, eth, usd ]);
+
   return (
     <div>
       <ToolTip value={rate} show={displayRate} />
       <button
         onClick={switchCurrencyType}
-        onMouseOver={() => setDisplayRate(true)}
-        onMouseOut={() => setDisplayRate(false)}
+        onMouseOver={onMouseOver}
+        onMouseOut={onMouseOut}
         css={`
-          background: ${currencyType === ETH ? '#97b9ca' : '#97cab3'};
+          background: ${color};
           border: none;
           border-radius: 4px;
           outline: none;
           cursor: pointer;
+          width: 90px;
         `}
         { ...props }
       >
