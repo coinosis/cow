@@ -8,12 +8,13 @@ import {
   useRouteMatch,
 } from 'react-router-dom';
 import styled from 'styled-components';
-import { AccountContext, BackendContext } from './coinosis';
+import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import { Link, Loading } from './helpers';
 import Attendance from './attendance';
 import Meet from './meet';
 import Assessment from './assessment';
 import Result from './result';
+import contractJson from '../Event.json';
 
 export const ATTENDANCE = 'asistencia';
 export const ASSESSMENT = 'aplausos';
@@ -22,8 +23,10 @@ const RESULT = 'resultados';
 const Event = () => {
 
   const { eventURL } = useParams();
+  const web3 = useContext(Web3Context);
   const { account, name: userName } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
+  const [contract, setContract] = useState();
   const [name, setName] = useState();
   const [url, setUrl] = useState();
   const [id, setId] = useState();
@@ -62,6 +65,11 @@ const Event = () => {
       });
   }, [backendURL, eventURL]);
 
+  const setContractRaw = useCallback(address => {
+    const contract = new web3.eth.Contract(contractJson.abi, address);
+    setContract(contract);
+  }, [ web3, contractJson ]);
+
   useEffect(() => {
     fetch(`${backendURL}/event/${eventURL}`)
       .then(response => {
@@ -71,6 +79,7 @@ const Event = () => {
         return response.json();
       }).then(({
         _id,
+        address,
         name,
         url,
         fee,
@@ -79,6 +88,7 @@ const Event = () => {
         organizer,
         attendees
       }) => {
+        setContractRaw(address);
         setId(_id);
         setName(name);
         setUrl(url);
@@ -94,7 +104,7 @@ const Event = () => {
     return () => {
       clearInterval(updateAttendees);
     }
-  }, [backendURL, eventURL, account]);
+  }, [backendURL, eventURL, setContractRaw ]);
 
   if (attendees === undefined || userName === undefined) return <Loading/>
 
