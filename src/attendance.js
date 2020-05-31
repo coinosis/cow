@@ -3,7 +3,6 @@ import {
   Web3Context,
   AccountContext,
   BackendContext,
-  ContractContext
 } from './coinosis';
 import { ASSESSMENT } from './event';
 import Amount from './amount';
@@ -13,12 +12,14 @@ import {
   Link,
   Loading,
   SectionTitle,
+  useGasPrice,
   usePost,
 } from './helpers';
 import settings from '../settings.json';
 import Account from './account';
 
 const Attendance = ({
+  contract,
   eventName,
   event,
   fee,
@@ -29,10 +30,10 @@ const Attendance = ({
   afterEnd,
 }) => {
 
+  const getGasPrice = useGasPrice();
   const web3 = useContext(Web3Context);
   const { account, name: user } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
-  const contract = useContext(ContractContext);
   const post = usePost();
   const [feeUSDWei, setFeeUSDWei] = useState();
   const [now] = useState(new Date());
@@ -179,41 +180,22 @@ const Attendance = ({
     }
   }
 
-  const getEthPrice = useCallback(async () => {
-    const response = await fetch(`${backendURL}/eth/price`);
-    if (!response.ok) return null;
-    const ethPrice = await response.json();
-    return ethPrice;
-  });
-
-  const getGasPrice = useCallback(async () => {
-    const response = await fetch(`${backendURL}/eth/gas`);
-    if (!response.ok) return null;
-    const { safe, propose } = await response.json();
-    return propose;
-  });
-
   const sendEther = useCallback(async () => {
-    const ethPrice = await getEthPrice();
-    if (ethPrice === null) return;
     const gasPrice = await getGasPrice();
-    if (gasPrice === null) return;
-    const value = String(fee / ethPrice);
-    const valueWei = web3.utils.toWei(value);
-    const gasPriceWei = web3.utils.toWei(gasPrice, 'gwei');
-    web3.eth.sendTransaction({
+    const txOptions = {
       from: account,
-      to: contract._address,
-      value: valueWei,
-      gasPrice: gasPriceWei,
-    }).on('transactionHash', hash => {
-      setEthState('transacción creada');
-      setEthMessage('esperando a que sea incluida en la blockchain...');
-    }).on('receipt', hash => {
-      setEthState('transacción aceptada');
-      setEthMessage('registrando tu pago...');
-    });
-  }, [ web3, contract, account, getEthPrice, getGasPrice, fee ]);
+      value: feeWei,
+      gasPrice: gasPrice.propose,
+    };
+    contract.methods.register().send(txOptions)
+      .on('transactionHash', hash => {
+        setEthState('transacción creada');
+        setEthMessage('esperando a que sea incluida en la blockchain...');
+      }).on('receipt', hash => {
+        setEthState('transacción aceptada');
+        setEthMessage('registrando tu pago...');
+      });
+  }, [ contract, account, getGasPrice, feeWei ]);
 
   if (account === null) {
     return (
