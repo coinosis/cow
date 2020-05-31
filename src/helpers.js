@@ -204,3 +204,21 @@ export const useETHPrice = () => {
   }, [ backendURL ]);
 
 }
+
+export const useGasPrice = () => {
+
+  const backendURL = useContext(BackendContext);
+  const web3 = useContext(Web3Context);
+
+  return useCallback(async () => {
+    const response = await fetch(`${backendURL}/eth/gas`);
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    const { safe, propose } = await response.json();
+    const safeWei = web3.utils.toWei(safe, 'gwei');
+    const proposeWei = web3.utils.toWei(propose, 'gwei');
+    return { safe: safeWei, propose: proposeWei };
+  });
+
+}

@@ -9,14 +9,18 @@ import {
   setMinutes,
   subMinutes
 } from 'date-fns';
-import { AccountContext, BackendContext } from './coinosis';
-import { formatDate, usePost } from './helpers';
+import contractJson from '../Event.json';
+import { Web3Context, AccountContext, BackendContext } from './coinosis';
+import { formatDate, usePost, useETHPrice, useGasPrice } from './helpers';
 
 registerLocale('es', es);
 
 const AddEvent = ({ setEvents }) => {
 
   const post = usePost();
+  const getETHPrice = useETHPrice();
+  const getGasPrice = useGasPrice();
+  const web3 = useContext(Web3Context);
   const backendURL = useContext(BackendContext);
   const { account, name: userName } = useContext(AccountContext);
   const [name, setName] = useState('');
@@ -29,17 +33,20 @@ const AddEvent = ({ setEvents }) => {
   const [minutesBefore, setMinutesBefore] = useState(30);
   const [minutesAfter, setMinutesAfter] = useState(30);
   const [formValid, setFormValid] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [status, setStatus] = useState();
 
   useEffect(() => {
-    setFormValid(
-      name !== ''
-        && url !== ''
-        && description !== ''
-        && fee !== ''
-        && start !== ''
-        && end !== ''
-        && userName !== null
-    );
+    const valid =
+          name !== ''
+          && url !== ''
+          && description !== ''
+          && fee !== ''
+          && start !== ''
+          && end !== ''
+          && userName !== null;
+    setFormValid(valid);
+    setStatus();
   }, [name, url, description, fee, start, end, userName]);
 
   const preSetName = useCallback(e => {
@@ -114,11 +121,12 @@ const AddEvent = ({ setEvents }) => {
     setMinutesAfter(natural);
   });
 
-  const add = useCallback(() => {
+  const addToBackend = useCallback(address => {
     const organizer = account;
     const beforeStart = subMinutes(start, minutesBefore);
     const afterEnd = addMinutes(end, minutesAfter);
     const object = {
+      address,
       name,
       url,
       description,
@@ -131,7 +139,8 @@ const AddEvent = ({ setEvents }) => {
     };
     post('events', object, (err, data) => {
       if (err) {
-        console.error(err);
+        setStatus(err.message.substring(0, 60));
+        setCreating(false);
         return;
       }
       data.startDate = start;
@@ -145,6 +154,8 @@ const AddEvent = ({ setEvents }) => {
       setEnd('');
       setMinutesBefore(30);
       setMinutesAfter(30);
+      setStatus('evento creado.');
+      setCreating(false);
     });
   }, [
     name,
@@ -157,6 +168,45 @@ const AddEvent = ({ setEvents }) => {
     minutesAfter,
     account,
   ]);
+
+  const deployContract = useCallback(async () => {
+    setCreating(true);
+    setStatus('iniciando proceso de creación...');
+    const contract = new web3.eth.Contract(contractJson.abi);
+    const ethPrice = await getETHPrice();
+    const feeETH = fee / ethPrice;
+    const feeWei = web3.utils.toWei(String(feeETH));
+    const gasPrice = await getGasPrice();
+    const deployData = {
+      data: contractJson.bytecode,
+      arguments: [url, feeWei],
+    };
+    const deployment = await contract.deploy(deployData);
+    setStatus('usa Metamask para desplegar el contrato. '
+              + 'Esta acción tiene costo.');
+    const txOptions = {
+      from: account,
+      gas: 1500000,
+      gasPrice: gasPrice.propose,
+    };
+    const instance = await deployment.send(txOptions)
+          .on('error', error => {
+            setStatus(error.message.substring(0, 60));
+            setCreating(false);
+          }).on('transactionHash', receipt => {
+            setStatus(
+              'esperando a que la transacción sea incluida en la blockchain...'
+            );
+          }).on('receipt', receipt => {
+            setStatus('usa Metamask para firmar el contrato.');
+          });
+    return instance._address;
+  }, [ web3, contractJson, url, fee, getETHPrice, account, getGasPrice ]);
+
+  const add = useCallback(async () => {
+    const address = await deployContract();
+    addToBackend(address);
+  }, [ addToBackend, deployContract ]);
 
   return (
     <div
@@ -297,13 +347,17 @@ const AddEvent = ({ setEvents }) => {
             <td/>
             <td>
               <button
-                disabled={!formValid}
+                disabled={!formValid || creating}
                 onClick={add}
               >
                 crear
               </button>
             </td>
           </tr>
+          <Field
+            label={status ? 'estado:' : ''}
+            element={status}
+          />
         </tbody>
       </table>
     </div>
