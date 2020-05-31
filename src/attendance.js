@@ -264,6 +264,8 @@ const Attendance = ({
         </div>
       ) : paymentList === undefined ? (
         <Loading/>
+      ) : now > afterEnd ? (
+        <div>Este evento finalizó el {formatDate(afterEnd)}</div>
       ) : (
         <div
           css={`
