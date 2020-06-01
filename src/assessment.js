@@ -7,7 +7,14 @@ import React, {
 } from 'react';
 import { AccountContext, BackendContext } from './coinosis';
 import { ATTENDANCE } from './event';
-import { environment, EtherscanLink, Link, Loading, usePost } from './helpers';
+import {
+  environment,
+  EtherscanLink,
+  Link,
+  Loading,
+  useGetUser,
+  usePost,
+} from './helpers';
 import Account from './account';
 
 const Assessment = ({
@@ -15,6 +22,8 @@ const Assessment = ({
   setSent,
   url: event,
   attendees,
+  users,
+  setUsers,
 }) => {
 
   const { account, name } = useContext(AccountContext);
@@ -41,9 +50,9 @@ const Assessment = ({
         if (error.toString().includes('404')) {
           setSent(false);
           // const assessment = {}; // TODO: but this part does
-          for (const key in attendees) {
-            if (!attendees[key].address in assessment) {
-            assessment[attendees[key].address] = 0;
+          for (const i in attendees) {
+            if (!attendees[i] in assessment) {
+            assessment[attendees[i]] = 0;
             }
           }
           setAssessment(assessment);
@@ -109,7 +118,7 @@ const Assessment = ({
 
   if (sent === undefined) return <Loading/>
 
-  if (!attendees.map(a => a.address).includes(account)) {
+  if (!attendees.includes(account)) {
     return (
       <div
         css={`
@@ -152,7 +161,9 @@ const Assessment = ({
         sent={sent}
       />
       <Users
-        users={attendees}
+        attendees={attendees}
+        users={users}
+        setUsers={setUsers}
         assessment={assessment}
         attemptAssessment={attemptAssessment}
         clapsError={clapsError}
@@ -222,7 +233,33 @@ const Claps = ({ clapsLeft, clapsError, sent }) => {
   );
 }
 
-const Users = ({ users, assessment, attemptAssessment, disabled }) => {
+const Users = ({
+  attendees,
+  users,
+  setUsers,
+  assessment,
+  attemptAssessment,
+  disabled,
+}) => {
+
+  const getUser = useGetUser();
+
+  useEffect(() => {
+    if (users && users.length === attendees.length) return;
+    const updateUsers = async () => {
+      const userAddresses = users.map(user => user.address);
+      for (const i in attendees) {
+        if (userAddresses.includes(attendees[i])) continue;
+        const user = await getUser(attendees[i]);
+        setUsers(prevUsers => {
+          const nextUsers = [ ...prevUsers, user ];
+          nextUsers.sort((a, b) => a.name.localeCompare(b.name));
+          return nextUsers;
+        });
+      }
+    }
+    updateUsers();
+  }, [ attendees, getUser ]);
 
   const setClaps = useCallback((address, value) => {
     if (isNaN(value)) return;
@@ -233,6 +270,8 @@ const Users = ({ users, assessment, attemptAssessment, disabled }) => {
       return newAssessment;
     });
   }, [assessment]);
+
+  if (users === undefined) return <Loading/>
 
   return (
     <tbody>

@@ -219,6 +219,19 @@ export const useGasPrice = () => {
     const safeWei = web3.utils.toWei(safe, 'gwei');
     const proposeWei = web3.utils.toWei(propose, 'gwei');
     return { safe: safeWei, propose: proposeWei };
-  });
+  }, [ backendURL, web3 ]);
+
+}
+
+export const useGetUser = () => {
+
+  const backendURL = useContext(BackendContext);
+
+  return useCallback(async address => {
+    const response = await fetch(`${backendURL}/user/${address}`);
+    if (!response.ok) throw new Error(response.status);
+    const data = await response.json();
+    return data;
+  }, [ backendURL ])
 
 }

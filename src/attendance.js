@@ -26,6 +26,7 @@ const Attendance = ({
   feeWei,
   organizer,
   attendees,
+  getAttendees,
   beforeStart,
   afterEnd,
 }) => {
@@ -194,6 +195,7 @@ const Attendance = ({
       }).on('receipt', hash => {
         setEthState('transacción aceptada');
         setEthMessage('registrando tu pago...');
+        getAttendees();
       });
   }, [ contract, account, getGasPrice, feeWei ]);
 
@@ -243,7 +245,7 @@ const Attendance = ({
           para participar.
         </div>
       </div>
-      { attendees.map(a => a.address).includes(account) ? (
+      { attendees.includes(account) ? (
         <div
           css={`
             display: flex;

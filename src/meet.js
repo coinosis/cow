@@ -7,8 +7,8 @@ const Meet = ({
   id,
   account,
   userName,
-  attendees,
-  setAttendees,
+  users,
+  setUsers,
   beforeStart,
   afterEnd,
 }) => {
@@ -16,34 +16,17 @@ const Meet = ({
   const [now] = useState(new Date());
 
   const participantChanged = useCallback((jitster, change) => {
-    setAttendees(oldAttendees => {
-      if (!oldAttendees) return oldAttendees;
-      const attendees = [ ...oldAttendees ];
-      let index = attendees.findIndex(a => a.id === jitster.id);
+    setUsers(prevUsers => {
+      if (!prevUsers) return prevUsers;
+      const nextUsers = [ ...prevUsers ];
+      let index = nextUsers.findIndex(user => user.id === jitster.id);
       if (index === -1 && jitster.displayName) {
-        index = attendees.findIndex(a =>
-          a.name === jitster.displayName
-        );
+        index = nextUsers.findIndex(user => user.name === jitster.displayName);
       }
-      if (index === -1 && jitster.displayName) {
-        index = attendees.findIndex(a =>
-          a.displayname === jitster.displayName
-        );
-      }
-      if (index === -1) {
-        // jitster.name = jitster.displayName || 'anónimo';
-        // jitster.address = '0x000';
-        // jitster.present = true;
-        // attendees.push(jitster);
-        // attendees.sort((a, b) => a.name.localeCompare(b.name));
-        return attendees;
-      }
-      let joinedAttendee = {...attendees[index], ...jitster, ...change};
-      if (joinedAttendee.address === '0x000' && jitster.displayname) {
-        joinedAttendee.name = jitster.displayname;
-      }
-      attendees[index] = joinedAttendee;
-      return attendees;
+      if (index === -1) return prevUsers;
+      let joinedAttendee = {...nextUsers[index], ...jitster, ...change};
+      nextUsers[index] = joinedAttendee;
+      return nextUsers;
     });
   }, []);
 
@@ -60,13 +43,12 @@ const Meet = ({
     });
 
     API.on('dominantSpeakerChanged', jitster => {
-      setAttendees(oldAttendees => {
-        const attendees = [ ...oldAttendees ];
-        const index = attendees.findIndex(a => a.speaker);
-        if (index !== -1) {
-          attendees[index].speaker = false;
-        }
-        return attendees;
+      setUsers(prevUsers => {
+        const nextUsers = [ ...prevUsers ];
+        const index = nextUsers.findIndex(a => a.speaker);
+        if (index === -1) return prevUsers;
+        nextUsers[index].speaker = false;
+        return nextUsers;
       });
       participantChanged(jitster, { speaker: true });
     });
@@ -87,20 +69,21 @@ const Meet = ({
 
   if (
     userName === undefined
-      || attendees === undefined
+      || users === undefined
       || account === undefined
       || beforeStart === undefined
       || afterEnd === undefined
   ) return <div/>
 
-  if (userName === null || !attendees.map(a => a.address).includes(account))
+  if (userName === null || !users.map(a => a.address).includes(account))
     return <div/>
 
   if (now < beforeStart) return (
     <div>
       {format(
         beforeStart,
-        "'la videoconferencia comenzará el' dd 'de' MMMM 'de' yyyy 'a las' h:mm aa"
+        "'la videoconferencia comenzará el' dd 'de' MMMM 'de' yyyy 'a las' "
+        + "h:mm aa"
       )}
     </div>
   );
@@ -109,7 +92,8 @@ const Meet = ({
     <div>
       {format(
         afterEnd,
-        "'la videoconferencia finalizó el' dd 'de' MMMM 'de' yyyy 'a las' h:mm aa"
+        "'la videoconferencia finalizó el' dd 'de' MMMM 'de' yyyy 'a las' "
+        + "h:mm aa"
       )}
     </div>
   );

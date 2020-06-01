@@ -36,40 +36,31 @@ const Event = () => {
   const [afterEnd, setAfterEnd] = useState();
   const [organizer, setOrganizer] = useState();
   const [attendees, setAttendees] = useState();
+  const [users, setUsers] = useState([]);
   const [assessmentSent, setAssessmentSent] = useState();
   const match = useRouteMatch();
 
-  const fetchAttendees = useCallback(() => {
-    fetch(`${backendURL}/event/${eventURL}/attendees`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(response.status);
-        }
-        return response.json();
-      })
-      .then(data => {
-        setAttendees(attendees => {
-          if (!attendees) return data;
-          if (data.length <= attendees.length) return attendees;
-          const newAttendees = [...attendees];
-          data.forEach(d => {
-            if (!attendees.map(a => a.address).includes(d.address)) {
-              newAttendees.push(d);
-            }
-          });
-          newAttendees.sort((a, b) => a.name.localeCompare(b.name));
-          return newAttendees;
-        });
-      })
-      .catch(err => {
-        console.error(err);
-      });
-  }, [backendURL, eventURL]);
+  const getAttendees = useCallback(async () => {
+    if (!contract) return;
+    const attendees = await contract.methods.getAttendees().call();
+    setAttendees(previous => {
+      if (previous && previous.length === attendees.length) return previous;
+      return attendees;
+    });
+  }, [ contract ]);
 
   const setContractRaw = useCallback(address => {
     const contract = new web3.eth.Contract(contractJson.abi, address);
     setContract(contract);
   }, [ web3, contractJson ]);
+
+  useEffect(() => {
+    getAttendees();
+    const updateAttendees = setInterval(getAttendees, 10000);
+    return () => {
+      clearInterval(updateAttendees);
+    }
+  }, [ getAttendees ]);
 
   useEffect(() => {
     fetch(`${backendURL}/event/${eventURL}`)
@@ -88,9 +79,13 @@ const Event = () => {
         beforeStart,
         afterEnd,
         organizer,
-        attendees
+        attendees,
       }) => {
-        setContractRaw(address);
+        if (address) {
+          setContractRaw(address);
+        } else {
+          setAttendees(attendees);
+        }
         setId(_id);
         setName(name);
         setUrl(url);
@@ -102,12 +97,7 @@ const Event = () => {
       }).catch(err => {
         console.error(err);
       });
-    fetchAttendees();
-    const updateAttendees = setInterval(fetchAttendees, 10000);
-    return () => {
-      clearInterval(updateAttendees);
-    }
-  }, [backendURL, eventURL, setContractRaw ]);
+  }, [ backendURL, eventURL, setContractRaw ]);
 
   if (attendees === undefined || userName === undefined) return <Loading/>
 
@@ -125,6 +115,7 @@ const Event = () => {
             feeWei={feeWei}
             organizer={organizer}
             attendees={attendees}
+            getAttendees={getAttendees}
             beforeStart={beforeStart}
             afterEnd={afterEnd}
           />
@@ -140,13 +131,15 @@ const Event = () => {
               setSent={setAssessmentSent}
               url={url}
               attendees={attendees}
+              users={users}
+              setUsers={setUsers}
             />
             <Meet
               id={id}
               account={account}
               userName={userName}
-              attendees={attendees}
-              setAttendees={setAttendees}
+              users={users}
+              setUsers={setUsers}
               beforeStart={beforeStart}
               afterEnd={afterEnd}
             />
