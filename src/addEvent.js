@@ -173,7 +173,7 @@ const AddEvent = ({ setEvents }) => {
     const contract = new web3.eth.Contract(contractJson.abi);
     const ethPrice = await getETHPrice();
     const feeETH = fee / ethPrice;
-    const feeWei = web3.utils.toWei(String(feeETH));
+    const feeWei = web3.utils.toWei(String(feeETH.toFixed(18)));
     const gasPrice = await getGasPrice();
     const deployData = {
       data: contractJson.bytecode,
