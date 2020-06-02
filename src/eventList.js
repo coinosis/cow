@@ -3,16 +3,6 @@ import { AccountContext, BackendContext } from './coinosis';
 import { Link, formatDate, SectionTitle } from './helpers';
 import AddEvent from './addEvent';
 
-const privilegedAccounts = [
-  '0xeFaC568c637201ea0A944b888b8FB98386eF2882',
-  '0xfE1d177037DF1ABbdde4c0E4AFcdE9447F8511D0',
-  '0x51e9047a6bBEC3c2a4C03c27382381B129e99e0E',
-  '0xbED9793fC4FEe638805464A16c11ef642e16974D',
-  '0xe1fF19182deb2058016Ae0627c1E4660A895196a',
-  '0xEf7c6b3F12d5064aC2D469354C1147571A26a67c',
-  '0x9A5998e48f5d7D581C2d022Ae824765e9a5DC9B5',
-];
-
 const EventList = () => {
 
   const { account } = useContext(AccountContext);
@@ -21,7 +11,6 @@ const EventList = () => {
   const [upcoming, setUpcoming] = useState([]);
   const [live, setLive] = useState([]);
   const [past, setPast] = useState([]);
-  const [showAddEvent, setShowAddEvent] = useState(false);
 
   useEffect(() => {
     if (!backendURL) return;
@@ -61,15 +50,6 @@ const EventList = () => {
     setPast(past);
   }, [events]);
 
-  useEffect(() => {
-    if (privilegedAccounts.includes(account)) {
-      setShowAddEvent(true);
-    }
-    else {
-      setShowAddEvent(false);
-    }
-  }, [account]);
-
   return (
     <div
       css={`
@@ -88,7 +68,7 @@ const EventList = () => {
       />
       <div
         css={`
-          display: ${showAddEvent ? 'flex' : 'none'};
+          display: flex;
           flex-direction: column;
           align-items: center;
         `}
