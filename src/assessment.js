@@ -16,6 +16,7 @@ import {
   useGasPrice,
   usePost,
   ATTENDEE_REGISTERED,
+  ATTENDEE_CLICKED_SEND,
   ATTENDEE_SENT_CLAPS,
   ATTENDEE_CLAPPED,
 } from './helpers';
@@ -119,6 +120,7 @@ const Assessment = ({
   }, [assessment]);
 
   const send = useCallback(async () => {
+    setState(ATTENDEE_CLICKED_SEND);
     const addresses = Object.keys(assessment);
     const claps = Object.values(assessment);
     const gasPrice = await getGasPrice();
@@ -195,7 +197,8 @@ const Assessment = ({
         assessment={assessment}
         attemptAssessment={attemptAssessment}
         clapsError={clapsError}
-        disabled={state >= ATTENDEE_SENT_CLAPS}
+        state={state}
+        version={version}
       />
       <tfoot>
         <tr>
@@ -203,11 +206,11 @@ const Assessment = ({
           <td>
             <button
               onClick={send}
-              disabled={state >= ATTENDEE_SENT_CLAPS}
+              disabled={state >= ATTENDEE_CLICKED_SEND}
             >
               {state >= ATTENDEE_CLAPPED
                ? 'enviado'
-               : state == ATTENDEE_SENT_CLAPS ? 'enviando...'
+               : state >= ATTENDEE_SENT_CLAPS ? 'enviando...'
                : 'enviar'
               }
             </button>
@@ -221,7 +224,7 @@ const Assessment = ({
 
 const Claps = ({ clapsLeft, clapsError, state }) => {
 
-  if (state >= ATTENDEE_SENT_CLAPS) {
+  if (state >= ATTENDEE_CLICKED_SEND) {
     return (
       <thead>
         <tr>
@@ -232,7 +235,9 @@ const Claps = ({ clapsLeft, clapsError, state }) => {
               font-weight: 700;
             `}
           >
-            { state == ATTENDEE_SENT_CLAPS
+            { state == ATTENDEE_CLICKED_SEND
+              ? 'abriendo Metamask...'
+              : state == ATTENDEE_SENT_CLAPS
               ? 'confirmando transacción...'
               : 'gracias por tu tiempo!'
             }
@@ -274,7 +279,8 @@ const Users = ({
   setUsers,
   assessment,
   attemptAssessment,
-  disabled,
+  state,
+  version,
 }) => {
 
   const getUser = useGetUser();
@@ -324,7 +330,8 @@ const Users = ({
              speaker={speaker}
              claps={claps}
              setClaps={value => setClaps(address, value)}
-             disabled={disabled}
+             state={state}
+             version={version}
            />
          );
       })}
@@ -340,7 +347,8 @@ const User = ({
   claps,
   setClaps,
   hasFocus,
-  disabled,
+  state,
+  version,
 }) => {
 
   const clapInput = createRef();
@@ -404,9 +412,9 @@ const User = ({
         <input
           ref={clapInput}
           type="text"
-          value={claps}
+          value={state >= ATTENDEE_CLAPPED && version === 2 ? '***' : claps}
           onChange={e => setClaps(e.target.value)}
-          disabled={disabled || ownAddress}
+          disabled={state >= ATTENDEE_CLICKED_SEND || ownAddress}
           css={`
             width: 60px;
           `}
