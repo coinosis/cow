@@ -37,7 +37,7 @@ const Event = () => {
   const [organizer, setOrganizer] = useState();
   const [attendees, setAttendees] = useState();
   const [users, setUsers] = useState([]);
-  const [assessmentSent, setAssessmentSent] = useState();
+  const [state, setState] = useState();
   const match = useRouteMatch();
 
   const getAttendees = useCallback(async () => {
@@ -84,6 +84,7 @@ const Event = () => {
         if (address) {
           setContractRaw(address);
         } else {
+          setContract(null);
           setAttendees(attendees);
         }
         setId(_id);
@@ -127,8 +128,9 @@ const Event = () => {
             `}
           >
             <Assessment
-              sent={assessmentSent}
-              setSent={setAssessmentSent}
+              contract={contract}
+              state={state}
+              setState={setState}
               url={url}
               attendees={attendees}
               users={users}

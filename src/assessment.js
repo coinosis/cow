@@ -13,13 +13,18 @@ import {
   Link,
   Loading,
   useGetUser,
+  useGasPrice,
   usePost,
+  ATTENDEE_REGISTERED,
+  ATTENDEE_SENT_CLAPS,
+  ATTENDEE_CLAPPED,
 } from './helpers';
 import Account from './account';
 
 const Assessment = ({
-  sent,
-  setSent,
+  contract,
+  state,
+  setState,
   url: event,
   attendees,
   users,
@@ -33,10 +38,33 @@ const Assessment = ({
   const [assessment, setAssessment] = useState({});
   const [clapsError, setClapsError] = useState(false);
   const post = usePost();
+  const getGasPrice = useGasPrice();
 
   useEffect(() => {
+    for (const i in attendees) {
+      if (!(attendees[i] in assessment)) {
+        assessment[attendees[i]] = 0;
+      }
+    }
+    setAssessment(assessment);
+    setTotalClaps((attendees.length - 1) * 3);
+  }, [ attendees ]);
+
+  const updateState = useCallback(async () => {
+    if (!contract || account === undefined) return;
+    const state = await contract.methods.states(account).call();
+    setState(state);
+  }, [ contract, account ])
+
+  useEffect(() => {
+    updateState();
+  }, [ updateState ]);
+
+  useEffect(() => {
+    if (contract === undefined) return;
+    if (contract) return;
     if (!name) return;
-    fetch(`${backendURL}/assessment/${event}/${account}`) // TODO: this doesn't need to happen every time attendees is reloaded
+    fetch(`${backendURL}/assessment/${event}/${account}`)
       .then(response => {
         if (!response.ok) {
           throw new Error(response.status);
@@ -45,23 +73,15 @@ const Assessment = ({
         }
       }).then(data => {
         setAssessment(data.assessment);
-        setSent(true);
+        setState(ATTENDEE_CLAPPED);
       }).catch(error => {
         if (error.toString().includes('404')) {
-          setSent(false);
-          // const assessment = {}; // TODO: but this part does
-          for (const i in attendees) {
-            if (!attendees[i] in assessment) {
-            assessment[attendees[i]] = 0;
-            }
-          }
-          setAssessment(assessment);
-          setTotalClaps((attendees.length - 1) * 3);
+          setState(ATTENDEE_REGISTERED);
         } else {
           console.error(error);
         }
       });
-  }, [backendURL, event, account, attendees, name]);
+  }, [ contract, backendURL, event, account ]);
 
   useEffect(() => {
     if (assessment && totalClaps) {
@@ -89,19 +109,18 @@ const Assessment = ({
     setAssessment(newAssessment);
   }, [assessment]);
 
-  const send = useCallback(() => {
-    const selflessAssessment = { ...assessment };
-    delete selflessAssessment[account];
-    const object = { event, sender: account, assessment: selflessAssessment };
-    post('assessments', object, (error, data) => {
-      if(error) {
-        console.error(error);
-        return;
-      }
-      setAssessment(data.assessment);
-      setSent(true);
-    });
-  }, [account, assessment]);
+  const send = useCallback(async () => {
+    const addresses = Object.keys(assessment);
+    const claps = Object.values(assessment);
+    const gasPrice = await getGasPrice();
+    const result = await contract.methods.clap(addresses, claps)
+          .send({ from: account, gasPrice: gasPrice.propose })
+          .on('transactionHash', transactionHash => {
+            setState(ATTENDEE_SENT_CLAPS);
+          }).on('receipt', receipt => {
+            updateState();
+          });
+  }, [ assessment, getGasPrice, contract, account ]);
 
   if (account === null || name === null) {
     return (
@@ -116,7 +135,7 @@ const Assessment = ({
     );
   }
 
-  if (sent === undefined) return <Loading/>
+  if (state === undefined) return <Loading/>
 
   if (!attendees.includes(account)) {
     return (
@@ -158,7 +177,7 @@ const Assessment = ({
       <Claps
         clapsLeft={clapsLeft}
         clapsError={clapsError}
-        sent={sent}
+        state={state}
       />
       <Users
         attendees={attendees}
@@ -167,7 +186,7 @@ const Assessment = ({
         assessment={assessment}
         attemptAssessment={attemptAssessment}
         clapsError={clapsError}
-        disabled={sent}
+        disabled={state >= ATTENDEE_SENT_CLAPS}
       />
       <tfoot>
         <tr>
@@ -175,9 +194,13 @@ const Assessment = ({
           <td>
             <button
               onClick={send}
-              disabled={sent}
+              disabled={state >= ATTENDEE_SENT_CLAPS}
             >
-              {sent ? 'enviado' : 'enviar'}
+              {state >= ATTENDEE_CLAPPED
+               ? 'enviado'
+               : state == ATTENDEE_SENT_CLAPS ? 'enviando...'
+               : 'enviar'
+              }
             </button>
           </td>
         </tr>
@@ -187,9 +210,9 @@ const Assessment = ({
   );
 }
 
-const Claps = ({ clapsLeft, clapsError, sent }) => {
+const Claps = ({ clapsLeft, clapsError, state }) => {
 
-  if (sent) {
+  if (state >= ATTENDEE_SENT_CLAPS) {
     return (
       <thead>
         <tr>
@@ -200,7 +223,10 @@ const Claps = ({ clapsLeft, clapsError, sent }) => {
               font-weight: 700;
             `}
           >
-            gracias por tu tiempo!
+            { state == ATTENDEE_SENT_CLAPS
+              ? 'confirmando transacción...'
+              : 'gracias por tu tiempo!'
+            }
           </td>
         </tr>
       </thead>

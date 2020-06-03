@@ -10,6 +10,12 @@ import {
 
 export const environment = process.env.ENVIRONMENT || 'development';
 
+export const ATTENDEE_UNREGISTERED = 0;
+export const ATTENDEE_REGISTERED = 1;
+export const ATTENDEE_SENT_CLAPS = 1.9;
+export const ATTENDEE_CLAPPED = 2;
+export const ATTENDEE_REWARDED = 3;
+
 export const Loading = () => {
   return (
     <div
