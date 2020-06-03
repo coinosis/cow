@@ -66,22 +66,20 @@ const EventList = () => {
         title="próximos eventos"
         events={upcoming}
       />
-      <div
-        css={`
+      { name && (
+        <div
+          css={`
           display: flex;
           flex-direction: column;
           align-items: center;
         `}
-      >
-        { name && (
-          <div>
-            <SectionTitle>
-              crea un nuevo evento
-            </SectionTitle>
-            <AddEvent setEvents={setEvents} />
-          </div>
-        )}
-    </div>
+        >
+          <SectionTitle>
+            crea un nuevo evento
+          </SectionTitle>
+          <AddEvent setEvents={setEvents} />
+        </div>
+      )}
       <EventSection
         title="eventos pasados"
         events={past}
