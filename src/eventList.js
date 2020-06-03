@@ -5,7 +5,7 @@ import AddEvent from './addEvent';
 
 const EventList = () => {
 
-  const { account } = useContext(AccountContext);
+  const { account, name } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [events, setEvents] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
@@ -73,10 +73,14 @@ const EventList = () => {
           align-items: center;
         `}
       >
-        <SectionTitle>
-          crea un nuevo evento
-        </SectionTitle>
-        <AddEvent setEvents={setEvents} />
+        { name && (
+          <div>
+            <SectionTitle>
+              crea un nuevo evento
+            </SectionTitle>
+            <AddEvent setEvents={setEvents} />
+          </div>
+        )}
     </div>
       <EventSection
         title="eventos pasados"
