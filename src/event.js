@@ -38,6 +38,7 @@ const Event = () => {
   const [attendees, setAttendees] = useState();
   const [users, setUsers] = useState([]);
   const [state, setState] = useState();
+  const [version, setVersion] = useState();
   const match = useRouteMatch();
 
   const getAttendees = useCallback(async () => {
@@ -80,10 +81,11 @@ const Event = () => {
         afterEnd,
         organizer,
         attendees,
+        version,
       }) => {
-        if (address) {
+        if (version === 2) {
           setContractRaw(address);
-        } else {
+        } else if (version === 1 || version === 0) {
           setContract(null);
           setAttendees(attendees);
         }
@@ -95,6 +97,7 @@ const Event = () => {
         setBeforeStart(new Date(beforeStart));
         setAfterEnd(new Date(afterEnd));
         setOrganizer(organizer);
+        setVersion(version);
       }).catch(err => {
         console.error(err);
       });
@@ -135,6 +138,7 @@ const Event = () => {
               attendees={attendees}
               users={users}
               setUsers={setUsers}
+              version={version}
             />
             <Meet
               id={id}

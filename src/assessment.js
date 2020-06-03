@@ -29,6 +29,7 @@ const Assessment = ({
   attendees,
   users,
   setUsers,
+  version,
 }) => {
 
   const { account, name } = useContext(AccountContext);
@@ -51,19 +52,27 @@ const Assessment = ({
   }, [ attendees ]);
 
   const updateState = useCallback(async () => {
-    if (!contract || account === undefined) return;
     const state = await contract.methods.states(account).call();
     setState(state);
-  }, [ contract, account ])
+  }, [ contract, account ]);
 
   useEffect(() => {
+    if (
+      version === undefined
+        || contract === undefined
+        || account === undefined
+    ) return;
+    if (version !== 2) return;
     updateState();
   }, [ updateState ]);
 
   useEffect(() => {
-    if (contract === undefined) return;
-    if (contract) return;
-    if (!name) return;
+    if (
+      version === undefined
+        || contract === undefined
+        || name === undefined
+    ) return;
+    if (version > 1) return;
     fetch(`${backendURL}/assessment/${event}/${account}`)
       .then(response => {
         if (!response.ok) {
