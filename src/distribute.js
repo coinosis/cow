@@ -2,15 +2,18 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { formatDistance } from 'date-fns';
 import { es } from 'date-fns/esm/locale';
 import { useGasPrice, ATTENDEE_REWARDED } from './helpers';
-import { AccountContext } from './coinosis';
+import Amount from './amount';
+import { Web3Context, AccountContext } from './coinosis';
 
 const Distribute = ({ contract, end, state, updateState }) => {
 
+  const web3 = useContext(Web3Context);
   const { account } = useContext(AccountContext);
   const [disabled, setDisabled] = useState(true);
   const [message, setMessage] = useState();
   const [time, setTime] = useState();
   const [updater, setUpdater] = useState();
+  const [reward, setReward] = useState();
   const getGasPrice = useGasPrice();
 
   useEffect(() => {
@@ -18,8 +21,21 @@ const Distribute = ({ contract, end, state, updateState }) => {
     if (state == ATTENDEE_REWARDED) {
       setMessage('distribución efectuada.');
       setDisabled(true);
+      const getPastEvents = async () => {
+        const pastEvents = await contract.getPastEvents(
+          'Transfer',
+          {filter: {attendee: account}, fromBlock: 0}
+        );
+        if (pastEvents.length > 0) {
+          const reward = pastEvents[0].returnValues.reward;
+          setReward(reward);
+        }
+      }
+      getPastEvents();
+      setReward(reward);
+      clearInterval(updater);
     }
-  }, [ state ]);
+  }, [ state, account ]);
 
   const updateTime = useCallback(() => {
     setTime(new Date());
@@ -36,13 +52,16 @@ const Distribute = ({ contract, end, state, updateState }) => {
   }, [ updateTime ]);
 
   useEffect(() => {
+    updateState();
+  }, [ time, updateState ]);
+
+  useEffect(() => {
     if (time === undefined || end === undefined) return;
     if (state == ATTENDEE_REWARDED) return;
     if (time >= end) {
       setMessage('antes de distribuir los fondos, asegúrate de que todo el '
                  + 'mundo haya enviado sus aplausos.');
       setDisabled(false);
-      clearInterval(updater);
     } else {
       const dateOptions = { locale: es, addSuffix: true, includeSeconds: true };
       const distance = formatDistance(end, time, dateOptions);
@@ -81,7 +100,12 @@ const Distribute = ({ contract, end, state, updateState }) => {
         flex-direction: column;
         align-items: flex-start;
         padding: 10px;
-        background: ${disabled ? '#d0d0d0' : '#a0d0a0'};
+        background: ${time < end
+                        ? '#d0d0d0'
+                        : state < ATTENDEE_REWARDED
+                        ? '#a0d0a0'
+                        : '#a0a0d0'
+                     };
         border: 1px solid black;
       `}
     >
@@ -94,20 +118,23 @@ const Distribute = ({ contract, end, state, updateState }) => {
       >
         {message}
       </div>
-      <div
-        css={`
-          width: 100%;
-          display: flex;
-          justify-content: center;
-        `}
-      >
-        <button
-          disabled={disabled}
-          onClick={distribute}
+      { state < ATTENDEE_REWARDED && (
+        <div
+          css={`
+            width: 100%;
+            display: flex;
+            justify-content: center;
+          `}
         >
-          distribuir fondos para todo el mundo
-        </button>
-      </div>
+          <button
+            disabled={disabled}
+            onClick={distribute}
+            css="margin: 10px 0"
+          >
+            distribuir fondos para todo el mundo
+          </button>
+        </div>
+      )}
       {time >= end && state < ATTENDEE_REWARDED && (
         <div
           css={`
@@ -122,6 +149,20 @@ const Distribute = ({ contract, end, state, updateState }) => {
             <li>cualquier asistente puede hacerla</li>
             <li>tiene costo</li>
           </ul>
+        </div>
+      )}
+      { state == ATTENDEE_REWARDED && (
+        <div
+          css={`
+            width: 100%;
+            display: flex;
+            justify-content: center;
+          `}
+        >
+          <div css="margin-right: 10px">
+            recibiste
+          </div>
+          <Amount eth={reward}/>
         </div>
       )}
     </div>
