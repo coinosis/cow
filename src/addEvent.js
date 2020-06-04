@@ -11,7 +11,14 @@ import {
 } from 'date-fns';
 import contractJson from '../Event.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
-import { formatDate, usePost, useETHPrice, useGasPrice } from './helpers';
+import {
+  formatDate,
+  usePost,
+  useETHPrice,
+  useGasPrice,
+  timestampInSeconds,
+  dateFromTimestamp,
+} from './helpers';
 
 registerLocale('es', es);
 
@@ -121,10 +128,10 @@ const AddEvent = ({ setEvents }) => {
     setMinutesAfter(natural);
   });
 
-  const addToBackend = useCallback((address, id, feeWei) => {
+  const addToBackend = useCallback((address, id, feeWei, afterEnd) => {
     const organizer = account;
     const beforeStart = subMinutes(start, minutesBefore);
-    const afterEnd = addMinutes(end, minutesAfter);
+    const dateAfterEnd = dateFromTimestamp(afterEnd);
     const object = {
       address,
       name,
@@ -134,7 +141,7 @@ const AddEvent = ({ setEvents }) => {
       start,
       end,
       beforeStart,
-      afterEnd,
+      afterEnd: dateAfterEnd,
       organizer,
     };
     post('events', object, (err, data) => {
@@ -174,17 +181,19 @@ const AddEvent = ({ setEvents }) => {
     const ethPrice = await getETHPrice();
     const feeETH = fee / ethPrice;
     const feeWei = web3.utils.toWei(String(feeETH.toFixed(18)));
+    const dateAfterEnd = addMinutes(end, minutesAfter);
+    const afterEnd = timestampInSeconds(dateAfterEnd);
     const gasPrice = await getGasPrice();
     const deployData = {
       data: contractJson.bytecode,
-      arguments: [url, feeWei],
+      arguments: [url, feeWei, afterEnd],
     };
     const deployment = await contract.deploy(deployData);
     setStatus('usa Metamask para desplegar el contrato. '
               + 'Esta acción tiene costo.');
     const txOptions = {
       from: account,
-      gas: 1500000,
+      gas: 1600000,
       gasPrice: gasPrice.propose,
     };
     const instance = await deployment.send(txOptions)
@@ -200,12 +209,28 @@ const AddEvent = ({ setEvents }) => {
           });
     const actualId = await instance.methods.id().call();
     const actualFeeWei = await instance.methods.fee().call();
-    return {address: instance._address, id: actualId, feeWei: actualFeeWei };
-  }, [ web3, contractJson, url, fee, getETHPrice, account, getGasPrice ]);
+    const actualAfterEnd = await instance.methods.end().call();
+    return {
+      address: instance._address,
+      id: actualId,
+      feeWei: actualFeeWei,
+      afterEnd: actualAfterEnd
+    };
+  }, [
+    web3,
+    contractJson,
+    url,
+    fee,
+    getETHPrice,
+    account,
+    getGasPrice,
+    end,
+    minutesAfter,
+  ]);
 
   const add = useCallback(async () => {
-    const { address, id, feeWei } = await deployContract();
-    addToBackend(address, id, feeWei);
+    const { address, id, feeWei, afterEnd } = await deployContract();
+    addToBackend(address, id, feeWei, afterEnd);
   }, [ addToBackend, deployContract ]);
 
   return (

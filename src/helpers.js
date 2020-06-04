@@ -242,3 +242,19 @@ export const useGetUser = () => {
   }, [ backendURL ])
 
 }
+
+export const timestampInSeconds = date => {
+  const timestamp = date.getTime();
+  const string = String(timestamp);
+  const truncated = string.substring(0, string.length - 3);
+  const number = Number(truncated);
+  return number;
+}
+
+export const dateFromTimestamp = timestamp => {
+  const string = String(timestamp);
+  const trailingZeroes = string + '000';
+  const number = Number(trailingZeroes);
+  const date = new Date(number);
+  return date
+}
