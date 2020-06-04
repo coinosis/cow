@@ -29,6 +29,7 @@ const Attendance = ({
   getAttendees,
   beforeStart,
   afterEnd,
+  updateState,
 }) => {
 
   const getGasPrice = useGasPrice();
@@ -196,6 +197,7 @@ const Attendance = ({
         setEthState('transacción aceptada');
         setEthMessage('registrando tu pago...');
         getAttendees();
+        updateState();
       });
   }, [ contract, account, getGasPrice, feeWei ]);
 

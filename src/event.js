@@ -44,19 +44,15 @@ const Event = () => {
   const match = useRouteMatch();
 
   const updateState = useCallback(async () => {
+    if (contract === undefined || account === undefined) return;
     const state = await contract.methods.states(account).call();
     setState(state);
   }, [ contract, account ]);
 
   useEffect(() => {
-    if (
-      version === undefined
-        || contract === undefined
-        || account === undefined
-    ) return;
-    if (version !== 2) return;
+    if (version === undefined || version !== 2) return;
     updateState();
-  }, [ updateState ]);
+  }, [ version, updateState ]);
 
   const getAttendees = useCallback(async () => {
     if (!contract) return;
@@ -141,6 +137,7 @@ const Event = () => {
             getAttendees={getAttendees}
             beforeStart={beforeStart}
             afterEnd={afterEnd}
+            updateState={updateState}
           />
         </Route>
         <Route path={`${match.path}/${ASSESSMENT}`}>

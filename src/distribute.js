@@ -15,8 +15,9 @@ const Distribute = ({ contract, end, state, updateState }) => {
 
   useEffect(() => {
     if (state === undefined) return;
-    if (state === ATTENDEE_REWARDED) {
+    if (state == ATTENDEE_REWARDED) {
       setMessage('distribución efectuada.');
+      setDisabled(true);
     }
   }, [ state ]);
 
@@ -25,6 +26,7 @@ const Distribute = ({ contract, end, state, updateState }) => {
   }, []);
 
   useEffect(() => {
+    if (state == ATTENDEE_REWARDED) return;
     updateTime();
     const timeUpdater = setInterval(updateTime, 10000);
     setUpdater(timeUpdater);
@@ -35,6 +37,7 @@ const Distribute = ({ contract, end, state, updateState }) => {
 
   useEffect(() => {
     if (time === undefined || end === undefined) return;
+    if (state == ATTENDEE_REWARDED) return;
     if (time >= end) {
       setMessage('antes de distribuir los fondos, asegúrate de que todo el '
                  + 'mundo haya enviado sus aplausos.');
@@ -55,10 +58,10 @@ const Distribute = ({ contract, end, state, updateState }) => {
       from: account,
       gasPrice: gasPrice.propose,
     }
-    setMessage('abriendo Metamask...');
+    setMessage('usa Metamask para enviar la transacción.');
     contract.methods.distribute().send(sendOptions)
       .on('error', error => {
-        setMessage(error.substring(0, 60));
+        setMessage(error.message.substring(0, 60));
         setDisabled(false);
       }).on('transactionHash', transactionHash => {
         setMessage('esperando a que la transacción sea incluida en la '
@@ -73,22 +76,54 @@ const Distribute = ({ contract, end, state, updateState }) => {
     <div
       css={`
         max-width: 250px;
-        margin-top: 40px;
+        margin: 40px 10px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         padding: 10px;
         background: ${disabled ? '#d0d0d0' : '#a0d0a0'};
-        box-shadow: 1px 1px 5px;
+        border: 1px solid black;
       `}
     >
-      {message}
-      <button
-        disabled={disabled}
-        onClick={distribute}
+      <div
+        css={`
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        `}
       >
-        distribuir fondos para todo el mundo
-      </button>
+        {message}
+      </div>
+      <div
+        css={`
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        `}
+      >
+        <button
+          disabled={disabled}
+          onClick={distribute}
+        >
+          distribuir fondos para todo el mundo
+        </button>
+      </div>
+      {time >= end && state < ATTENDEE_REWARDED && (
+        <div
+          css={`
+            width: 100%;
+            display: flex;
+            align-items: center;
+          `}
+        >
+          esta acción:
+          <ul>
+            <li>sólo la tiene que hacer una persona</li>
+            <li>cualquier asistente puede hacerla</li>
+            <li>tiene costo</li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

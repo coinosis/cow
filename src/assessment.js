@@ -44,6 +44,10 @@ const Assessment = ({
   const getGasPrice = useGasPrice();
 
   useEffect(() => {
+    setAssessment({});
+  }, [ account ]);
+
+  useEffect(() => {
     for (const i in attendees) {
       if (!(attendees[i] in assessment)) {
         assessment[attendees[i]] = 0;
@@ -222,7 +226,7 @@ const Claps = ({ clapsLeft, clapsError, state }) => {
             `}
           >
             { state == ATTENDEE_CLICKED_SEND
-              ? 'abriendo Metamask...'
+              ? 'envía tus aplausos usando Metamask.'
               : state == ATTENDEE_SENT_CLAPS
               ? 'confirmando transacción...'
               : 'gracias por tu tiempo!'
@@ -398,7 +402,13 @@ const User = ({
         <input
           ref={clapInput}
           type="text"
-          value={state >= ATTENDEE_CLAPPED && version === 2 ? '***' : claps}
+          value={
+            version === 2
+              && state >= ATTENDEE_CLAPPED
+              && !ownAddress
+              ? '***'
+              : claps
+          }
           onChange={e => setClaps(e.target.value)}
           disabled={state >= ATTENDEE_CLICKED_SEND || ownAddress}
           css={`
