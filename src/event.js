@@ -9,8 +9,9 @@ import {
 } from 'react-router-dom';
 import styled from 'styled-components';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
-import { Link, Loading } from './helpers';
+import { Link, Loading, ATTENDEE_REGISTERED } from './helpers';
 import Attendance from './attendance';
+import Distribute from './distribute';
 import Meet from './meet';
 import Assessment from './assessment';
 import Result from './result';
@@ -32,6 +33,7 @@ const Event = () => {
   const [id, setId] = useState();
   const [fee, setFee] = useState();
   const [feeWei, setFeeWei] = useState();
+  const [end, setEnd] = useState();
   const [beforeStart, setBeforeStart] = useState();
   const [afterEnd, setAfterEnd] = useState();
   const [organizer, setOrganizer] = useState();
@@ -40,6 +42,21 @@ const Event = () => {
   const [state, setState] = useState();
   const [version, setVersion] = useState();
   const match = useRouteMatch();
+
+  const updateState = useCallback(async () => {
+    const state = await contract.methods.states(account).call();
+    setState(state);
+  }, [ contract, account ]);
+
+  useEffect(() => {
+    if (
+      version === undefined
+        || contract === undefined
+        || account === undefined
+    ) return;
+    if (version !== 2) return;
+    updateState();
+  }, [ updateState ]);
 
   const getAttendees = useCallback(async () => {
     if (!contract) return;
@@ -77,6 +94,7 @@ const Event = () => {
         url,
         fee,
         feeWei,
+        end,
         beforeStart,
         afterEnd,
         organizer,
@@ -94,6 +112,7 @@ const Event = () => {
         setUrl(url);
         setFee(fee);
         setFeeWei(feeWei);
+        setEnd(new Date(end));
         setBeforeStart(new Date(beforeStart));
         setAfterEnd(new Date(afterEnd));
         setOrganizer(organizer);
@@ -130,16 +149,32 @@ const Event = () => {
               display: flex;
             `}
           >
-            <Assessment
-              contract={contract}
-              state={state}
-              setState={setState}
-              url={url}
-              attendees={attendees}
-              users={users}
-              setUsers={setUsers}
-              version={version}
-            />
+            <div
+              css={`
+                display: flex;
+                flex-direction: column;
+              `}
+            >
+              <Assessment
+                contract={contract}
+                state={state}
+                setState={setState}
+                updateState={updateState}
+                url={url}
+                attendees={attendees}
+                users={users}
+                setUsers={setUsers}
+                version={version}
+              />
+              { state >= ATTENDEE_REGISTERED && (
+                <Distribute
+                  contract={contract}
+                  end={end}
+                  state={state}
+                  updateState={updateState}
+                />
+              )}
+            </div>
             <Meet
               id={id}
               account={account}

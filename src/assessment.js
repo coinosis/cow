@@ -26,6 +26,7 @@ const Assessment = ({
   contract,
   state,
   setState,
+  updateState,
   url: event,
   attendees,
   users,
@@ -51,21 +52,6 @@ const Assessment = ({
     setAssessment(assessment);
     setTotalClaps((attendees.length - 1) * 3);
   }, [ attendees ]);
-
-  const updateState = useCallback(async () => {
-    const state = await contract.methods.states(account).call();
-    setState(state);
-  }, [ contract, account ]);
-
-  useEffect(() => {
-    if (
-      version === undefined
-        || contract === undefined
-        || account === undefined
-    ) return;
-    if (version !== 2) return;
-    updateState();
-  }, [ updateState ]);
 
   useEffect(() => {
     if (
