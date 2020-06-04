@@ -166,7 +166,7 @@ const Event = () => {
                 setUsers={setUsers}
                 version={version}
               />
-              { state >= ATTENDEE_REGISTERED && (
+              { version === 2 && state >= ATTENDEE_REGISTERED && (
                 <Distribute
                   contract={contract}
                   end={end}
