@@ -128,10 +128,11 @@ const AddEvent = ({ setEvents }) => {
     setMinutesAfter(natural);
   });
 
-  const addToBackend = useCallback((address, id, feeWei, afterEnd) => {
+  const addToBackend = useCallback((address, id, feeWei, end) => {
     const organizer = account;
     const beforeStart = subMinutes(start, minutesBefore);
-    const dateAfterEnd = dateFromTimestamp(afterEnd);
+    const endDate = dateFromTimestamp(end);
+    const afterEnd = addMinutes(endDate, minutesAfter);
     const object = {
       address,
       name,
@@ -139,9 +140,9 @@ const AddEvent = ({ setEvents }) => {
       description,
       feeWei,
       start,
-      end,
+      end: endDate,
       beforeStart,
-      afterEnd: dateAfterEnd,
+      afterEnd,
       organizer,
     };
     post('events', object, (err, data) => {
@@ -181,12 +182,11 @@ const AddEvent = ({ setEvents }) => {
     const ethPrice = await getETHPrice();
     const feeETH = fee / ethPrice;
     const feeWei = web3.utils.toWei(String(feeETH.toFixed(18)));
-    const dateAfterEnd = addMinutes(end, minutesAfter);
-    const afterEnd = timestampInSeconds(dateAfterEnd);
+    const endTimestamp = timestampInSeconds(end);
     const gasPrice = await getGasPrice();
     const deployData = {
       data: contractJson.bytecode,
-      arguments: [url, feeWei, afterEnd],
+      arguments: [url, feeWei, endTimestamp],
     };
     const deployment = await contract.deploy(deployData);
     setStatus('usa Metamask para desplegar el contrato. '
@@ -209,12 +209,12 @@ const AddEvent = ({ setEvents }) => {
           });
     const actualId = await instance.methods.id().call();
     const actualFeeWei = await instance.methods.fee().call();
-    const actualAfterEnd = await instance.methods.end().call();
+    const actualEnd = await instance.methods.end().call();
     return {
       address: instance._address,
       id: actualId,
       feeWei: actualFeeWei,
-      afterEnd: actualAfterEnd
+      end: actualEnd,
     };
   }, [
     web3,
@@ -229,8 +229,8 @@ const AddEvent = ({ setEvents }) => {
   ]);
 
   const add = useCallback(async () => {
-    const { address, id, feeWei, afterEnd } = await deployContract();
-    addToBackend(address, id, feeWei, afterEnd);
+    const { address, id, feeWei, end } = await deployContract();
+    addToBackend(address, id, feeWei, end);
   }, [ addToBackend, deployContract ]);
 
   return (
