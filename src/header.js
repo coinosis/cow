@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Hash } from './helpers';
 import logo from './assets/logo.png';
-import { ContractContext } from './coinosis';
+import { ContractContext } from './result';
 import Account from './account';
 
 const Header = () => {
@@ -24,9 +24,7 @@ const Header = () => {
         css={`
           justify-content: flex-start;
         `}
-      >
-        <ContractInfo/>
-      </HeaderItem>
+      />
       <HeaderItem
         css={`
           justify-content: center;

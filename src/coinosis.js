@@ -3,8 +3,7 @@ import { HashRouter, Switch, Route } from 'react-router-dom';
 import Web3 from 'web3';
 import { createGlobalStyle } from 'styled-components';
 import InstallMetamask from './installMetamask';
-import contractJson from '../Coinosis.json';
-import { environment, Loading, NoContract } from './helpers';
+import { environment, Loading } from './helpers';
 import settings from '../settings.json';
 import Header from './header';
 import EventList from './eventList';
@@ -12,7 +11,6 @@ import Event from './event';
 import Profile from './profile';
 
 export const Web3Context = createContext();
-export const ContractContext = createContext();
 export const AccountContext = createContext();
 export const BackendContext = createContext();
 export const CurrencyContext = createContext([]);
@@ -23,7 +21,6 @@ export const USD = Symbol('USD');
 const Coinosis = () => {
 
   const [web3, setWeb3] = useState();
-  const [contract, setContract] = useState();
   const [account, setAccount] = useState();
   const [name, setName] = useState();
   const [data, setData] = useState();
@@ -40,20 +37,6 @@ const Coinosis = () => {
   }, []);
 
   useEffect(() => {
-    if (!web3) return;
-    web3.eth.net.getId().then(networkId => {
-      const deployment = contractJson.networks[networkId];
-      if (!deployment) {
-        setContract(null);
-        return;
-      }
-      const contractAddress = deployment.address;
-      const contract = new web3.eth.Contract(contractJson.abi, contractAddress);
-      setContract(contract);
-    });
-  }, [web3]);
-
-  useEffect(() => {
     fetch(settings[environment].backend)
       .then(response => {
         setBackendURL(settings[environment].backend);
@@ -63,41 +46,38 @@ const Coinosis = () => {
   }, []);
 
   if (web3 === null) return <InstallMetamask/>
-  if (contract === undefined || backendURL === undefined) return <Loading/>
-  if (contract === null) return <NoContract/>
+  if (backendURL === undefined) return <Loading/>
 
   return (
     <Web3Context.Provider value={web3}>
-      <ContractContext.Provider value={contract}>
-        <AccountContext.Provider value={{
-          account,
-          setAccount,
-          name,
-          setName,
-          data,
-          setData,
-        }}>
-          <BackendContext.Provider value={backendURL}>
-            <CurrencyContext.Provider value={[currencyType, setCurrencyType]}>
-              <GlobalStyle/>
-              <HashRouter>
-                <Header/>
-                <Switch>
-                  <Route path="/:eventURL([a-z1-9-]{1}[a-z0-9-]{0,59})">
-                    <Event/>
-                  </Route>
-                  <Route path="/:account(0x[0-9a-f]{40})">
-                    <Profile/>
-                  </Route>
-                  <Route path="/">
-                    <EventList />
-                  </Route>
-                </Switch>
-              </HashRouter>
-            </CurrencyContext.Provider>
-          </BackendContext.Provider>
-        </AccountContext.Provider>
-      </ContractContext.Provider>
+      <AccountContext.Provider value={{
+        account,
+        setAccount,
+        name,
+        setName,
+        data,
+        setData,
+      }}>
+        <BackendContext.Provider value={backendURL}>
+          <CurrencyContext.Provider value={[currencyType, setCurrencyType]}>
+            <GlobalStyle/>
+            <HashRouter>
+              <Header/>
+              <Switch>
+                <Route path="/:eventURL([a-z1-9-]{1}[a-z0-9-]{0,59})">
+                  <Event/>
+                </Route>
+                <Route path="/:account(0x[0-9a-f]{40})">
+                  <Profile/>
+                </Route>
+                <Route path="/">
+                  <EventList />
+                </Route>
+              </Switch>
+            </HashRouter>
+          </CurrencyContext.Provider>
+        </BackendContext.Provider>
+      </AccountContext.Provider>
     </Web3Context.Provider>
   );
 }
