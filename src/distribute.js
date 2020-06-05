@@ -40,14 +40,13 @@ const Distribute = ({ contract, end, state, updateState }) => {
   }, []);
 
   useEffect(() => {
-    if (state == ATTENDEE_REWARDED) return;
     updateTime();
     const timeUpdater = setInterval(updateTime, 10000);
     setUpdater(timeUpdater);
     return () => {
       clearInterval(timeUpdater);
     }
-  }, [ state, updateTime ]);
+  }, [ updateTime ]);
 
   useEffect(() => {
     updateState();
