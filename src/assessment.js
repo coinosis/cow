@@ -58,11 +58,7 @@ const Assessment = ({
   }, [ attendees ]);
 
   useEffect(() => {
-    if (
-      version === undefined
-        || contract === undefined
-        || name === undefined
-    ) return;
+    if (version === undefined || name === undefined) return;
     if (version > 1) return;
     fetch(`${backendURL}/assessment/${event}/${account}`)
       .then(response => {
@@ -81,7 +77,7 @@ const Assessment = ({
           console.error(error);
         }
       });
-  }, [ contract, backendURL, event, account ]);
+  }, [ backendURL, event, account ]);
 
   useEffect(() => {
     if (assessment && totalClaps) {

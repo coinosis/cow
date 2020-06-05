@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 import styled from 'styled-components';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
-import { Link, Loading, ATTENDEE_REGISTERED } from './helpers';
+import { Link, Loading, ATTENDEE_REGISTERED, NoContract } from './helpers';
 import Attendance from './attendance';
 import Distribute from './distribute';
 import Meet from './meet';
@@ -44,7 +44,7 @@ const Event = () => {
   const match = useRouteMatch();
 
   const updateState = useCallback(async () => {
-    if (contract === undefined || account === undefined) return;
+    if (!contract || account === undefined) return;
     const state = await contract.methods.states(account).call();
     setState(state);
   }, [ contract, account ]);
@@ -63,9 +63,15 @@ const Event = () => {
     });
   }, [ contract ]);
 
-  const setContractRaw = useCallback(address => {
+  const setContractRaw = useCallback(async address => {
+    if (web3 === undefined) return;
     const contract = new web3.eth.Contract(contractJson.abi, address);
-    setContract(contract);
+    try {
+      await contract.methods.version().call();
+      setContract(contract);
+    } catch (err) {
+      setContract(null);
+    }
   }, [ web3, contractJson ]);
 
   useEffect(() => {
@@ -100,7 +106,6 @@ const Event = () => {
         if (version === 2) {
           setContractRaw(address);
         } else if (version === 1 || version === 0) {
-          setContract(null);
           setAttendees(attendees);
         }
         setId(_id);
@@ -117,6 +122,16 @@ const Event = () => {
         console.error(err);
       });
   }, [ backendURL, eventURL, setContractRaw ]);
+
+  if (contract === null) {
+    return (
+      <div>
+        <Title text={name}/>
+        <Tabs/>
+        <NoContract/>
+      </div>
+    );
+  }
 
   if (attendees === undefined || userName === undefined) return <Loading/>
 
