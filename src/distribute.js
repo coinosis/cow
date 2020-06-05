@@ -154,8 +154,8 @@ const Distribute = ({ contract, end, state, updateState }) => {
         >
           esta acción:
           <ul>
-            <li>sólo la tiene que hacer una persona</li>
-            <li>cualquier asistente puede hacerla</li>
+            <li>sólo la tiene que hacer una persona,</li>
+            <li>cualquier asistente puede hacerla,</li>
             <li>tiene costo</li>
           </ul>
         </div>
