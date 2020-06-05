@@ -14,13 +14,12 @@ const Distribute = ({ contract, end, state, updateState }) => {
   const [time, setTime] = useState();
   const [updater, setUpdater] = useState();
   const [reward, setReward] = useState();
+  const [distributed, setDistributed] = useState(false);
   const getGasPrice = useGasPrice();
 
   useEffect(() => {
     if (state === undefined) return;
     if (state == ATTENDEE_REWARDED) {
-      setMessage('distribución efectuada.');
-      setDisabled(true);
       const getPastEvents = async () => {
         const pastEvents = await contract.getPastEvents(
           'Transfer',
@@ -33,7 +32,6 @@ const Distribute = ({ contract, end, state, updateState }) => {
       }
       getPastEvents();
       setReward(reward);
-      clearInterval(updater);
     }
   }, [ state, account ]);
 
@@ -49,11 +47,23 @@ const Distribute = ({ contract, end, state, updateState }) => {
     return () => {
       clearInterval(timeUpdater);
     }
-  }, [ updateTime ]);
+  }, [ state, updateTime ]);
 
   useEffect(() => {
     updateState();
-  }, [ time, updateState ]);
+    const getPastEvents = async () => {
+      const pastEvents = await contract.getPastEvents(
+        'Distribution',
+        {fromBlock: 0}
+      );
+      if (pastEvents.length > 0) {
+        setDistributed(true);
+        setMessage('Distribución efectuada. Gracias por tu participación!');
+        clearInterval(updater);
+      }
+    }
+    getPastEvents();
+  }, [ time, updateState, contract, updater ]);
 
   useEffect(() => {
     if (time === undefined || end === undefined) return;
@@ -87,7 +97,6 @@ const Distribute = ({ contract, end, state, updateState }) => {
                    + 'blockchain...');
       }).on('receipt', receipt => {
         updateState();
-        setDisabled(false);
       });
   }, [ contract, account, getGasPrice ]);
 
@@ -118,7 +127,7 @@ const Distribute = ({ contract, end, state, updateState }) => {
       >
         {message}
       </div>
-      { state < ATTENDEE_REWARDED && (
+      { !distributed && (
         <div
           css={`
             width: 100%;
@@ -135,7 +144,7 @@ const Distribute = ({ contract, end, state, updateState }) => {
           </button>
         </div>
       )}
-      {time >= end && state < ATTENDEE_REWARDED && (
+      {time >= end && !distributed && (
         <div
           css={`
             width: 100%;
