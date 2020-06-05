@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import contractV1Json from '../Coinosis.json';
+import contractV0Json from '../CoinosisV0.json';
 import { Web3Context } from './coinosis';
 import Amount from './amount';
 import { Loading, ToolTip, Hash, EtherscanLink, NoContract } from './helpers';
@@ -16,29 +17,42 @@ export const ContractContext = createContext();
 const Result = ({ url: eventURL, version, contract: contractV2 }) => {
 
   const web3 = useContext(Web3Context);
-  const [contractV1, setContractV1] = useState();
+  const [contract, setContract] = useState();
 
   useEffect(() => {
     if (!web3) return;
     web3.eth.net.getId().then(networkId => {
-      const deployment = contractV1Json.networks[networkId];
+      let deployment;
+      if (version === 1) {
+        deployment = contractV1Json.networks[networkId];
+      } else if (version === 0) {
+        deployment = contractV0Json.networks[networkId];
+      }
       if (!deployment) {
-        setContractV1(null);
+        setContract(null);
         return;
       }
       const contractAddress = deployment.address;
-      const contract = new web3.eth.Contract(
-        contractV1Json.abi,
-        contractAddress
-      );
-      setContractV1(contract);
+      let contract;
+      if (version === 1) {
+        contract = new web3.eth.Contract(
+          contractV1Json.abi,
+          contractAddress
+        );
+      } else if (version === 0) {
+        contract = new web3.eth.Contract(
+          contractV0Json.abi,
+          contractAddress
+        );
+      }
+      setContract(contract);
     });
-  }, [ web3 ]);
+  }, [ web3, contractV1Json, contractV0Json, version ]);
 
-  if (contractV1 === null) return <NoContract/>
+  if (contract === null) return <NoContract/>
 
   return (
-    <ContractContext.Provider value={contractV1}>
+    <ContractContext.Provider value={contract}>
       <Assessments eventURL={eventURL} version={version} />
     </ContractContext.Provider>
   );
@@ -48,14 +62,18 @@ const Assessments = ({ eventURL, version }) => {
 
   const isMounted = useRef(true);
   const web3 = useContext(Web3Context);
-  const contractV1 = useContext(ContractContext);
-  const contractV0 = '';
+  const contract = useContext(ContractContext);
   const [assessments, setAssessments] = useState([]);
 
   useEffect(() => {
-    if (!contractV1) return;
-    const topics = [ null, web3.utils.sha3(eventURL) ];
-    contractV1.events.Assessment({fromBlock: 0, topics }, (error, event) => {
+    if (!contract) return;
+    let topics;
+    if (version === 1) {
+      topics = [ null, web3.utils.sha3(eventURL) ];
+    } else if (version === 0) {
+      topics = undefined;
+    }
+    contract.events.Assessment({ fromBlock: 0, topics }, (error, event) => {
       if (error) {
         console.error(error);
         return;
@@ -69,7 +87,7 @@ const Assessments = ({ eventURL, version }) => {
     return () => {
       isMounted.current = false;
     }
-  }, [ contractV1 ]);
+  }, [ contract, version ]);
 
   if (!assessments.length) {
     return (
