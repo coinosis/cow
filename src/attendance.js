@@ -190,9 +190,10 @@ const Attendance = ({
     const response = await fetch(`${backendURL}/eth/gas`);
     if (!response.ok) return null;
     const { safe, propose } = await response.json();
-    const index = 0.3 * safe + 0.7 * propose;
-    const rounded = String(index.toFixed(3));
-    return rounded;
+    // const index = 0.3 * safe + 0.7 * propose;
+    // const rounded = String(index.toFixed(3));
+    // return rounded;
+    return propose;
   });
 
   const sendEther = useCallback(async () => {
