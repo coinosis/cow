@@ -125,7 +125,7 @@ const Attendance = ({
       merchantId: settings[environment].payU.merchantId,
       referenceCode,
       description: eventName,
-      amount: '4',
+      amount: fee,
       tax: 0,
       taxReturnBase: 0,
       accountId: settings[environment].payU.accountId,
