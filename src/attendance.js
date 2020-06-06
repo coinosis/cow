@@ -120,11 +120,12 @@ const Attendance = ({
     const referenceCode = `${event}:${account}:${counter}:${environmentId}`;
     setReferenceCode(referenceCode);
     const test = settings[environment].payU.test;
+    console.log(fee);
     const object = {
       merchantId: settings[environment].payU.merchantId,
       referenceCode,
       description: eventName,
-      amount: 4,
+      amount: '4',
       tax: 0,
       taxReturnBase: 0,
       accountId: settings[environment].payU.accountId,
@@ -143,7 +144,7 @@ const Attendance = ({
         body: JSON.stringify({
           merchantId: object.merchantId,
           referenceCode: object.referenceCode,
-          amount: 4,
+          amount: object.amount,
           currency: object.currency,
         }),
       }
