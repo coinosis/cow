@@ -143,7 +143,7 @@ const Attendance = ({
         body: JSON.stringify({
           merchantId: object.merchantId,
           referenceCode: object.referenceCode,
-          amount: object.amount,
+          amount: 4,
           currency: object.currency,
         }),
       }
