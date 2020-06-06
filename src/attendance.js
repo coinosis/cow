@@ -120,12 +120,11 @@ const Attendance = ({
     const referenceCode = `${event}:${account}:${counter}:${environmentId}`;
     setReferenceCode(referenceCode);
     const test = settings[environment].payU.test;
-    console.log(fee);
     const object = {
       merchantId: settings[environment].payU.merchantId,
       referenceCode,
       description: eventName,
-      amount: 4,
+      amount: fee,
       tax: 0,
       taxReturnBase: 0,
       accountId: settings[environment].payU.accountId,
@@ -190,9 +189,6 @@ const Attendance = ({
     const response = await fetch(`${backendURL}/eth/gas`);
     if (!response.ok) return null;
     const { safe, propose } = await response.json();
-    // const index = 0.3 * safe + 0.7 * propose;
-    // const rounded = String(index.toFixed(3));
-    // return rounded;
     return propose;
   });
 
