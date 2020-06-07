@@ -14,6 +14,7 @@ import {
   useRouteMatch,
 } from 'react-router-dom';
 import styled from 'styled-components';
+import contractJson from '../Event.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import { Link, Loading, ATTENDEE_REGISTERED, NoContract } from './helpers';
 import Attendance from './attendance';
@@ -21,7 +22,7 @@ import Distribute from './distribute';
 import Meet from './meet';
 import Assessment from './assessment';
 import Result from './result';
-import contractJson from '../Event.json';
+import Footer from './footer';
 
 export const ATTENDANCE = 'asistencia';
 export const ASSESSMENT = 'aplausos';
@@ -214,6 +215,7 @@ const Event = () => {
           <Redirect to={`${match.url}/${ATTENDANCE}`} />
         </Route>
       </Switch>
+      <Footer hidden={version < 2} />
     </ContractContext.Provider>
   );
 }

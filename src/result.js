@@ -20,6 +20,7 @@ import {
   useGetUser,
 } from './helpers';
 import { ContractContext } from './event';
+import Footer from './footer';
 
 const Result = ({ url: eventURL }) => {
 
@@ -53,6 +54,7 @@ const Result = ({ url: eventURL }) => {
   return (
     <ContractContext.Provider value={{ contract, version }}>
       <Assessments eventURL={eventURL} />
+      <Footer hidden={version >= 2} />
     </ContractContext.Provider>
   );
 }
