@@ -4,7 +4,7 @@ import {
   AccountContext,
   BackendContext,
 } from './coinosis';
-import { ASSESSMENT } from './event';
+import { ASSESSMENT, ContractContext } from './event';
 import Amount from './amount';
 import {
   environment,
@@ -19,7 +19,6 @@ import settings from '../settings.json';
 import Account from './account';
 
 const Attendance = ({
-  contract,
   eventName,
   event,
   fee,
@@ -32,6 +31,7 @@ const Attendance = ({
   updateState,
 }) => {
 
+  const { contract } = useContext(ContractContext);
   const getGasPrice = useGasPrice();
   const web3 = useContext(Web3Context);
   const { account, name: user } = useContext(AccountContext);

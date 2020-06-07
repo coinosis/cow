@@ -4,9 +4,11 @@ import { es } from 'date-fns/esm/locale';
 import { useGasPrice, ATTENDEE_REWARDED } from './helpers';
 import Amount from './amount';
 import { Web3Context, BackendContext, AccountContext } from './coinosis';
+import { ContractContext } from './event';
 
-const Distribute = ({ contract, eventURL, end, state, updateState }) => {
+const Distribute = ({ eventURL, end, state, updateState }) => {
 
+  const { contract } = useContext(ContractContext);
   const web3 = useContext(Web3Context);
   const backendURL = useContext(BackendContext);
   const { account } = useContext(AccountContext);

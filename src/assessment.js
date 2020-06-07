@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { AccountContext, BackendContext } from './coinosis';
-import { ATTENDANCE } from './event';
+import { ATTENDANCE, ContractContext } from './event';
 import {
   environment,
   EtherscanLink,
@@ -23,7 +23,6 @@ import {
 import Account from './account';
 
 const Assessment = ({
-  contract,
   state,
   setState,
   updateState,
@@ -31,9 +30,9 @@ const Assessment = ({
   attendees,
   users,
   setUsers,
-  version,
 }) => {
 
+  const { contract, version } = useContext(ContractContext);
   const { account, name } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [totalClaps, setTotalClaps] = useState();

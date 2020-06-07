@@ -151,7 +151,6 @@ const Event = () => {
       <Switch>
         <Route path={`${match.path}/${ATTENDANCE}`}>
           <Attendance
-            contract={contract}
             eventName={name}
             event={url}
             fee={fee}
@@ -177,7 +176,6 @@ const Event = () => {
               `}
             >
               <Assessment
-                contract={contract}
                 state={state}
                 setState={setState}
                 updateState={updateState}
@@ -185,11 +183,9 @@ const Event = () => {
                 attendees={attendees}
                 users={users}
                 setUsers={setUsers}
-                version={version}
               />
               { version === 2 && state >= ATTENDEE_REGISTERED && (
                 <Distribute
-                  contract={contract}
                   eventURL={url}
                   end={end}
                   state={state}
