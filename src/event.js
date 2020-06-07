@@ -181,6 +181,7 @@ const Event = () => {
               { version === 2 && state >= ATTENDEE_REGISTERED && (
                 <Distribute
                   contract={contract}
+                  eventURL={url}
                   end={end}
                   state={state}
                   updateState={updateState}
@@ -199,7 +200,7 @@ const Event = () => {
           </div>
         </Route>
         <Route path={`${match.path}/${RESULT}`}>
-          <Result url={url} />
+          <Result url={url} version={version} contract={contract} />
         </Route>
         <Route path={match.path}>
           <Redirect to={`${match.url}/${ATTENDANCE}`} />

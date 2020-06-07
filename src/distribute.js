@@ -3,11 +3,12 @@ import { formatDistance } from 'date-fns';
 import { es } from 'date-fns/esm/locale';
 import { useGasPrice, ATTENDEE_REWARDED } from './helpers';
 import Amount from './amount';
-import { Web3Context, AccountContext } from './coinosis';
+import { Web3Context, BackendContext, AccountContext } from './coinosis';
 
-const Distribute = ({ contract, end, state, updateState }) => {
+const Distribute = ({ contract, eventURL, end, state, updateState }) => {
 
   const web3 = useContext(Web3Context);
+  const backendURL = useContext(BackendContext);
   const { account } = useContext(AccountContext);
   const [disabled, setDisabled] = useState(true);
   const [message, setMessage] = useState();
@@ -81,6 +82,7 @@ const Distribute = ({ contract, end, state, updateState }) => {
   const distribute = useCallback(() => {
     setMessage('preparando transacción...');
     setDisabled(true);
+    fetch(`${backendURL}/distribution/${eventURL}`, { method: 'put' });
     const gasPrice = getGasPrice();
     const sendOptions = {
       from: account,
@@ -97,7 +99,7 @@ const Distribute = ({ contract, end, state, updateState }) => {
       }).on('receipt', receipt => {
         updateState();
       });
-  }, [ contract, account, getGasPrice ]);
+  }, [ backendURL, eventURL, contract, account, getGasPrice ]);
 
   return (
     <div

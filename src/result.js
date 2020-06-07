@@ -10,7 +10,15 @@ import contractV1Json from '../Coinosis.json';
 import contractV0Json from '../CoinosisV0.json';
 import { Web3Context } from './coinosis';
 import Amount from './amount';
-import { Loading, ToolTip, Hash, EtherscanLink, NoContract } from './helpers';
+import {
+  Loading,
+  ToolTip,
+  Hash,
+  EtherscanLink,
+  NoContract,
+  useDistributionPrice,
+  useGetUser,
+} from './helpers';
 
 export const ContractContext = createContext();
 
@@ -21,6 +29,7 @@ const Result = ({ url: eventURL, version, contract: contractV2 }) => {
 
   useEffect(() => {
     if (!web3) return;
+    if (version == 2) return;
     web3.eth.net.getId().then(networkId => {
       let deployment;
       if (version === 1) {
@@ -49,24 +58,89 @@ const Result = ({ url: eventURL, version, contract: contractV2 }) => {
     });
   }, [ web3, contractV1Json, contractV0Json, version ]);
 
+  useEffect(() => {
+    if (version == 2) {
+      setContract(contractV2);
+    }
+  }, [ version, contractV2 ]);
+
   if (contract === null) return <NoContract/>
 
   return (
-    <ContractContext.Provider value={contract}>
-      <Assessments eventURL={eventURL} version={version} />
+    <ContractContext.Provider value={{ contract, version }}>
+      <Assessments eventURL={eventURL} />
     </ContractContext.Provider>
   );
 }
 
-const Assessments = ({ eventURL, version }) => {
+const Assessments = ({ eventURL }) => {
 
   const isMounted = useRef(true);
   const web3 = useContext(Web3Context);
-  const contract = useContext(ContractContext);
+  const { contract, version } = useContext(ContractContext);
   const [assessments, setAssessments] = useState([]);
+  const distributionPrice = useDistributionPrice(eventURL);
+  const getUser = useGetUser();
 
   useEffect(() => {
-    if (!contract) return;
+    if (!contract || version === undefined || !distributionPrice) return;
+    if (version !== 2) return;
+    const getAssessment = async () => {
+      const ETHPriceUSDWei = distributionPrice;
+      const addresses = await contract.methods.getAttendees().call();
+      const pastEvents = await contract.getPastEvents(
+        'Distribution',
+        { fromBlock: 0 }
+      );
+      let blockNumber;
+      let id;
+      let totalFeesWei;
+      if (pastEvents.length) {
+        blockNumber = pastEvents[0].blockNumber;
+        id = pastEvents[0].transactionHash;
+        totalFeesWei = pastEvents[0].returnValues.totalReward;
+      }
+      const block = await web3.eth.getBlock(blockNumber);
+      const { timestamp } = block;
+      const claps = await Promise.all(addresses.map(address =>
+        contract.methods.claps(address).call()
+      ));
+      const users = await Promise.all(addresses.map(address =>
+        getUser(address)
+      ));
+      const names = users.map(user => user.name);
+      const registrationFeeWei = await contract.methods.fee().call();
+      const transfers = await contract.getPastEvents(
+        'Transfer',
+        { fromBlock: 0 }
+      );
+      const rewards = addresses.map(address =>
+        transfers.find(transfer =>
+          transfer.returnValues.attendee === address
+        ).returnValues.reward
+      );
+      const totalClaps = await contract.methods.totalClaps().call();
+      const assessment = {
+        id,
+        blockNumber,
+        timestamp,
+        ETHPriceUSDWei,
+        names,
+        addresses,
+        claps,
+        registrationFeeWei,
+        totalFeesWei,
+        totalClaps,
+        rewards,
+      };
+      setAssessments([ assessment ]);
+    }
+    getAssessment();
+  }, [ contract, version, distributionPrice ]);
+
+  useEffect(() => {
+    if (!contract || version === undefined) return;
+    if (version > 1) return;
     let topics;
     if (version === 1) {
       topics = [ null, web3.utils.sha3(eventURL) ];
@@ -351,7 +425,7 @@ const Participant = ({
 }) => {
 
   const isMounted = useRef(true);
-  const contractV1 = useContext(ContractContext);
+  const { contract, version } = useContext(ContractContext);
   const [percentage, setPercentage] = useState();
   const [fraction, setFraction] = useState('');
   const [balance, setBalance] = useState('');
@@ -367,7 +441,24 @@ const Participant = ({
   }, []);
 
   useEffect(() => {
-    contractV1.events.Transfer(
+    if (contract === undefined || version === undefined) return;
+    if (version === 2) setTransfersV2(contract);
+    if (version === 1 || version === 0) setTransfersV1(contract);
+  }, [ contract, version, setTransfersV2, setTransfersV1 ]);
+
+  const setTransfersV2 = useCallback(async contract => {
+    const transfers = await contract.getPastEvents(
+      'Transfer',
+      { fromBlock: 0 }
+    );
+    const transfer = transfers.find(transfer =>
+      transfer.returnValues.attendee === address
+    );
+    setTx(transfer.transactionHash);
+  }, []);
+
+  const setTransfersV1 = useCallback(contract => {
+    contract.events.Transfer(
       { fromBlock: blockNumber, filter: {addr: address} },
       (error, event) => {
         if (error) {
@@ -383,7 +474,7 @@ const Participant = ({
     return () => {
       isMounted.current = false;
     }
-  }, []);
+  }, [ blockNumber, address, isMounted ]);
 
   return (
     <tr>

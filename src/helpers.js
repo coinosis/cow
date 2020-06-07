@@ -243,6 +243,29 @@ export const useGetUser = () => {
 
 }
 
+export const useDistributionPrice = event => {
+
+  const web3 = useContext(Web3Context);
+  const backendURL = useContext(BackendContext);
+  const [ethPrice, setEthPrice] = useState();
+
+  useEffect(() => {
+    const getPrice = async () => {
+      const response = await fetch(`${backendURL}/distribution/${event}`);
+      if (!response.ok) {
+        console.error(response.status);
+        return;
+      }
+      const data = await response.json();
+      const ethPriceWei = web3.utils.toWei(data.ethPrice);
+      setEthPrice(ethPriceWei);
+    }
+    getPrice();
+  }, [ backendURL, web3 ]);
+
+  return ethPrice;
+}
+
 export const timestampInSeconds = date => {
   const timestamp = date.getTime();
   const string = String(timestamp);
