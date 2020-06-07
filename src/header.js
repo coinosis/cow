@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Hash } from './helpers';
 import logo from './assets/logo.png';
-import { ContractContext } from './result';
+import { ContractContext } from './event';
 import Account from './account';
 
 const Header = () => {

@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import {
   NavLink,
   Switch,
@@ -20,6 +26,8 @@ import contractJson from '../Event.json';
 export const ATTENDANCE = 'asistencia';
 export const ASSESSMENT = 'aplausos';
 const RESULT = 'resultados';
+
+export const ContractContext = createContext();
 
 const Event = () => {
 
@@ -136,7 +144,7 @@ const Event = () => {
   if (attendees === undefined || userName === undefined) return <Loading/>
 
   return (
-    <div>
+    <ContractContext.Provider value={{ contract, version }}>
       <Title text={name} />
       <Tabs/>
       <Switch>
@@ -200,13 +208,13 @@ const Event = () => {
           </div>
         </Route>
         <Route path={`${match.path}/${RESULT}`}>
-          <Result url={url} version={version} contract={contract} />
+          <Result url={url} />
         </Route>
         <Route path={match.path}>
           <Redirect to={`${match.url}/${ATTENDANCE}`} />
         </Route>
       </Switch>
-    </div>
+    </ContractContext.Provider>
   );
 }
 
