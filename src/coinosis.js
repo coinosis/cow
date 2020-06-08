@@ -64,7 +64,14 @@ const Coinosis = () => {
 
   if (web3 === null) return <InstallMetamask/>
   if (contract === undefined || backendURL === undefined) return <Loading/>
-  if (contract === null) return <NoContract/>
+
+  if (contract === null) {
+    return (
+    <Web3Context.Provider value={web3}>
+      <NoContract />
+    </Web3Context.Provider>
+    );
+  }
 
   return (
     <Web3Context.Provider value={web3}>
