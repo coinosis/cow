@@ -66,7 +66,7 @@ const Attendance = ({
         const payment = paymentList[i];
         if (
           payment.referenceCode === referenceCode
-            && payment.pull.status !== 'PENDING'
+            && !['APPROVED', 'PENDING'].includes(payment.pull.status)
         ) {
           formWindow.close();
           setFormWindow();
