@@ -231,8 +231,16 @@ export const SectionTitle = styled.div`
 export const useETHPrice = () => {
 
   const backendURL = useContext(BackendContext);
+  const [ethPrice, setETHPrice] = useState();
 
-  return useCallback(async () => {
+  useEffect(() => {
+    const getPrice = async () => {
+      setETHPrice(await getETHPrice());
+    }
+    getPrice();
+  }, [ getETHPrice ]);
+
+  const getETHPrice = useCallback(async () => {
     const response = await fetch(`${backendURL}/eth/price`);
     if (!response.ok) {
       throw new Error(response.status);
@@ -240,6 +248,16 @@ export const useETHPrice = () => {
     const data = await response.json();
     return data;
   }, [ backendURL ]);
+
+  const toETH = useCallback(usd => {
+    return usd / ethPrice;
+  }, [ ethPrice ]);
+
+  const toUSD = useCallback(eth => {
+    return eth * ethPrice;
+  }, [ ethPrice ]);
+
+  return { getETHPrice, toETH, toUSD };
 
 }
 

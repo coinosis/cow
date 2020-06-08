@@ -17,7 +17,7 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
   const web3 = useContext(Web3Context);
   const backendURL = useContext(BackendContext);
   const [currencyType, setCurrencyType] = useContext(CurrencyContext);
-  const getETHPrice = useETHPrice();
+  const { getETHPrice } = useETHPrice();
 
   const [usd, setUSD] = useState();
   const [eth, setETH] = useState('_.___ ETH');

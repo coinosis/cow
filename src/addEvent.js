@@ -25,7 +25,7 @@ registerLocale('es', es);
 const AddEvent = ({ setEvents }) => {
 
   const post = usePost();
-  const getETHPrice = useETHPrice();
+  const { toETH, toUSD } = useETHPrice();
   const getGasPrice = useGasPrice();
   const web3 = useContext(Web3Context);
   const backendURL = useContext(BackendContext);
@@ -33,6 +33,7 @@ const AddEvent = ({ setEvents }) => {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [feeETH, setFeeETH] = useState('');
   const [fee, setFee] = useState('');
   const [now] = useState(new Date());
   const [start, setStart] = useState('');
@@ -48,13 +49,14 @@ const AddEvent = ({ setEvents }) => {
           name !== ''
           && url !== ''
           && description !== ''
-          && fee !== ''
+          && Number(feeETH) != 0
+          && Number(fee) != 0
           && start !== ''
           && end !== ''
           && userName !== null;
     setFormValid(valid);
     setStatus();
-  }, [name, url, description, fee, start, end, userName]);
+  }, [name, url, description, feeETH, fee, start, end, userName]);
 
   const preSetName = useCallback(e => {
     const value = e.target.value;
@@ -81,18 +83,31 @@ const AddEvent = ({ setEvents }) => {
     }
   }, []);
 
-  const preSetFee = useCallback(e => {
-    const { value } = e.target;
-    if (value === '' || (value.length > 1 && value[value.length - 1] === '.')) {
-      setFee(value);
-      return;
-    }
-    if (isNaN(value)) return;
-    const number = Number(value);
-    const positive = Math.abs(number);
-    const rounded = Math.round(positive * 100) / 100;
-    setFee(rounded);
+  const getFee = useCallback((value, decimals) => {
+    if (value === '') return value;
+    const feeFormat = new RegExp(`^(\\d+\\.?\\d{0,${decimals}}).*`);
+    const match = String(value).match(feeFormat);
+    if (!match) return null;
+    return match[1];
   }, []);
+
+  const setFeeETHRaw = useCallback(({ target: { value }}) => {
+    const feeETH = getFee(value, 3);
+    if (feeETH === null) return;
+    setFeeETH(feeETH);
+    const valueUSD = toUSD(feeETH);
+    const fee = getFee(valueUSD, 2);
+    setFee(fee);
+  }, [ getFee, toUSD ]);
+
+  const setFeeRaw = useCallback(({ target: { value }}) => {
+    const fee = getFee(value, 2);
+    if (fee === null) return;
+    setFee(fee);
+    const valueETH = toETH(fee);
+    const feeETH = getFee(valueETH, 3);
+    setFeeETH(feeETH);
+  }, [ getFee, toETH ]);
 
   const preSetStart = useCallback(start => {
     setStart(start);
@@ -157,6 +172,7 @@ const AddEvent = ({ setEvents }) => {
       setName('');
       setUrl('');
       setDescription('');
+      setFeeETH('');
       setFee('');
       setStart('');
       setEnd('');
@@ -179,9 +195,7 @@ const AddEvent = ({ setEvents }) => {
     setCreating(true);
     setStatus('iniciando proceso de creación...');
     const contract = new web3.eth.Contract(contractJson.abi);
-    const ethPrice = await getETHPrice();
-    const feeETH = fee / ethPrice;
-    const feeWei = web3.utils.toWei(String(feeETH.toFixed(18)));
+    const feeWei = web3.utils.toWei(String(feeETH));
     const endTimestamp = timestampInSeconds(end);
     const gasPrice = await getGasPrice();
     const deployData = {
@@ -220,8 +234,7 @@ const AddEvent = ({ setEvents }) => {
     web3,
     contractJson,
     url,
-    fee,
-    getETHPrice,
+    feeETH,
     account,
     getGasPrice,
     end,
@@ -295,16 +308,31 @@ const AddEvent = ({ setEvents }) => {
           <Field
             label="costo de inscripción:"
             element={
-              <input
-                value={fee}
-                onChange={preSetFee}
-                type="text"
+              <div
                 css={`
-                  width: 60px;
+                  display: flex;
                 `}
-              />
+              >
+                <input
+                  value={feeETH}
+                  onChange={setFeeETHRaw}
+                  type="text"
+                  css="width: 60px"
+                />
+                <div css="margin-left: 5px">ETH</div>
+                <div css="margin-left: 20px">(</div>
+                <input
+                  value={fee}
+                  onChange={setFeeRaw}
+                  type="text"
+                  css={`
+                    margin-left: 5px;
+                    width: 60px;
+                  `}
+                />
+                <div css="margin-left: 5px">USD )</div>
+              </div>
             }
-            unit="USD"
           />
           <Field
             label="fecha y hora de inicio:"
