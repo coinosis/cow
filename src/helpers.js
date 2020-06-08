@@ -180,9 +180,40 @@ export const usePost = () => {
 }
 
 export const NoContract = () => {
+
+  const web3 = useContext(Web3Context);
+  const [provider, setProvider] = useState();
+  const [mainnet, setMainnet] = useState();
+
+  useEffect(() => {
+    if (web3 === undefined) return;
+    const { currentProvider } = web3;
+    if (currentProvider.isNiftyWallet) {
+      setProvider('Nifty');
+      setMainnet('Ethereum');
+    } else if (currentProvider.isMetaMask) {
+      setProvider('Metamask');
+      setMainnet('Main Ethereum Network');
+    } else {
+      setProvider('tu proveedor de Web3');
+      setMainnet('la red principal de Ethereum');
+    }
+  }, [ web3 ]);
+
   return (
-    <div>
-      ningún contrato ha sido desplegado en esta red.
+    <div
+      css={`
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      `}
+    >
+      <SectionTitle>
+        ningún contrato ha sido desplegado en esta red
+      </SectionTitle>
+      <div>
+        por favor apunta {provider} a {mainnet}.
+      </div>
     </div>
   )
 }
