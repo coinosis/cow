@@ -27,6 +27,14 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
   const [color, setColor] = useState();
 
   useEffect(() => {
+    if (wei === undefined) return;
+    const ethRounded = Math.round(
+      Number(web3.utils.fromWei(String(wei))) * 1000
+    ) / 1000;
+    setETH(`${ethRounded} ETH`);
+  }, [ wei ]);
+
+  useEffect(() => {
     const setValues = async () => {
       if (!usdWei && !wei) return;
       if (!rateWei) {
@@ -38,14 +46,14 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
       }
       else if (!wei) {
         wei = BigInt(usdWei) * BigInt(1e18) / BigInt(rateWei);
+        const ethRounded = Number(web3.utils.fromWei(String(wei))).toFixed(3);
+        setETH(`${ethRounded} ETH`);
       }
       const usdRounded = Number(web3.utils.fromWei(String(usdWei))).toFixed(2);
-      const ethRounded = Number(web3.utils.fromWei(String(wei))).toFixed(3);
       const rateRounded = Number(
         web3.utils.fromWei(String(rateWei))
       ).toFixed(2);
       setUSD(`${usdRounded} USD`);
-      setETH(`${ethRounded} ETH`);
       setRate(`${rateRounded} USD/ETH`);
     }
     setValues();
