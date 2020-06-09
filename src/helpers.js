@@ -228,10 +228,10 @@ export const SectionTitle = styled.div`
   margin-bottom: 15px;
 `
 
-export const useETHPrice = () => {
+export const useConversions = () => {
 
-  const backendURL = useContext(BackendContext);
   const [ethPrice, setETHPrice] = useState();
+  const getETHPrice = useETHPrice();
 
   useEffect(() => {
     const getPrice = async () => {
@@ -239,15 +239,6 @@ export const useETHPrice = () => {
     }
     getPrice();
   }, [ getETHPrice ]);
-
-  const getETHPrice = useCallback(async () => {
-    const response = await fetch(`${backendURL}/eth/price`);
-    if (!response.ok) {
-      throw new Error(response.status);
-    }
-    const data = await response.json();
-    return data;
-  }, [ backendURL ]);
 
   const toETH = useCallback(usd => {
     return usd / ethPrice;
@@ -257,7 +248,21 @@ export const useETHPrice = () => {
     return eth * ethPrice;
   }, [ ethPrice ]);
 
-  return { getETHPrice, toETH, toUSD };
+  return { toETH, toUSD };
+}
+
+export const useETHPrice = () => {
+
+  const backendURL = useContext(BackendContext);
+
+  return useCallback(async () => {
+    const response = await fetch(`${backendURL}/eth/price`);
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    const data = await response.json();
+    return data;
+  }, [ backendURL ]);
 
 }
 

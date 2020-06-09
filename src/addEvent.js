@@ -14,7 +14,7 @@ import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import {
   formatDate,
   usePost,
-  useETHPrice,
+  useConversions,
   useGasPrice,
   timestampInSeconds,
   dateFromTimestamp,
@@ -25,7 +25,7 @@ registerLocale('es', es);
 const AddEvent = ({ setEvents }) => {
 
   const post = usePost();
-  const { toETH, toUSD } = useETHPrice();
+  const { toETH, toUSD } = useConversions();
   const getGasPrice = useGasPrice();
   const web3 = useContext(Web3Context);
   const backendURL = useContext(BackendContext);
