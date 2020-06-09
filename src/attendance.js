@@ -14,6 +14,7 @@ import {
   SectionTitle,
   useGasPrice,
   usePost,
+  useConversions,
 } from './helpers';
 import settings from '../settings.json';
 import Account from './account';
@@ -46,6 +47,7 @@ const Attendance = ({
   const [pending, setPending] = useState();
   const [ethState, setEthState] = useState();
   const [ethMessage, setEthMessage] = useState();
+  const { toUSD } = useConversions();
 
   const fetchPayments = useCallback(() => {
     fetch(`${backendURL}/payu/${event}/${account}`)
@@ -123,6 +125,7 @@ const Attendance = ({
     const counter = paymentList.length + 1;
     const referenceCode = `${event}:${account}:${counter}:${environmentId}`;
     setReferenceCode(referenceCode);
+    const fee = Math.round(toUSD(web3.utils.fromWei(feeWei)) * 100) / 100;
     const test = settings[environment].payU.test;
     const object = {
       merchantId: settings[environment].payU.merchantId,
@@ -162,7 +165,17 @@ const Attendance = ({
     }).catch(err => {
       console.error(err);
     });
-  }, [eventName, event, fee, account, user, paymentList, backendURL]);
+  }, [
+    web3,
+    eventName,
+    event,
+    feeWei,
+    account,
+    user,
+    paymentList,
+    backendURL,
+    toUSD,
+  ]);
 
   const attendFree = useCallback(() => {
     const object = { attendee: account, event };
