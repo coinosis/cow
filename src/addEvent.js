@@ -143,7 +143,7 @@ const AddEvent = ({ setEvents }) => {
     setMinutesAfter(natural);
   });
 
-  const addToBackend = useCallback((address, id, feeWei, end) => {
+  const addToBackend = useCallback((address, feeWei, end) => {
     const organizer = account;
     const beforeStart = subMinutes(start, minutesBefore);
     const endDate = dateFromTimestamp(end);
@@ -151,7 +151,7 @@ const AddEvent = ({ setEvents }) => {
     const object = {
       address,
       name,
-      url: id,
+      url,
       description,
       feeWei,
       start,
@@ -200,7 +200,7 @@ const AddEvent = ({ setEvents }) => {
     const gasPrice = await getGasPrice();
     const deployData = {
       data: contractJson.bytecode,
-      arguments: [url, feeWei, endTimestamp],
+      arguments: [feeWei, endTimestamp],
     };
     const deployment = await contract.deploy(deployData);
     setStatus('usa Metamask para desplegar el contrato. '
@@ -221,12 +221,10 @@ const AddEvent = ({ setEvents }) => {
           }).on('receipt', receipt => {
             setStatus('usa Metamask para firmar el contrato.');
           });
-    const actualId = await instance.methods.id().call();
     const actualFeeWei = await instance.methods.fee().call();
     const actualEnd = await instance.methods.end().call();
     return {
       address: instance._address,
-      id: actualId,
       feeWei: actualFeeWei,
       end: actualEnd,
     };
@@ -242,8 +240,8 @@ const AddEvent = ({ setEvents }) => {
   ]);
 
   const add = useCallback(async () => {
-    const { address, id, feeWei, end } = await deployContract();
-    addToBackend(address, id, feeWei, end);
+    const { address, feeWei, end } = await deployContract();
+    addToBackend(address, feeWei, end);
   }, [ addToBackend, deployContract ]);
 
   return (
