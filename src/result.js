@@ -6,8 +6,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import contractV1Json from '../Coinosis.json';
-import contractV0Json from '../CoinosisV0.json';
+import contractV1Json from '../contracts/Coinosis.json';
+import contractV0Json from '../contracts/CoinosisV0.json';
 import { Web3Context } from './coinosis';
 import Amount from './amount';
 import {

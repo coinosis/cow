@@ -9,7 +9,7 @@ import {
   setMinutes,
   subMinutes
 } from 'date-fns';
-import contractJson from '../Event.json';
+import contractJson from '../contracts/Event.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import {
   formatDate,
