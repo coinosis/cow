@@ -207,7 +207,7 @@ const AddEvent = ({ setEvents }) => {
               + 'Esta acción tiene costo.');
     const txOptions = {
       from: account,
-      gas: 800000,
+      gas: 750000,
       gasPrice: gasPrice.propose,
     };
     const instance = await deployment.send(txOptions)
