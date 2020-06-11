@@ -9,7 +9,7 @@ import {
   setMinutes,
   subMinutes
 } from 'date-fns';
-import contractJson from '../contracts/Event.json';
+import contractJson from '../contracts/ProxyEvent.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import {
   formatDate,
@@ -207,7 +207,7 @@ const AddEvent = ({ setEvents }) => {
               + 'Esta acción tiene costo.');
     const txOptions = {
       from: account,
-      gas: 750000,
+      gas: 850000,
       gasPrice: gasPrice.propose,
     };
     const instance = await deployment.send(txOptions)
