@@ -127,6 +127,7 @@ const Attendance = ({
     setReferenceCode(referenceCode);
     const fee = Math.round(toUSD(web3.utils.fromWei(feeWei)) * 100) / 100;
     const test = settings[environment].payU.test;
+    const callback = process.env.CALLBACK || backendURL;
     const object = {
       merchantId: settings[environment].payU.merchantId,
       referenceCode,
@@ -139,7 +140,7 @@ const Attendance = ({
       buyerFullName: user,
       buyerEmail: '',
       algorithmSignature: 'SHA256',
-      confirmationUrl: `${backendURL}/payu`,
+      confirmationUrl: `${callback}/payu`,
       test,
     };
     fetch(

@@ -7,7 +7,7 @@
   "scripts": {
     "postinstall": "webpack -p --define process.env.ENVIRONMENT=\"'testing'\"",
     "start": "http-server dist/ -p $PORT",
-    "start:dev": "webpack-dev-server"
+    "start:dev": "./start.dev.sh"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

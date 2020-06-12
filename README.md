@@ -2,17 +2,25 @@
 
 * Install and run [coinosis](https://github.com/coinosis/coinosis)
 * Install and run [owl](https://github.com/coinosis/owl)
+* Install [ngrok](https://ngrok.com/). You don't need a user account.
 
 ## Development
 
-### clone, install and run for development
+### clone & install
 
 ```bash
 
 git clone https://github.com/coinosis/cow.git -b dev
 cd cow
-npm i
-npm run start:dev
+npm install
+
+```
+
+### run
+
+1. run `ngrok http 3000`
+2. copy the https forwarding public url show by ngrok
+3. on a different window, run `npm run start:dev $CALLBACK` where `$CALLBACK` is the copied url. Example: `npm run start:dev https://85e024fb3e96.ngrok.io`
 
 ```
 
