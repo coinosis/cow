@@ -14,7 +14,7 @@ import {
   useRouteMatch,
 } from 'react-router-dom';
 import styled from 'styled-components';
-import contractJson from '../contracts/Event.json';
+import contractJson from '../contracts/ProxyEvent.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import { Link, Loading, ATTENDEE_REGISTERED, NoContract } from './helpers';
 import Attendance from './attendance';

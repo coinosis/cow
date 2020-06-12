@@ -39,6 +39,7 @@ const Assessment = ({
   const [clapsLeft, setClapsLeft] = useState();
   const [assessment, setAssessment] = useState({});
   const [clapsError, setClapsError] = useState(false);
+  const [proxy, setProxy] = useState();
   const post = usePost();
   const getGasPrice = useGasPrice();
 
@@ -104,7 +105,7 @@ const Assessment = ({
     setAssessment(newAssessment);
   }, [assessment]);
 
-  const send = useCallback(async () => {
+  const sendToContract = useCallback(async () => {
     setState(ATTENDEE_CLICKED_SEND);
     const addresses = Object.keys(assessment);
     const claps = Object.values(assessment);
@@ -117,6 +118,28 @@ const Assessment = ({
             updateState();
           });
   }, [ assessment, getGasPrice, contract, account ]);
+
+  const sendToBackend = useCallback(() => {
+    console.log('send to backend');
+  }, []);
+
+  useEffect(() => {
+    if (contract === undefined || account === undefined) return;
+    const getProxy = async () => {
+      const proxy = await contract.methods.proxy(account).call();
+      const number = parseInt(proxy, 16);
+      setProxy(!!number);
+    }
+    getProxy();
+  }, [ contract, account ]);
+
+  const send = useCallback(async () => {
+    if (proxy) {
+      sendToBackend();
+    } else {
+      sendToContract();
+    }
+  }, [ proxy, sendToContract ]);
 
   if (account === null || name === null) {
     return (
