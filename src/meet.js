@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import Jitsi from 'react-jitsi';
 import { format } from 'date-fns';
-import { Loading } from './helpers';
+import { environment, Loading } from './helpers';
+import settings from '../settings.json';
 
 const Meet = ({
   id,
@@ -113,42 +114,44 @@ const Meet = ({
       ¿Tienes problemas con el audio y el video? Haz clic
         <a css="margin: 5px" href="webrtc.html" target="_blank">aquí</a>.
       </div>
-      <Jitsi
-        roomName={id}
-        displayName={userName}
-        userInfo={{ displayName: userName }}
-        noSSL={false}
-        loadingComponent={Loading}
-        onAPILoad={handleAPI}
-        containerStyle={{ width: '100%', height: '800px' }}
-        config={{
-          startWithAudioMuted: true,
-          fileRecordingsEnabled: false,
-          remoteVideoMenu: {
-            disableKick: true,
-          },
-        }}
-        interfaceConfig={{
-          DEFAULT_BACKGROUND: '#476047',
-          TOOLBAR_BUTTONS: [
-            'microphone',
-            'camera',
-            'desktop',
-            'chat',
-            'livestreaming',
-            'raisehand',
-            'videoquality',
-            'stats',
-            'shortcuts',
-            'tileview',
-            'mute-everyone',
-            'settings',
-          ],
-          SETTINGS_SECTIONS: ['language'],
-          SHOW_CHROME_EXTENSION_BANNER: false,
-          ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 15000,
-        }}
-      />
+      { settings[environment].jitsi && (
+        <Jitsi
+          roomName={id}
+          displayName={userName}
+          userInfo={{ displayName: userName }}
+          noSSL={false}
+          loadingComponent={Loading}
+          onAPILoad={handleAPI}
+          containerStyle={{ width: '100%', height: '800px' }}
+          config={{
+            startWithAudioMuted: true,
+            fileRecordingsEnabled: false,
+            remoteVideoMenu: {
+              disableKick: true,
+            },
+          }}
+          interfaceConfig={{
+            DEFAULT_BACKGROUND: '#476047',
+            TOOLBAR_BUTTONS: [
+              'microphone',
+              'camera',
+              'desktop',
+              'chat',
+              'livestreaming',
+              'raisehand',
+              'videoquality',
+              'stats',
+              'shortcuts',
+              'tileview',
+              'mute-everyone',
+              'settings',
+            ],
+            SETTINGS_SECTIONS: ['language'],
+            SHOW_CHROME_EXTENSION_BANNER: false,
+            ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 15000,
+          }}
+        />
+      )}
     </div>
   );
 }
