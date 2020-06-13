@@ -24,7 +24,9 @@ npm install
 
 ```
 
-Point your browser to `http://localhost:9000`, point Metamask to `localhost:8545` and start developing with hot module replacement.
+* Point your browser to `http://localhost:9000`, point Metamask to `localhost:8545` and start developing with hot module replacement.
+
+* Optionally, install [AutoFill](http://www.tohodo.com/autofill/help.html) to help you fill out credit card forms.
 
 ### Submit your changes
 
