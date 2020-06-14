@@ -105,10 +105,7 @@ const Assessment = ({
     setAssessment(newAssessment);
   }, [assessment]);
 
-  const sendToContract = useCallback(async () => {
-    setState(ATTENDEE_CLICKED_SEND);
-    const addresses = Object.keys(assessment);
-    const claps = Object.values(assessment);
+  const sendToContract = useCallback(async (addresses, claps) => {
     const gasPrice = await getGasPrice();
     const result = await contract.methods.clap(addresses, claps)
           .send({ from: account, gasPrice: gasPrice.propose })
@@ -117,11 +114,14 @@ const Assessment = ({
           }).on('receipt', receipt => {
             updateState();
           });
-  }, [ assessment, getGasPrice, contract, account ]);
+  }, [ getGasPrice, contract, account ]);
 
-  const sendToBackend = useCallback(() => {
-    console.log('send to backend');
-  }, []);
+  const sendToBackend = useCallback((addresses, claps) => {
+    const object = { event, sender: account, addresses, claps };
+    post('assessments', object, (error, data) => {
+      console.log(error, data);
+    });
+  }, [ event, account, post ]);
 
   useEffect(() => {
     if (contract === undefined || account === undefined) return;
@@ -134,12 +134,15 @@ const Assessment = ({
   }, [ contract, account ]);
 
   const send = useCallback(async () => {
+    setState(ATTENDEE_CLICKED_SEND);
+    const addresses = Object.keys(assessment);
+    const claps = Object.values(assessment);
     if (proxy) {
-      sendToBackend();
+      sendToBackend(addresses, claps);
     } else {
-      sendToContract();
+      sendToContract(addresses, claps);
     }
-  }, [ proxy, sendToContract ]);
+  }, [ assessment, proxy, sendToBackend, sendToContract ]);
 
   if (account === null || name === null) {
     return (
