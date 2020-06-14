@@ -277,9 +277,7 @@ export const useGasPrice = () => {
       throw new Error(response.status);
     }
     const { safe, propose } = await response.json();
-    const safeWei = web3.utils.toWei(safe, 'gwei');
-    const proposeWei = web3.utils.toWei(propose, 'gwei');
-    return { safe: safeWei, propose: proposeWei };
+    return { safe, propose };
   }, [ backendURL, web3 ]);
 
 }
