@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Hash } from './helpers';
 import { ContractContext } from './event';
+import { Web3Context } from './coinosis';
 
 const Footer = ({ hidden }) => {
   return (
@@ -20,6 +21,7 @@ const Footer = ({ hidden }) => {
 
 const ContractInfo = () => {
 
+  const web3 = useContext(Web3Context);
   const { contract, version } = useContext(ContractContext);
   const [address, setAddress] = useState('');
   const [versionString, setVersionString] = useState('');
@@ -32,7 +34,9 @@ const ContractInfo = () => {
       contract.methods
         .version()
         .call()
-        .then(setVersionString)
+          .then(versionHex => {
+            setVersionString(web3.utils.hexToUtf8(versionHex));
+          })
         .catch(err => {
           setVersionString('(fuera de servicio)');
           setColor('#a04040');
