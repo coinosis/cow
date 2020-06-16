@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { AccountContext, BackendContext } from './coinosis';
+import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import { ATTENDANCE, ContractContext } from './event';
 import {
   environment,
@@ -32,6 +32,7 @@ const Assessment = ({
   setUsers,
 }) => {
 
+  const web3 = useContext(Web3Context);
   const { contract, version } = useContext(ContractContext);
   const { account, name } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
@@ -40,6 +41,7 @@ const Assessment = ({
   const [assessment, setAssessment] = useState({});
   const [clapsError, setClapsError] = useState(false);
   const [proxy, setProxy] = useState();
+  const [txHash, setTxHash] = useState();
   const post = usePost();
   const getGasPrice = useGasPrice();
 
@@ -111,6 +113,7 @@ const Assessment = ({
           .send({ from: account, gasPrice: gasPrice.propose })
           .on('transactionHash', transactionHash => {
             setState(ATTENDEE_SENT_CLAPS);
+            setTxHash(transactionHash);
           }).on('receipt', receipt => {
             updateState();
           });
@@ -118,8 +121,19 @@ const Assessment = ({
 
   const sendToBackend = useCallback((addresses, claps) => {
     const object = { event, sender: account, addresses, claps };
-    post('assessments', object, (error, data) => {
-      console.log(error, data);
+    post('assessments', object, async (error, data) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+      setState(ATTENDEE_SENT_CLAPS);
+      let tx;
+      do {
+        tx = await web3.eth.getTransaction(data.result);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setTxHash(tx.hash);
+      } while (tx.blockHash === null)
+      updateState();
     });
   }, [ event, account, post ]);
 
@@ -200,6 +214,7 @@ const Assessment = ({
         clapsLeft={clapsLeft}
         clapsError={clapsError}
         state={state}
+        txHash={txHash}
       />
       <Users
         attendees={attendees}
@@ -233,7 +248,7 @@ const Assessment = ({
   );
 }
 
-const Claps = ({ clapsLeft, clapsError, state }) => {
+const Claps = ({ clapsLeft, clapsError, state, txHash }) => {
 
   if (state >= ATTENDEE_CLICKED_SEND) {
     return (
@@ -249,8 +264,17 @@ const Claps = ({ clapsLeft, clapsError, state }) => {
             { state == ATTENDEE_CLICKED_SEND
               ? 'envía tus aplausos usando Metamask.'
               : state == ATTENDEE_SENT_CLAPS
-              ? 'confirmando transacción...'
-              : 'gracias por tu tiempo!'
+              ? (
+                <EtherscanLink
+                  type="tx"
+                  value={txHash}
+                >
+                  confirmando transacción...
+                </EtherscanLink>
+              )
+              : state == ATTENDEE_CLAPPED
+              ? 'gracias por tu tiempo!'
+              : state
             }
           </td>
         </tr>
