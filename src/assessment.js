@@ -42,11 +42,13 @@ const Assessment = ({
   const [clapsError, setClapsError] = useState(false);
   const [proxy, setProxy] = useState();
   const [txHash, setTxHash] = useState();
+  const [txState, setTxState] = useState(ATTENDEE_REGISTERED);
   const post = usePost();
   const getGasPrice = useGasPrice();
 
   useEffect(() => {
     setAssessment({});
+    setTxState(state);
   }, [ account ]);
 
   useEffect(() => {
@@ -112,7 +114,7 @@ const Assessment = ({
     const result = await contract.methods.clap(addresses, claps)
           .send({ from: account, gasPrice: gasPrice.propose })
           .on('transactionHash', transactionHash => {
-            setState(ATTENDEE_SENT_CLAPS);
+            setTxState(ATTENDEE_SENT_CLAPS);
             setTxHash(transactionHash);
           }).on('receipt', receipt => {
             updateState();
@@ -126,7 +128,7 @@ const Assessment = ({
         console.error(error);
         return;
       }
-      setState(ATTENDEE_SENT_CLAPS);
+      setTxState(ATTENDEE_SENT_CLAPS);
       let tx;
       do {
         tx = await web3.eth.getTransaction(data.result);
@@ -148,7 +150,7 @@ const Assessment = ({
   }, [ contract, account ]);
 
   const send = useCallback(async () => {
-    setState(ATTENDEE_CLICKED_SEND);
+    setTxState(ATTENDEE_CLICKED_SEND);
     const addresses = Object.keys(assessment);
     const claps = Object.values(assessment);
     if (proxy) {
@@ -215,6 +217,7 @@ const Assessment = ({
         clapsError={clapsError}
         state={state}
         txHash={txHash}
+        txState={txState}
       />
       <Users
         attendees={attendees}
@@ -225,6 +228,7 @@ const Assessment = ({
         clapsError={clapsError}
         state={state}
         version={version}
+        txState={txState}
       />
       <tfoot>
         <tr>
@@ -232,11 +236,11 @@ const Assessment = ({
           <td>
             <button
               onClick={send}
-              disabled={state >= ATTENDEE_CLICKED_SEND}
+              disabled={txState > ATTENDEE_REGISTERED}
             >
               {state >= ATTENDEE_CLAPPED
                ? 'enviado'
-               : state >= ATTENDEE_SENT_CLAPS ? 'enviando...'
+               : txState >= ATTENDEE_SENT_CLAPS ? 'enviando...'
                : 'enviar'
               }
             </button>
@@ -248,9 +252,9 @@ const Assessment = ({
   );
 }
 
-const Claps = ({ clapsLeft, clapsError, state, txHash }) => {
+const Claps = ({ clapsLeft, clapsError, state, txHash, txState }) => {
 
-  if (state >= ATTENDEE_CLICKED_SEND) {
+  if (txState >= ATTENDEE_CLICKED_SEND) {
     return (
       <thead>
         <tr>
@@ -261,9 +265,11 @@ const Claps = ({ clapsLeft, clapsError, state, txHash }) => {
               font-weight: 700;
             `}
           >
-            { state == ATTENDEE_CLICKED_SEND
+            { state == ATTENDEE_CLAPPED
+              ? 'gracias por tu tiempo!'
+              : txState == ATTENDEE_CLICKED_SEND
               ? 'envía tus aplausos usando Metamask.'
-              : state == ATTENDEE_SENT_CLAPS
+              : txState == ATTENDEE_SENT_CLAPS
               ? (
                 <EtherscanLink
                   type="tx"
@@ -272,9 +278,7 @@ const Claps = ({ clapsLeft, clapsError, state, txHash }) => {
                   confirmando transacción...
                 </EtherscanLink>
               )
-              : state == ATTENDEE_CLAPPED
-              ? 'gracias por tu tiempo!'
-              : state
+              : ''
             }
           </td>
         </tr>
@@ -316,6 +320,7 @@ const Users = ({
   attemptAssessment,
   state,
   version,
+  txState,
 }) => {
 
   const getUser = useGetUser();
@@ -367,6 +372,7 @@ const Users = ({
              setClaps={value => setClaps(address, value)}
              state={state}
              version={version}
+             txState={txState}
            />
          );
       })}
@@ -384,6 +390,7 @@ const User = ({
   hasFocus,
   state,
   version,
+  txState,
 }) => {
 
   const clapInput = createRef();
@@ -455,7 +462,7 @@ const User = ({
               : claps
           }
           onChange={e => setClaps(e.target.value)}
-          disabled={state >= ATTENDEE_CLICKED_SEND || ownAddress}
+          disabled={txState >= ATTENDEE_CLICKED_SEND || ownAddress}
           css={`
             width: 60px;
           `}
