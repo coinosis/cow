@@ -52,8 +52,8 @@ const Attendance = ({
           return response.json();
         }
       }).then(data => {
-        setApproved(data.some(d => d.pull.status === 'APPROVED'));
-        setPending(data.some(d => d.pull.status === 'PENDING'));
+        setApproved(data.some(d => d.pull && d.pull.status === 'APPROVED'));
+        setPending(data.some(d => d.pull && d.pull.status === 'PENDING'));
         setPaymentList(data);
        }).catch(err => {
         console.error(err);
