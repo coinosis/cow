@@ -304,17 +304,15 @@ const Attendance = ({
                   justify-content: space-around;
                 `}
               >
-                { fee > 0 && (
-                  <button
-                    onClick={sendEther}
-                  >
-                    envía ether
-                  </button>
-                )}
+                <button
+                  onClick={sendEther}
+                >
+                  envía ether
+                </button>
                 <button
                   onClick={attend}
                 >
-                  { fee > 0 ? 'paga con PayU' : 'inscríbete' }
+                  paga con PayU
                 </button>
               </div>
               <div css="margin: 10px">
