@@ -49,7 +49,7 @@ const Assessment = ({
   useEffect(() => {
     setAssessment({});
     setTxState(state);
-  }, [ account ]);
+  }, [ account, state ]);
 
   useEffect(() => {
     for (const i in attendees) {
