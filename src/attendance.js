@@ -61,10 +61,11 @@ const Attendance = ({
         setApproved(data.some(d => d.pull && d.pull.status === 'APPROVED'));
         setPending(data.some(d => d.pull && d.pull.status === 'PENDING'));
         setPaymentList(data);
+        updateState();
        }).catch(err => {
         console.error(err);
        });
-  }, [ backendURL, event, account ]);
+  }, [ backendURL, event, account, updateState ]);
 
   useEffect(() => {
     if (referenceCode && formWindow && paymentList.length) {
@@ -213,7 +214,7 @@ const Attendance = ({
         getAttendees();
         updateState();
       });
-  }, [ contract, account, getGasPrice, feeWei ]);
+  }, [ contract, account, getGasPrice, feeWei, updateState ]);
 
   if (account === null) {
     return (
