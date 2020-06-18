@@ -1,0 +1,33 @@
+### AUTOFILL PROFILES ###,,,,,,
+Profile ID,Name,Site,Hotkey,,,
+c1,PayU,sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v2,,,,
+### AUTOFILL RULES ###,,,,,,
+Rule ID,Type,Name,Value,Site,Mode,Profile
+r1,0,"^buyerEmail$","aoeu@aoeu.com","",0,c1
+r2,0,"^fullName$","APPROVED","",0,c1
+r3,0,"^dniNumber$","123123123","",0,c1
+r4,0,"^addCreditCardNumber$","4035 7911 4654 1870","",0,c1
+r5,0,"^securityCode$","777","",0,c1
+r6,0,"^securityCodeAux_$","777","",0,c1
+r7,0,"^contactPhone$","312 312 3123","",0,c1
+r8,3,"^tandc$","1","",0,c1
+r9,2,"^expirationMonth$","""1""","",0,c1
+r10,2,"^expirationYear$","""21""","",0,c1
+### AUTOFILL OPTIONS ###,,,,,,
+advanced,"[]",,,,,
+exceptions,"[]",,,,,
+textclips,"[]",,,,,
+variables,"[]",,,,,
+backup,0,30,,,,
+manual,0,,,,,
+delay,0,1,,,,
+labelmatch,0,,,,,
+overwrite,0,,,,,
+vars,1,,,,,
+sound,0,,,,,
+voice,0,1,,,,
+debug,0,,,,,
+mask,0,,,,,
+scale,1,,,,,
+menu,1,,,,,
+autoimport,0,,,,,
