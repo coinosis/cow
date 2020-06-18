@@ -1,7 +1,12 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { formatDistance } from 'date-fns';
 import { es } from 'date-fns/esm/locale';
-import { useGasPrice, ATTENDEE_REWARDED } from './helpers';
+import {
+  useGasPrice,
+  ATTENDEE_REWARDED,
+  ATTENDEE_CLICKED_DISTRIBUTE,
+  ATTENDEE_SENT_DISTRIBUTION,
+} from './helpers';
 import Amount from './amount';
 import { Web3Context, BackendContext, AccountContext } from './coinosis';
 import { ContractContext } from './event';
@@ -18,11 +23,13 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
   const [updater, setUpdater] = useState();
   const [reward, setReward] = useState();
   const [distributed, setDistributed] = useState(false);
+  const [txState, setTxState] = useState(state);
   const getGasPrice = useGasPrice();
 
   useEffect(() => {
     if (state === undefined) return;
     if (state == ATTENDEE_REWARDED) {
+      setTxState(ATTENDEE_REWARDED);
       const getPastEvents = async () => {
         const pastEvents = await contract.getPastEvents(
           'Transfer',
@@ -34,7 +41,6 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
         }
       }
       getPastEvents();
-      setReward(reward);
     }
   }, [ state, account ]);
 
@@ -69,7 +75,7 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
 
   useEffect(() => {
     if (time === undefined || end === undefined) return;
-    if (state == ATTENDEE_REWARDED) return;
+    if (txState >= ATTENDEE_CLICKED_DISTRIBUTE) return;
     if (time >= end) {
       setMessage('antes de distribuir los fondos, asegúrate de que todo el '
                  + 'mundo haya enviado sus aplausos.');
@@ -82,9 +88,9 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
   }, [ time, end, updater ]);
 
   const distribute = useCallback(() => {
+    setTxState(ATTENDEE_CLICKED_DISTRIBUTE);
     setMessage('preparando transacción...');
     setDisabled(true);
-    fetch(`${backendURL}/distribution/${eventURL}`, { method: 'put' });
     const gasPrice = getGasPrice();
     const sendOptions = {
       from: account,
@@ -93,13 +99,16 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
     setMessage('usa Metamask para enviar la transacción.');
     contract.methods.distribute().send(sendOptions)
       .on('error', error => {
+        setTxState(state);
         setMessage(error.message.substring(0, 60));
         setDisabled(false);
       }).on('transactionHash', transactionHash => {
         setMessage('esperando a que la transacción sea incluida en la '
                    + 'blockchain...');
       }).on('receipt', receipt => {
+        setTxState(ATTENDEE_SENT_DISTRIBUTION);
         updateState();
+        fetch(`${backendURL}/distribution/${eventURL}`, { method: 'put' });
       });
   }, [ backendURL, eventURL, contract, account, getGasPrice ]);
 
@@ -114,7 +123,7 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
         padding: 10px;
         background: ${time < end
                         ? '#d0d0d0'
-                        : state < ATTENDEE_REWARDED
+                        : txState < ATTENDEE_REWARDED
                         ? '#a0d0a0'
                         : '#a0a0d0'
                      };
@@ -163,7 +172,7 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
           </ul>
         </div>
       )}
-      { state == ATTENDEE_REWARDED && (
+      { txState == ATTENDEE_REWARDED && (
         <div
           css={`
             width: 100%;

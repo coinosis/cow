@@ -15,6 +15,8 @@ export const ATTENDEE_REGISTERED = 1;
 export const ATTENDEE_CLICKED_SEND = 1.8;
 export const ATTENDEE_SENT_CLAPS = 1.9;
 export const ATTENDEE_CLAPPED = 2;
+export const ATTENDEE_CLICKED_DISTRIBUTE = 2.8;
+export const ATTENDEE_SENT_DISTRIBUTION = 2.9;
 export const ATTENDEE_REWARDED = 3;
 
 export const Loading = () => {
