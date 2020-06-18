@@ -14,7 +14,7 @@ import {
   useRouteMatch,
 } from 'react-router-dom';
 import styled from 'styled-components';
-import contractJson from '../contracts/ProxyEvent.json';
+import abi from '../contracts/ProxyEvent.abi.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import { Link, Loading, ATTENDEE_REGISTERED, NoContract } from './helpers';
 import Attendance from './attendance';
@@ -74,14 +74,14 @@ const Event = () => {
 
   const setContractRaw = useCallback(async address => {
     if (web3 === undefined) return;
-    const contract = new web3.eth.Contract(contractJson.abi, address);
+    const contract = new web3.eth.Contract(abi, address);
     try {
       await contract.methods.version().call();
       setContract(contract);
     } catch (err) {
       setContract(null);
     }
-  }, [ web3, contractJson ]);
+  }, [ web3, abi ]);
 
   useEffect(() => {
     getAttendees();

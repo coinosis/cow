@@ -8,7 +8,8 @@ module.exports = {
     rules: [
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
       { test: /\.gif$|.png$/, loader: 'file-loader' },
-      { test: /\.css$/i, use: ['style-loader', 'css-loader']}
+      { test: /\.css$/i, use: ['style-loader', 'css-loader']},
+      { test: /\.txt$/, use: 'raw-loader' }
     ]
   },
   plugins: [

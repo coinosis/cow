@@ -9,7 +9,8 @@ import {
   setMinutes,
   subMinutes
 } from 'date-fns';
-import contractJson from '../contracts/ProxyEvent.json';
+import abi from '../contracts/ProxyEvent.abi.json';
+import bin from '../contracts/ProxyEvent.bin.txt';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import {
   formatDate,
@@ -194,12 +195,12 @@ const AddEvent = ({ setEvents }) => {
   const deployContract = useCallback(async () => {
     setCreating(true);
     setStatus('iniciando proceso de creación...');
-    const contract = new web3.eth.Contract(contractJson.abi);
+    const contract = new web3.eth.Contract(abi);
     const feeWei = web3.utils.toWei(String(feeETH));
     const endTimestamp = timestampInSeconds(end);
     const gasPrice = await getGasPrice();
     const deployData = {
-      data: contractJson.bytecode,
+      data: bin,
       arguments: [feeWei, endTimestamp],
     };
     const deployment = await contract.deploy(deployData);
@@ -230,7 +231,8 @@ const AddEvent = ({ setEvents }) => {
     };
   }, [
     web3,
-    contractJson,
+    abi,
+    bin,
     url,
     feeETH,
     account,
