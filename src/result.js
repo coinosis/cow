@@ -6,8 +6,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import contractV1Json from '../contracts/Coinosis.json';
-import contractV0Json from '../contracts/CoinosisV0.json';
+import abiV1 from '../contracts/Coinosis.abi.json';
+import abiV0 from '../contracts/CoinosisV0.abi.json';
+import deployments from '../deployments.json';
 import { Web3Context } from './coinosis';
 import Amount from './amount';
 import {
@@ -30,18 +31,17 @@ const Result = ({ url: eventURL }) => {
 
   const setContractV1And0 = useCallback(version => {
     if (!web3) return;
-    const contractJson = version === 1 ? contractV1Json : contractV0Json;
+    const abi = version === 1 ? abiV1 : abiV0;
     web3.eth.net.getId().then(networkId => {
-      const deployment = contractJson.networks[networkId];
-      if (!deployment) {
+      const address = deployments[version][networkId];
+      if (!address) {
         setContract(null);
         return;
       }
-      const contractAddress = deployment.address;
-      const contract = new web3.eth.Contract(contractJson.abi, contractAddress);
+      const contract = new web3.eth.Contract(abi, address);
       setContract(contract);
     });
-  }, [ web3, contractV1Json, contractV0Json ]);
+  }, [ web3, abiV1, abiV0 ]);
 
   useEffect(() => {
     if (version === undefined) return;

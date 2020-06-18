@@ -31,16 +31,20 @@ const ContractInfo = () => {
     if (contract) {
       setAddress(contract._address);
       try {
-      contract.methods
-        .version()
-        .call()
-          .then(versionHex => {
-            setVersionString(web3.utils.hexToUtf8(versionHex));
+        contract.methods
+          .version()
+          .call()
+          .then(versionString => {
+            if (version === 2) {
+              setVersionString(web3.utils.hexToUtf8(versionString));
+            } else {
+              setVersionString(versionString);
+            }
           })
-        .catch(err => {
-          setVersionString('(fuera de servicio)');
-          setColor('#a04040');
-        });
+          .catch(err => {
+            setVersionString('(fuera de servicio)');
+            setColor('#a04040');
+          });
       } catch (err) {
         setVersionString('0.2.0');
       }
