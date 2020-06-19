@@ -336,7 +336,7 @@ const Attendance = ({
                 tu pago fue aceptado
               </SectionTitle>
               <div>
-                esperando confirmación por parte de PayU...
+                enviando transacción al contrato inteligente...
               </div>
             </div>
           ) : ethState ? (
