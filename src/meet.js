@@ -116,13 +116,17 @@ const Meet = ({
       </div>
       { settings[environment].jitsi && (
         <Jitsi
-          roomName={id}
+          roomName={`${id}-${settings[environment].id}`}
           displayName={userName}
           userInfo={{ displayName: userName }}
           noSSL={false}
           loadingComponent={Loading}
           onAPILoad={handleAPI}
-          containerStyle={{ width: '100%', height: '800px' }}
+          containerStyle={{
+            width: '100%',
+            height: '800px',
+            marginBottom: '20px',
+          }}
           config={{
             startWithAudioMuted: true,
             fileRecordingsEnabled: false,
