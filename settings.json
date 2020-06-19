@@ -14,10 +14,10 @@
     "id": "testing",
     "backend": "https://testing-owl.herokuapp.com",
     "payU": {
-      "gateway": "https://checkout.payulatam.com/ppp-web-gateway-payu",
-      "merchantId": 845239,
-      "accountId": 852741,
-      "test": 0
+      "gateway": "https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/",
+      "merchantId": 508029,
+      "accountId": 512321,
+      "test": 1
     },
     "jitsi": true
   },
