@@ -424,6 +424,9 @@ const Attendance = ({
             <tbody>
               { paymentList.map(payment => {
                 const { pull, push } = payment;
+                if (pull === null) return (
+                  <tr><td>Intentando conectar con PayU...</td></tr>
+                );
                 return (
                   <tr key={payment.referenceCode}>
                     <td>{formatDate(new Date(pull.requestDate))}</td>
