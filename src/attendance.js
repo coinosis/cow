@@ -7,6 +7,7 @@ import {
 import { ASSESSMENT, ContractContext } from './event';
 import Amount from './amount';
 import {
+  EtherscanLink,
   environment,
   formatDate,
   Link,
@@ -47,6 +48,7 @@ const Attendance = ({
   const [pending, setPending] = useState();
   const [ethState, setEthState] = useState();
   const [ethMessage, setEthMessage] = useState();
+  const [txHash, setTxHash] = useState();
   const { toUSD } = useConversions();
 
   const fetchPayments = useCallback(() => {
@@ -206,6 +208,7 @@ const Attendance = ({
     };
     contract.methods.register().send(txOptions)
       .on('transactionHash', hash => {
+        setTxHash(hash);
         setEthState('transacción creada');
         setEthMessage('esperando a que sea incluida en la blockchain...');
       }).on('receipt', hash => {
@@ -350,7 +353,11 @@ const Attendance = ({
               <SectionTitle>
                 { ethState }
               </SectionTitle>
-              { ethMessage }
+              { txHash ? (
+                <EtherscanLink type="tx" value={txHash}>
+                  { ethMessage }
+                </EtherscanLink>
+              ) : ethMessage }
             </div>
           ) : pending ? (
             <div
