@@ -61,7 +61,10 @@ const Attendance = ({
         }
       }).then(data => {
         setApproved(data.some(d => d.pull && d.pull.status === 'APPROVED'));
-        setPending(data.some(d => d.pull && d.pull.status === 'PENDING'));
+        setPending(data.length
+          && data[0].pull
+          && data[0].pull.status === 'PENDING'
+        );
         setPaymentList(data);
         updateState();
        }).catch(err => {
