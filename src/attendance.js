@@ -155,7 +155,6 @@ const Attendance = ({
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          merchantId: object.merchantId,
           referenceCode: object.referenceCode,
           amount: object.amount,
           currency: object.currency,
