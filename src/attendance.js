@@ -368,10 +368,11 @@ const Attendance = ({
               `}
             >
               <SectionTitle>
-                tu pago está pendiente
+                los pagos en efectivo están deshabilitados
               </SectionTitle>
+              por favor usa otro medio de pago
               <button onClick={attend}>
-                usa otro medio de pago
+                paga con PayU
               </button>
               <button
                 onClick={sendEther}
@@ -439,25 +440,7 @@ const Attendance = ({
                     <td>{formatDate(new Date(pull.requestDate))}</td>
                     <td>{pull.value} {pull.currency}</td>
                     <td>{pull.response}</td>
-                    <td>
-                      { pull.receipt ? (
-                        <a
-                          onClick={() => window.open(
-                            pull.receipt,
-                            'receiptWindow',
-                            'width=1000,height=800'
-                          )}
-                          css={`
-                            text-decoration: underline;
-                            cursor: pointer;
-                          `}
-                        >
-                          {payment.referenceCode}
-                        </a>
-                      ) : (
-                        <div>{payment.referenceCode}</div>
-                      ) }
-                    </td>
+                    <td>{payment.referenceCode}</td>
                   </tr>
                 );
               })}
