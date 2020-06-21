@@ -95,11 +95,16 @@ const Assessments = ({ eventURL }) => {
         'Transfer',
         { fromBlock: 0 }
       );
-      const rewards = addresses.map(address =>
-        transfers.find(transfer =>
+      const rewards = addresses.map(address => {
+        const transfer = transfers.find(transfer =>
           transfer.returnValues.attendee === address
-        ).returnValues.reward
-      );
+        );
+        if (transfer !== undefined) {
+          return transfer.returnValues.reward;
+        } else {
+          return '0';
+        }
+      });
       const totalClaps = await contract.methods.totalClaps().call();
       const assessment = {
         id,
@@ -434,7 +439,9 @@ const Participant = ({
     const transfer = transfers.find(transfer =>
       transfer.returnValues.attendee === address
     );
-    setTx(transfer.transactionHash);
+    if (transfer !== undefined) {
+      setTx(transfer.transactionHash);
+    }
   }, [ contract ]);
 
   const setTransfersV1 = useCallback(() => {
