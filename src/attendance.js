@@ -25,7 +25,6 @@ const Attendance = ({
   event,
   fee,
   feeWei,
-  organizer,
   attendees,
   getAttendees,
   beforeStart,
@@ -189,7 +188,7 @@ const Attendance = ({
 
   const attendFree = useCallback(() => {
     const object = { attendee: account, event };
-    post('attend', object, (err, data) => {
+    post('attend', object, err => {
       if (err) {
         console.error(err);
       }
@@ -217,7 +216,7 @@ const Attendance = ({
         setTxHash(hash);
         setEthState('transacción creada');
         setEthMessage('esperando a que sea incluida en la blockchain...');
-      }).on('receipt', hash => {
+      }).on('receipt', () => {
         setEthState('transacción aceptada');
         setEthMessage('registrando tu pago...');
         getAttendees();
@@ -437,7 +436,7 @@ const Attendance = ({
             </thead>
             <tbody>
               { paymentList.map(payment => {
-                const { pull, push } = payment;
+                const { pull } = payment;
                 if (pull === null) return (
                   <tr><td>Intentando conectar con PayU...</td></tr>
                 );

@@ -38,9 +38,9 @@ const Coinosis = () => {
 
   useEffect(() => {
     fetch(settings[environment].backend)
-      .then(response => {
+      .then(() => {
         setBackendURL(settings[environment].backend);
-      }).catch(err => {
+      }).catch(() => {
         setBackendURL(null);
       });
   }, []);

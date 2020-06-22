@@ -1,5 +1,4 @@
 import React, {
-  createContext,
   useCallback,
   useContext,
   useEffect,
@@ -12,7 +11,6 @@ import deployments from '../deployments.json';
 import { Web3Context } from './coinosis';
 import Amount from './amount';
 import {
-  Loading,
   ToolTip,
   Hash,
   EtherscanLink,

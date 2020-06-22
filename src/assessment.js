@@ -8,7 +8,6 @@ import React, {
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import { ATTENDANCE, ContractContext } from './event';
 import {
-  environment,
   EtherscanLink,
   Link,
   Loading,
@@ -111,12 +110,12 @@ const Assessment = ({
 
   const sendToContract = useCallback(async (addresses, claps) => {
     const gasPrice = await getGasPrice();
-    const result = await contract.methods.clap(addresses, claps)
+    await contract.methods.clap(addresses, claps)
           .send({ from: account, gasPrice: gasPrice.propose })
           .on('transactionHash', transactionHash => {
             setTxState(ATTENDEE_SENT_CLAPS);
             setTxHash(transactionHash);
-          }).on('receipt', receipt => {
+          }).on('receipt', () => {
             updateState();
           });
   }, [ getGasPrice, contract, account ]);

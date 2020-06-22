@@ -2,12 +2,11 @@ import "regenerator-runtime/runtime";
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
   Web3Context,
-  BackendContext,
   CurrencyContext,
   ETH,
   USD,
 } from './coinosis';
-import { environment, ToolTip, useETHPrice } from './helpers.js';
+import { ToolTip, useETHPrice } from './helpers.js';
 
 const ethColor = '#97b9ca';
 const usdColor = '#97cab3';
@@ -15,7 +14,6 @@ const usdColor = '#97cab3';
 const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
 
   const web3 = useContext(Web3Context);
-  const backendURL = useContext(BackendContext);
   const [currencyType, setCurrencyType] = useContext(CurrencyContext);
   const getETHPrice = useETHPrice();
 

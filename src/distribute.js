@@ -8,13 +8,12 @@ import {
   ATTENDEE_SENT_DISTRIBUTION,
 } from './helpers';
 import Amount from './amount';
-import { Web3Context, BackendContext, AccountContext } from './coinosis';
+import { BackendContext, AccountContext } from './coinosis';
 import { ContractContext } from './event';
 
 const Distribute = ({ eventURL, end, state, updateState }) => {
 
   const { contract } = useContext(ContractContext);
-  const web3 = useContext(Web3Context);
   const backendURL = useContext(BackendContext);
   const { account } = useContext(AccountContext);
   const [disabled, setDisabled] = useState(true);
@@ -102,10 +101,10 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
         setTxState(state);
         setMessage(error.message.substring(0, 60));
         setDisabled(false);
-      }).on('transactionHash', transactionHash => {
+      }).on('transactionHash', () => {
         setMessage('esperando a que la transacción sea incluida en la '
                    + 'blockchain...');
-      }).on('receipt', receipt => {
+      }).on('receipt', () => {
         setTxState(ATTENDEE_SENT_DISTRIBUTION);
         updateState();
         fetch(`${backendURL}/distribution/${eventURL}`, { method: 'put' });

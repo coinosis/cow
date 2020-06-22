@@ -249,7 +249,6 @@ const EditableField = ({ children, onEdit }) => {
 }
 
 const Form = ({
-  icon,
   current,
   onSubmit,
   onCancel,

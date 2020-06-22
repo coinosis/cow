@@ -4,16 +4,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { es } from 'date-fns/esm/locale';
 import {
   addHours,
-  setHours,
   addMinutes,
-  setMinutes,
   subMinutes
 } from 'date-fns';
 import abi from '../contracts/ProxyEvent.abi.json';
 import bin from '../contracts/ProxyEvent.bin.txt';
-import { Web3Context, AccountContext, BackendContext } from './coinosis';
+import { Web3Context, AccountContext } from './coinosis';
 import {
-  formatDate,
   usePost,
   useConversions,
   useGasPrice,
@@ -29,7 +26,6 @@ const AddEvent = ({ setEvents }) => {
   const { toETH, toUSD } = useConversions();
   const getGasPrice = useGasPrice();
   const web3 = useContext(Web3Context);
-  const backendURL = useContext(BackendContext);
   const { account, name: userName } = useContext(AccountContext);
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
@@ -215,11 +211,11 @@ const AddEvent = ({ setEvents }) => {
           .on('error', error => {
             setStatus(error.message.substring(0, 60));
             setCreating(false);
-          }).on('transactionHash', receipt => {
+          }).on('transactionHash', () => {
             setStatus(
               'esperando a que la transacción sea incluida en la blockchain...'
             );
-          }).on('receipt', receipt => {
+          }).on('receipt', () => {
             setStatus('usa Metamask para firmar el contrato.');
           });
     const actualFeeWei = await instance.methods.fee().call();

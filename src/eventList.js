@@ -1,11 +1,11 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AccountContext, BackendContext } from './coinosis';
 import { Link, formatDate, SectionTitle } from './helpers';
 import AddEvent from './addEvent';
 
 const EventList = () => {
 
-  const { account, name } = useContext(AccountContext);
+  const { name } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [events, setEvents] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
@@ -32,7 +32,7 @@ const EventList = () => {
           return b.startDate - a.startDate;
         });
         setEvents(sortedEvents);
-      }).catch(err => {
+      }).catch(() => {
         setEvents([]);
       });
   }, []);

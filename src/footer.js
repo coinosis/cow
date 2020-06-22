@@ -41,7 +41,7 @@ const ContractInfo = () => {
               setVersionString(versionString);
             }
           })
-          .catch(err => {
+          .catch(() => {
             setVersionString('(fuera de servicio)');
             setColor('#a04040');
           });

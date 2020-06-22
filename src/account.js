@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
-import { environment, Loading, Link, usePost } from './helpers.js';
+import { Loading, Link, usePost } from './helpers.js';
 
 const Account = () => {
 
@@ -11,7 +11,6 @@ const Account = () => {
     setAccount,
     name,
     setName,
-    data,
     setData,
   } = useContext(AccountContext);
   const [unsavedName, setUnsavedName] = useState('');
@@ -50,7 +49,7 @@ const Account = () => {
       }).then(data => {
         setName(data.name);
         setData(data);
-      }).catch(err => {
+      }).catch(() => {
         setName(null);
         setData(null);
       });
