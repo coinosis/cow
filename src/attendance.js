@@ -66,6 +66,10 @@ const Attendance = ({
           && data[0].pull.status === 'PENDING'
         );
         setPaymentList(data);
+        const payment = data.find(d => d.transaction && d.transaction.hash);
+        if (payment !== undefined) {
+          setTxHash(payment.transaction.hash);
+        }
         updateState();
        }).catch(err => {
         console.error(err);
@@ -340,9 +344,9 @@ const Attendance = ({
               <SectionTitle>
                 tu pago fue aceptado
               </SectionTitle>
-              <div>
+              <EtherscanLink type="tx" value={txHash} >
                 enviando transacción al contrato inteligente...
-              </div>
+              </EtherscanLink>
             </div>
           ) : ethState ? (
             <div
