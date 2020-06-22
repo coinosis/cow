@@ -20,7 +20,7 @@ const InstallMetamask = () => {
   }, [ navigator.brave ]);
 
   if (brave === undefined) return <Loading/>
-  
+
   return (
     <div
       css={`
@@ -33,7 +33,7 @@ const InstallMetamask = () => {
     >
       <div
         css={`
-          font-size: 34px;          
+          font-size: 34px;
         `}
       >
         te damos la bienvenida a coinosis
@@ -58,6 +58,7 @@ const InstallMetamask = () => {
           ) : (
             <a
               target="_blank"
+              rel="noreferrer"
               href="https://metamask.io/"
               css={`
                 color: black;

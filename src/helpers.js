@@ -130,6 +130,7 @@ export const EtherscanLink = ({
       <a
         href={href}
         target="_blank"
+        rel="noreferrer"
         css={`
           color: black;
           &:visited {
