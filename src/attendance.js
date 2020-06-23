@@ -16,6 +16,7 @@ import {
   useGasPrice,
   usePost,
   useConversions,
+  sleep,
 } from './helpers';
 import settings from '../settings.json';
 import Account from './account';
@@ -41,8 +42,6 @@ const Attendance = ({
   const [feeUSDWei, setFeeUSDWei] = useState();
   const [now] = useState(new Date());
   const [paymentList, setPaymentList] = useState();
-  const [referenceCode, setReferenceCode] = useState();
-  const [formWindow, setFormWindow] = useState();
   const [approved, setApproved] = useState();
   const [pending, setPending] = useState();
   const [ethState, setEthState] = useState();
@@ -76,23 +75,6 @@ const Attendance = ({
   }, [ backendURL, event, account, updateState ]);
 
   useEffect(() => {
-    if (referenceCode && formWindow && paymentList.length) {
-      for (let i = 0; i < paymentList.length; i++) {
-        const payment = paymentList[i];
-        if (
-          payment.referenceCode === referenceCode
-            && !['APPROVED'].includes(payment.pull.status)
-        ) {
-          formWindow.close();
-          setFormWindow();
-          setReferenceCode();
-          return;
-        }
-      }
-    }
-  }, [paymentList, referenceCode, formWindow]);
-
-  useEffect(() => {
     if (!backendURL || !event || !account) return;
     fetchPayments();
     const paymentsFetcher = setInterval(fetchPayments, 10000);
@@ -122,18 +104,30 @@ const Attendance = ({
       input.setAttribute('value', object[key]);
       form.appendChild(input);
     }
-    const formWindow = window.open('', 'formWindow', 'width=1000,height=800');
+    const formWindow = window.open();
     formWindow.document.body.appendChild(form);
     formWindow.document.forms[0].submit();
-    setFormWindow(formWindow);
-  }, [formWindow, setFormWindow]);
+    return formWindow;
+  }, []);
+
+  const awaitClosable = useCallback(async (formWindow, referenceCode) => {
+    await sleep(20000);
+    do {
+      await sleep(2000);
+      const response = await fetch(`${backendURL}/closable/${referenceCode}`);
+      const closable = await response.json();
+      if (closable == true) {
+        formWindow.close();
+        break;
+      }
+    } while (true);
+  }, [ backendURL ]);
 
   const payU = useCallback(() => {
     const payUGateway = settings[environment].payU.gateway;
     const environmentId = settings[environment].id
     const counter = paymentList.length + 1;
     const referenceCode = `${event}:${account}:${counter}:${environmentId}`;
-    setReferenceCode(referenceCode);
     const fee = Math.round(toUSD(web3.utils.fromWei(feeWei)) * 100) / 100;
     const test = settings[environment].payU.test;
     const callback = process.env.CALLBACK || backendURL;
@@ -150,6 +144,7 @@ const Attendance = ({
       buyerEmail: '',
       algorithmSignature: 'SHA256',
       confirmationUrl: `${callback}/payu`,
+      responseUrl: `${callback}/close`,
       test,
     };
     fetch(
@@ -170,7 +165,8 @@ const Attendance = ({
       return response.json();
     }).then(hash => {
       object.signature = hash;
-      formSubmit(payUGateway, object);
+      const formWindow = formSubmit(payUGateway, object);
+      awaitClosable(formWindow, referenceCode);
     }).catch(err => {
       console.error(err);
     });
@@ -184,6 +180,8 @@ const Attendance = ({
     paymentList,
     backendURL,
     toUSD,
+    awaitClosable,
+    formSubmit,
   ]);
 
   const attendFree = useCallback(() => {
