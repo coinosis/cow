@@ -28,28 +28,24 @@ const ContractInfo = () => {
   const [color, setColor] = useState('black');
 
   useEffect(() => {
-    if (contract) {
-      setAddress(contract._address);
-      try {
-        contract.methods
-          .version()
-          .call()
-          .then(versionString => {
-            if (version === 2) {
-              setVersionString(web3.utils.hexToUtf8(versionString));
-            } else {
-              setVersionString(versionString);
-            }
-          })
-          .catch(() => {
-            setVersionString('(fuera de servicio)');
-            setColor('#a04040');
-          });
-      } catch (err) {
-        setVersionString('0.2.0');
-      }
+    if (contract === undefined) return;
+    setAddress(contract._address);
+    if (version == 0) setVersionString('versión 0.2.0');
+    else if (version == 1) setVersionString('versión 1.3.1');
+    else {
+      contract.methods
+      .version()
+      .call()
+      .then(versionHex => {
+        const versionNumber = web3.utils.hexToUtf8(versionHex);
+        setVersionString(`versión ${versionNumber}`);
+      })
+      .catch(() => {
+        setVersionString('(fuera de servicio)');
+        setColor('#a04040');
+      });
     }
-  }, [contract]);
+  }, [ contract, version ]);
 
   return (
     <div
@@ -75,7 +71,7 @@ const ContractInfo = () => {
           color: ${color};
         `}
       >
-        versión {versionString}
+        {versionString}
       </div>
     </div>
   );
