@@ -17,6 +17,7 @@ import styled from 'styled-components';
 import abi from '../contracts/ProxyEvent.abi.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import { Link, Loading, ATTENDEE_REGISTERED, NoContract } from './helpers';
+import Account from './account';
 import Attendance from './attendance';
 import Distribute from './distribute';
 import Meet from './meet';
@@ -73,7 +74,7 @@ const Event = () => {
   }, [ contract ]);
 
   const setContractRaw = useCallback(async address => {
-    if (web3 === undefined) return;
+    if (web3 === undefined || web3 === null) return;
     const contract = new web3.eth.Contract(abi, address);
     try {
       await contract.methods.version().call();
@@ -131,6 +132,16 @@ const Event = () => {
         console.error(err);
       });
   }, [ backendURL, eventURL, setContractRaw ]);
+
+  if (web3 === null) {
+    return (
+      <div>
+        <Title text={name} />
+        <Tabs/>
+        <Account/>
+      </div>
+    );
+  }
 
   if (contract === null) {
     return (

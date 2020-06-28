@@ -2,7 +2,6 @@ import React, { createContext, useEffect, useState } from 'react';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 import Web3 from 'web3';
 import { createGlobalStyle } from 'styled-components';
-import InstallMetamask from './installMetamask';
 import { environment, Loading } from './helpers';
 import settings from '../settings.json';
 import Header from './header';
@@ -24,6 +23,7 @@ const Coinosis = () => {
   const [account, setAccount] = useState();
   const [name, setName] = useState();
   const [data, setData] = useState();
+  const [awaitingReload, setAwaitingReload] = useState();
   const [backendURL, setBackendURL] = useState();
   const [currencyType, setCurrencyType] = useState(ETH);
 
@@ -45,7 +45,6 @@ const Coinosis = () => {
       });
   }, []);
 
-  if (web3 === null) return <InstallMetamask/>
   if (backendURL === undefined) return <Loading/>
 
   return (
@@ -57,6 +56,8 @@ const Coinosis = () => {
         setName,
         data,
         setData,
+        awaitingReload,
+        setAwaitingReload,
       }}>
         <BackendContext.Provider value={backendURL}>
           <CurrencyContext.Provider value={[currencyType, setCurrencyType]}>

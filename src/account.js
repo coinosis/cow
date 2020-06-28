@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
-import { Loading, Link, usePost } from './helpers.js';
+import { Loading, Link, usePost, sleep } from './helpers.js';
 
 const Account = () => {
 
@@ -12,6 +12,8 @@ const Account = () => {
     name,
     setName,
     setData,
+    awaitingReload,
+    setAwaitingReload,
   } = useContext(AccountContext);
   const [unsavedName, setUnsavedName] = useState('');
   const [message, setMessage] = useState('');
@@ -72,6 +74,14 @@ const Account = () => {
     });
   }, [account, unsavedName]);
 
+  if (web3 === null) {
+    return (
+      <Install
+        awaitingReload={awaitingReload}
+        setAwaitingReload={setAwaitingReload}
+      />
+    );
+  }
   if (account === undefined) return <Loading />
   if (account === null) return <Login />
 
@@ -141,6 +151,40 @@ const Login = () => {
     >
       inicia sesión
     </button>
+  );
+
+}
+
+const Install = ({ awaitingReload, setAwaitingReload }) => {
+
+  const [message, setMessage] = useState();
+
+  useEffect(() => {
+    if (awaitingReload) {
+      setMessage('ya instalé Metamask');
+    } else {
+      setMessage('instala tu billetera');
+    }
+  }, [ awaitingReload, setMessage ])
+
+  const onClick = useCallback(async () => {
+    if (awaitingReload) {
+      window.location.reload(false);
+    } else {
+      window.open('https://metamask.io');
+      await sleep(1000);
+      setAwaitingReload(true);
+    }
+  }, [ awaitingReload, window, sleep, setAwaitingReload ]);
+
+  return (
+    <div css="display: flex; justify-content: center">
+      <button
+        onClick={onClick}
+        >
+        {message}
+      </button>
+    </div>
   );
 
 }
