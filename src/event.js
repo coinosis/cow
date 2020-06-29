@@ -29,6 +29,28 @@ export const ATTENDANCE = 'asistencia';
 export const ASSESSMENT = 'aplausos';
 const RESULT = 'resultados';
 
+const eventStates = {
+  EVENT_CREATED: 0,
+  CALL_STARTED: 1,
+  EVENT_STARTED: 2,
+  EVENT_ENDED: 3,
+  CALL_ENDED: 4,
+};
+
+const userStates = {
+  UNREGISTERED: 0,
+  REGISTERED: 1,
+  CLAPPED: 2,
+  REWARDED: 3,
+};
+
+const contractStates = {
+  CONTRACT_CREATED: 0,
+  CONTRACT_FUNDED: 1,
+  CLAPS_MADE: 2,
+  DISTRIBUTION_MADE: 3,
+};
+
 export const ContractContext = createContext();
 
 const Event = () => {
@@ -49,20 +71,22 @@ const Event = () => {
   const [organizer, setOrganizer] = useState();
   const [attendees, setAttendees] = useState();
   const [users, setUsers] = useState([]);
-  const [state, setState] = useState();
+  const [eventState, setEventState] = useState();
+  const [userState, setUserState] = useState();
+  const [contractState, setContractState] = useState();
   const [version, setVersion] = useState();
   const match = useRouteMatch();
 
-  const updateState = useCallback(async () => {
+  const updateContractState = useCallback(async () => {
     if (!contract || account === undefined) return;
-    const state = await contract.methods.states(account).call();
-    setState(state);
-  }, [ contract, account ]);
+    const contractState = await contract.methods.states(account).call();
+    setContractState(contractState);
+  }, [ contract, account, setContractState ]);
 
   useEffect(() => {
     if (version === undefined || version !== 2) return;
-    updateState();
-  }, [ version, updateState ]);
+    updateContractState();
+  }, [ version, updateContractState ]);
 
   const getAttendees = useCallback(async () => {
     if (!contract) return;
@@ -171,7 +195,7 @@ const Event = () => {
             getAttendees={getAttendees}
             beforeStart={beforeStart}
             end={end}
-            updateState={updateState}
+            updateState={updateContractState}
           />
         </Route>
         <Route path={`${match.path}/${ASSESSMENT}`}>
@@ -187,20 +211,20 @@ const Event = () => {
               `}
             >
               <Assessment
-                state={state}
-                setState={setState}
-                updateState={updateState}
+                state={contractState}
+                setState={setContractState}
+                updateState={updateContractState}
                 url={url}
                 attendees={attendees}
                 users={users}
                 setUsers={setUsers}
               />
-              { version === 2 && state >= ATTENDEE_REGISTERED && (
+              { version === 2 && contractState >= ATTENDEE_REGISTERED && (
                 <Distribute
                   eventURL={url}
                   end={end}
-                  state={state}
-                  updateState={updateState}
+                  state={contractState}
+                  updateState={updateContractState}
                 />
               )}
             </div>
