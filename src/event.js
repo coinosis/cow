@@ -60,21 +60,12 @@ const Event = () => {
   const { account, name: userName } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [contract, setContract] = useState();
-  const [name, setName] = useState();
-  const [url, setUrl] = useState();
-  const [id, setId] = useState();
-  const [fee, setFee] = useState();
-  const [feeWei, setFeeWei] = useState();
-  const [end, setEnd] = useState();
-  const [beforeStart, setBeforeStart] = useState();
-  const [afterEnd, setAfterEnd] = useState();
-  const [organizer, setOrganizer] = useState();
+  const [event, setEvent] = useState();
   const [attendees, setAttendees] = useState();
   const [users, setUsers] = useState([]);
   const [eventState, setEventState] = useState();
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
-  const [version, setVersion] = useState();
   const match = useRouteMatch();
 
   const updateUserState = useCallback(async () => {
@@ -84,13 +75,13 @@ const Event = () => {
   }, [ contract, account, setUserState ]);
 
   useEffect(() => {
-    if (version === undefined || version !== 2) return;
+    if (event === undefined || event.version !== 2) return;
     updateUserState();
     const userStateUpdater = setInterval(updateUserState, 3000);
     return () => {
       clearInterval(userStateUpdater);
     }
-  }, [ version, updateUserState ]);
+  }, [ event, updateUserState ]);
 
   const updateContractState = useCallback(async () => {
     if (contract === undefined) return;
@@ -116,13 +107,13 @@ const Event = () => {
   }, [ contract, setContractState ]);
 
   useEffect(() => {
-    if (version < 2) return;
+    if (event === undefined || event.version < 2) return;
     updateContractState();
     const contractStateUpdater = setInterval(updateContractState, 3000);
     return () => {
       clearInterval(contractStateUpdater);
     }
-  }, [ version, updateContractState ]);
+  }, [ event, updateContractState ]);
 
   const getAttendees = useCallback(async () => {
     if (!contract) return;
@@ -159,35 +150,13 @@ const Event = () => {
           throw new Error(response.status);
         }
         return response.json();
-      }).then(({
-        _id,
-        address,
-        name,
-        url,
-        fee,
-        feeWei,
-        end,
-        beforeStart,
-        afterEnd,
-        organizer,
-        attendees,
-        version,
-      }) => {
-        if (version === 2) {
-          setContractRaw(address);
-        } else if (version === 1 || version === 0) {
-          setAttendees(attendees);
+      }).then(event => {
+        if (event.version === 2) {
+          setContractRaw(event.address);
+        } else if (event.version === 1 || event.version === 0) {
+          setAttendees(event.attendees);
         }
-        setId(_id);
-        setName(name);
-        setUrl(url);
-        setFee(fee);
-        setFeeWei(feeWei);
-        setEnd(new Date(end));
-        setBeforeStart(new Date(beforeStart));
-        setAfterEnd(new Date(afterEnd));
-        setOrganizer(organizer);
-        setVersion(version);
+        setEvent(event);
       }).catch(err => {
         console.error(err);
       });
@@ -196,7 +165,7 @@ const Event = () => {
   if (web3 === null) {
     return (
       <div>
-        <Title text={name} />
+        <Title text={event.name} />
         <Tabs/>
         <Account/>
       </div>
@@ -206,31 +175,35 @@ const Event = () => {
   if (contract === null) {
     return (
       <div>
-        <Title text={name}/>
+        <Title text={event.name}/>
         <Tabs/>
         <NoContract/>
       </div>
     );
   }
 
-  if (attendees === undefined || userName === undefined) return <Loading/>
+  if (
+    attendees === undefined
+    || userName === undefined
+    || event === undefined
+  ) return <Loading/>
 
   return (
-    <ContractContext.Provider value={{ contract, version }}>
-      <Title text={name} />
+    <ContractContext.Provider value={{ contract, version: event.version }}>
+      <Title text={event.name} />
       <Tabs/>
       <Switch>
         <Route path={`${match.path}/${ATTENDANCE}`}>
           <Attendance
-            eventName={name}
-            event={url}
-            fee={fee}
-            feeWei={feeWei}
-            organizer={organizer}
+            eventName={event.name}
+            event={event.url}
+            fee={event.fee}
+            feeWei={event.feeWei}
+            organizer={event.organizer}
             attendees={attendees}
             getAttendees={getAttendees}
-            beforeStart={beforeStart}
-            end={end}
+            beforeStart={new Date(event.beforeStart)}
+            end={new Date(event.end)}
             updateState={updateUserState}
           />
         </Route>
@@ -250,39 +223,39 @@ const Event = () => {
                 state={userState}
                 setState={setUserState}
                 updateState={updateUserState}
-                url={url}
+                url={event.url}
                 attendees={attendees}
                 users={users}
                 setUsers={setUsers}
               />
-              { version === 2 && userState >= ATTENDEE_REGISTERED && (
+              { event.version === 2 && userState >= ATTENDEE_REGISTERED && (
                 <Distribute
-                  eventURL={url}
-                  end={end}
+                  eventURL={event.url}
+                  end={new Date(event.end)}
                   state={userState}
                   updateState={updateUserState}
                 />
               )}
             </div>
             <Meet
-              id={id}
+              id={event._id}
               account={account}
               userName={userName}
               users={users}
               setUsers={setUsers}
-              beforeStart={beforeStart}
-              afterEnd={afterEnd}
+              beforeStart={new Date(event.beforeStart)}
+              afterEnd={new Date(event.afterEnd)}
             />
           </div>
         </Route>
         <Route path={`${match.path}/${RESULT}`}>
-          <Result url={url} />
+          <Result url={event.url} />
         </Route>
         <Route path={match.path}>
           <Redirect to={`${match.url}/${ATTENDANCE}`} />
         </Route>
       </Switch>
-      <Footer hidden={version < 2} />
+      <Footer hidden={event.version < 2} />
     </ContractContext.Provider>
   );
 }
