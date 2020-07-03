@@ -86,7 +86,7 @@ const Event = () => {
 
   useEffect(() => {
     getAttendees();
-    const updateAttendees = setInterval(getAttendees, 10000);
+    const updateAttendees = setInterval(getAttendees, 3000);
     return () => {
       clearInterval(updateAttendees);
     }
