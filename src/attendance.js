@@ -341,9 +341,13 @@ const Attendance = ({
               <SectionTitle>
                 tu pago fue aceptado
               </SectionTitle>
-              <EtherscanLink type="tx" value={txHash} >
-                enviando transacción al contrato inteligente...
-              </EtherscanLink>
+              { txHash ? (
+                <EtherscanLink type="tx" value={txHash} >
+                  enviando transacción al contrato inteligente...
+                </EtherscanLink>
+              ) : (
+                <div>esperando confirmación por parte de PayU...</div>
+              ) }
             </div>
           ) : ethState ? (
             <div
