@@ -68,6 +68,28 @@ const Event = () => {
   const [contractState, setContractState] = useState();
   const match = useRouteMatch();
 
+  const updateEventState = useCallback(() => {
+    const now = new Date();
+    if (now < new Date(event.beforeStart)) {
+      setEventState(eventStates.EVENT_CREATED);
+    } else if (now < new Date(event.start)) {
+      setEventState(eventStates.CALL_STARTED);
+    } else if (now < new Date(event.end)) {
+      setEventState(eventStates.EVENT_STARTED);
+    } else if (now < new Date(event.afterEnd)) {
+      setEventState(eventStates.EVENT_ENDED);
+    } else {
+      setEventState(eventStates.CALL_ENDED);
+    }
+  }, [ event, setEventState ]);
+
+  useEffect(() => {
+    const eventStateUpdater = setInterval(updateEventState, 3000);
+    return () => {
+      clearInterval(eventStateUpdater);
+    }
+  }, [ updateEventState ]);
+
   const updateUserState = useCallback(async () => {
     if (!contract || account === undefined) return;
     const userState = await contract.methods.states(account).call();
