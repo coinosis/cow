@@ -86,6 +86,10 @@ const Event = () => {
   useEffect(() => {
     if (version === undefined || version !== 2) return;
     updateUserState();
+    const userStateUpdater = setInterval(updateUserState, 3000);
+    return () => {
+      clearInterval(userStateUpdater);
+    }
   }, [ version, updateUserState ]);
 
   const getAttendees = useCallback(async () => {

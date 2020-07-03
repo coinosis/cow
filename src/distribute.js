@@ -56,7 +56,6 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
   }, [ updateTime ]);
 
   useEffect(() => {
-    updateState();
     const getPastEvents = async () => {
       const pastEvents = await contract.getPastEvents(
         'Distribution',
@@ -69,7 +68,7 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
       }
     }
     getPastEvents();
-  }, [ time, updateState, contract, updater ]);
+  }, [ time, contract, updater ]);
 
   useEffect(() => {
     if (time === undefined || end === undefined) return;

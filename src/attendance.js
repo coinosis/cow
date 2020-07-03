@@ -68,11 +68,10 @@ const Attendance = ({
         if (payment !== undefined) {
           setTxHash(payment.transaction.hash);
         }
-        updateState();
        }).catch(err => {
         console.error(err);
        });
-  }, [ backendURL, event, account, updateState ]);
+  }, [ backendURL, event, account ]);
 
   useEffect(() => {
     if (!backendURL || !event || !account) return;
