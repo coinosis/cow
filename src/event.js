@@ -77,16 +77,16 @@ const Event = () => {
   const [version, setVersion] = useState();
   const match = useRouteMatch();
 
-  const updateContractState = useCallback(async () => {
+  const updateUserState = useCallback(async () => {
     if (!contract || account === undefined) return;
-    const contractState = await contract.methods.states(account).call();
-    setContractState(contractState);
-  }, [ contract, account, setContractState ]);
+    const userState = await contract.methods.states(account).call();
+    setUserState(userState);
+  }, [ contract, account, setUserState ]);
 
   useEffect(() => {
     if (version === undefined || version !== 2) return;
-    updateContractState();
-  }, [ version, updateContractState ]);
+    updateUserState();
+  }, [ version, updateUserState ]);
 
   const getAttendees = useCallback(async () => {
     if (!contract) return;
@@ -195,7 +195,7 @@ const Event = () => {
             getAttendees={getAttendees}
             beforeStart={beforeStart}
             end={end}
-            updateState={updateContractState}
+            updateState={updateUserState}
           />
         </Route>
         <Route path={`${match.path}/${ASSESSMENT}`}>
@@ -211,20 +211,20 @@ const Event = () => {
               `}
             >
               <Assessment
-                state={contractState}
-                setState={setContractState}
-                updateState={updateContractState}
+                state={userState}
+                setState={setUserState}
+                updateState={updateUserState}
                 url={url}
                 attendees={attendees}
                 users={users}
                 setUsers={setUsers}
               />
-              { version === 2 && contractState >= ATTENDEE_REGISTERED && (
+              { version === 2 && userState >= ATTENDEE_REGISTERED && (
                 <Distribute
                   eventURL={url}
                   end={end}
-                  state={contractState}
-                  updateState={updateContractState}
+                  state={userState}
+                  updateState={updateUserState}
                 />
               )}
             </div>
