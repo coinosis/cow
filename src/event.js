@@ -92,6 +92,38 @@ const Event = () => {
     }
   }, [ version, updateUserState ]);
 
+  const updateContractState = useCallback(async () => {
+    if (contract === undefined) return;
+    const distributionEvents = await contract.getPastEvents(
+      'Distribution',
+      { fromBlock: 0 }
+    );
+    if (distributionEvents.length > 0) {
+      setContractState(contractStates.DISTRIBUTION_MADE);
+      return;
+    }
+    const claps = await contract.methods.totalClaps().call();
+    if (claps > 0) {
+      setContractState(contractStates.CLAPS_MADE);
+      return;
+    }
+    const funds = await web3.eth.getBalance(contract._address);
+    if (funds > 0) {
+      setContractState(contractStates.CONTRACT_FUNDED);
+      return;
+    }
+    setContractState(contractStates.CONTRACT_CREATED);
+  }, [ contract, setContractState ]);
+
+  useEffect(() => {
+    if (version < 2) return;
+    updateContractState();
+    const contractStateUpdater = setInterval(updateContractState, 3000);
+    return () => {
+      clearInterval(contractStateUpdater);
+    }
+  }, [ version, updateContractState ]);
+
   const getAttendees = useCallback(async () => {
     if (!contract) return;
     const attendees = await contract.methods.getAttendees().call();
