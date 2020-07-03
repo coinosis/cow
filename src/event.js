@@ -97,6 +97,14 @@ const Event = () => {
     });
   }, [ contract ]);
 
+  useEffect(() => {
+    getAttendees();
+    const updateAttendees = setInterval(getAttendees, 3000);
+    return () => {
+      clearInterval(updateAttendees);
+    }
+  }, [ getAttendees ]);
+
   const setContractRaw = useCallback(async address => {
     if (web3 === undefined || web3 === null) return;
     const contract = new web3.eth.Contract(abi, address);
@@ -107,14 +115,6 @@ const Event = () => {
       setContract(null);
     }
   }, [ web3, abi ]);
-
-  useEffect(() => {
-    getAttendees();
-    const updateAttendees = setInterval(getAttendees, 3000);
-    return () => {
-      clearInterval(updateAttendees);
-    }
-  }, [ getAttendees ]);
 
   useEffect(() => {
     fetch(`${backendURL}/event/${eventURL}`)
