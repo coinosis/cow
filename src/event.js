@@ -93,7 +93,7 @@ const Event = () => {
   }, [ event, updateUserState ]);
 
   const updateContractState = useCallback(async () => {
-    if (contract === undefined) return;
+    if (contract === undefined || contract === null) return;
     const distributionEvents = await contract.getPastEvents(
       'Distribution',
       { fromBlock: 0 }
