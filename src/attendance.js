@@ -4,7 +4,7 @@ import {
   AccountContext,
   BackendContext,
 } from './coinosis';
-import { ASSESSMENT, ContractContext } from './event';
+import { ContractContext } from './event';
 import Amount from './amount';
 import {
   EtherscanLink,
@@ -279,13 +279,6 @@ const Attendance = ({
         <SectionTitle>
           te inscribiste exitosamente
         </SectionTitle>
-          {now >= beforeStart && now <= end && (
-            <div>
-              dirígete a
-              <Link to={`${ASSESSMENT}`}>{ASSESSMENT}</Link>
-              para participar.
-            </div>
-          )}
         </div>
       ) : paymentList === undefined ? (
         <Loading/>

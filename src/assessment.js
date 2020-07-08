@@ -6,10 +6,9 @@ import React, {
   useState,
 } from 'react';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
-import { ATTENDANCE, ContractContext } from './event';
+import { ContractContext } from './event';
 import {
   EtherscanLink,
-  Link,
   Loading,
   useGetUser,
   useGasPrice,
@@ -182,10 +181,7 @@ const Assessment = ({
           justify-content: center;
         `}
       >
-        <Link to={`${event}/${ATTENDANCE}`}>
-          inscríbete
-        </Link>
-        para poder aplaudir.
+      inscríbete para poder aplaudir.
       </div>
     );
   }

@@ -5,15 +5,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {
-  NavLink,
-  Switch,
-  Route,
-  Redirect,
-  useParams,
-  useRouteMatch,
-} from 'react-router-dom';
-import styled from 'styled-components';
+import { useParams } from 'react-router-dom';
 import abi from '../contracts/ProxyEvent.abi.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import { Link, Loading, ATTENDEE_REGISTERED, NoContract } from './helpers';
@@ -24,10 +16,6 @@ import Meet from './meet';
 import Assessment from './assessment';
 import Result from './result';
 import Footer from './footer';
-
-export const ATTENDANCE = 'asistencia';
-export const ASSESSMENT = 'aplausos';
-const RESULT = 'resultados';
 
 const eventStates = {
   EVENT_CREATED: 0,
@@ -66,7 +54,6 @@ const Event = () => {
   const [eventState, setEventState] = useState();
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
-  const match = useRouteMatch();
 
   const updateEventState = useCallback(() => {
     const now = new Date();
@@ -188,7 +175,6 @@ const Event = () => {
     return (
       <div>
         <Title text={event.name} />
-        <Tabs/>
         <Account/>
       </div>
     );
@@ -198,7 +184,6 @@ const Event = () => {
     return (
       <div>
         <Title text={event.name}/>
-        <Tabs/>
         <NoContract/>
       </div>
     );
@@ -208,75 +193,65 @@ const Event = () => {
     attendees === undefined
     || userName === undefined
     || event === undefined
-  ) return <Loading/>
+  ) return (
+    <Loading/>
+  );
 
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
       <Title text={event.name} />
-      <Tabs/>
-      <Switch>
-        <Route path={`${match.path}/${ATTENDANCE}`}>
-          <Attendance
-            eventName={event.name}
-            event={event.url}
-            fee={event.fee}
-            feeWei={event.feeWei}
-            organizer={event.organizer}
-            attendees={attendees}
-            getAttendees={getAttendees}
-            beforeStart={new Date(event.beforeStart)}
-            end={new Date(event.end)}
-            updateState={updateUserState}
-          />
-        </Route>
-        <Route path={`${match.path}/${ASSESSMENT}`}>
-          <div
-            css={`
-              display: flex;
+      <Attendance
+        eventName={event.name}
+        event={event.url}
+        fee={event.fee}
+        feeWei={event.feeWei}
+        organizer={event.organizer}
+        attendees={attendees}
+        getAttendees={getAttendees}
+        beforeStart={new Date(event.beforeStart)}
+        end={new Date(event.end)}
+        updateState={updateUserState}
+        />
+      <div
+        css={`
+          display: flex;
+          `}
+        >
+        <div
+          css={`
+            display: flex;
+            flex-direction: column;
             `}
           >
-            <div
-              css={`
-                display: flex;
-                flex-direction: column;
-              `}
-            >
-              <Assessment
-                state={userState}
-                setState={setUserState}
-                updateState={updateUserState}
-                url={event.url}
-                attendees={attendees}
-                users={users}
-                setUsers={setUsers}
-              />
-              { event.version === 2 && userState >= ATTENDEE_REGISTERED && (
-                <Distribute
-                  eventURL={event.url}
-                  end={new Date(event.end)}
-                  state={userState}
-                  updateState={updateUserState}
-                />
-              )}
-            </div>
-            <Meet
-              id={event._id}
-              account={account}
-              userName={userName}
-              users={users}
-              setUsers={setUsers}
-              beforeStart={new Date(event.beforeStart)}
-              afterEnd={new Date(event.afterEnd)}
+          <Assessment
+            state={userState}
+            setState={setUserState}
+            updateState={updateUserState}
+            url={event.url}
+            attendees={attendees}
+            users={users}
+            setUsers={setUsers}
             />
-          </div>
-        </Route>
-        <Route path={`${match.path}/${RESULT}`}>
-          <Result url={event.url} />
-        </Route>
-        <Route path={match.path}>
-          <Redirect to={`${match.url}/${ATTENDANCE}`} />
-        </Route>
-      </Switch>
+          { event.version === 2 && userState >= ATTENDEE_REGISTERED && (
+            <Distribute
+              eventURL={event.url}
+              end={new Date(event.end)}
+              state={userState}
+              updateState={updateUserState}
+              />
+          )}
+        </div>
+        <Meet
+          id={event._id}
+          account={account}
+          userName={userName}
+          users={users}
+          setUsers={setUsers}
+          beforeStart={new Date(event.beforeStart)}
+          afterEnd={new Date(event.afterEnd)}
+          />
+      </div>
+      <Result url={event.url} />
       <Footer hidden={event.version < 2} />
     </ContractContext.Provider>
   );
@@ -287,8 +262,8 @@ const Title = ({ text }) => {
     <div
       css={`
         display: flex;
-      `}
-    >
+        `}
+      >
       <Link to="/" css={'width: 60px'}>← atrás</Link>
       <div
         css={`
@@ -297,58 +272,13 @@ const Title = ({ text }) => {
           margin: 40px;
           font-size: 32px;
           flex-grow: 1;
-        `}
-      >
+          `}
+        >
         {text}
       </div>
       <div css={'width: 60px'}/>
     </div>
   );
 }
-
-const Tabs = () => {
-  return (
-    <div
-      css={`
-        display: flex;
-        justify-content: center;
-        margin-bottom: 50px;
-      `}
-    >
-      <Tab name={ATTENDANCE} />
-      <Tab name={ASSESSMENT} />
-      <Tab name={RESULT} />
-    </div>
-  );
-}
-
-const Tab = ({ name }) => {
-
-  const match = useRouteMatch();
-  const backendURL = useContext(BackendContext);
-
-  return (
-    <StyledTab
-      to={`${match.url}/${name}`}
-      activeClassName="selected"
-      disabled={backendURL === null}
-    >
-      {name}
-    </StyledTab>
-  );
-}
-
-export const StyledTab = styled(NavLink)`
-  padding: 10px;
-  background: #f8f8f8;
-  border: 1px solid #e0e0e0;
-  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
-  user-select: none;
-  color: ${({ disabled }) => disabled ? '#505050' : 'black'};
-  text-decoration: none;
-  &.selected {
-    background: #e0e0e0;
-  }
-`
 
 export default Event;
