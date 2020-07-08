@@ -5,10 +5,11 @@
   "author": "@e18r",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "postinstall": "webpack -p --define process.env.ENVIRONMENT=\"'testing'\"",
-    "start": "http-server dist/ -p $PORT",
     "ngrok": "ngrok http 3000",
-    "start:dev": "./start.dev.sh"
+    "start:dev": "./start.dev.sh",
+    "build:test": "webpack -p --define process.env.ENVIRONMENT=\"'testing'\"",
+    "build:st": "webpack -p --define process.env.ENVIRONMENT=\"'staging'\"",
+    "build:prod": "webpack -p --define process.env.ENVIRONMENT=\"'production'\""
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -34,7 +35,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.9",
     "date-fns": "^2.13.0",
-    "http-server": "^0.12.3",
     "react": "^16.13.1",
     "react-datepicker": "^2.15.0",
     "react-dom": "^16.13.1",
