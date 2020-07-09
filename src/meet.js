@@ -116,6 +116,7 @@ const Meet = ({
       </div>
       { settings[environment].jitsi.enabled && (
         <Jitsi
+          domain="meet.8x8.vc"
           roomName={`${id}-${settings[environment].id}`}
           displayName={userName}
           userInfo={{ displayName: userName }}
