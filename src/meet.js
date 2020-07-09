@@ -116,7 +116,7 @@ const Meet = ({
       </div>
       { settings[environment].jitsi.enabled && (
         <Jitsi
-          domain="meet.8x8.vc"
+          domain="meet.jit.si"
           roomName={`${id}-${settings[environment].id}`}
           displayName={userName}
           userInfo={{ displayName: userName }}
@@ -129,6 +129,7 @@ const Meet = ({
             marginBottom: '20px',
           }}
           config={{
+            prejoinPageEnabled: false,
             startAudioOnly: !settings[environment].jitsi.video,
             startWithAudioMuted: true,
             fileRecordingsEnabled: false,
