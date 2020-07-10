@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { HashRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Web3 from 'web3';
 import { createGlobalStyle } from 'styled-components';
 import { environment, Loading } from './helpers';
@@ -62,7 +62,7 @@ const Coinosis = () => {
         <BackendContext.Provider value={backendURL}>
           <CurrencyContext.Provider value={[currencyType, setCurrencyType]}>
             <GlobalStyle/>
-            <HashRouter>
+            <BrowserRouter>
               <Header/>
               <Switch>
                 <Route path="/:eventURL([a-z1-9-]{1}[a-z0-9-]{0,59})">
@@ -75,7 +75,7 @@ const Coinosis = () => {
                   <EventList />
                 </Route>
               </Switch>
-            </HashRouter>
+            </BrowserRouter>
           </CurrencyContext.Provider>
         </BackendContext.Provider>
       </AccountContext.Provider>
