@@ -282,7 +282,7 @@ const AddEvent = ({ setEvents }) => {
                   value={url}
                   onChange={preSetUrl}
                   css={`
-                    width: 273px;
+                    width: 406px;
                   `}
                 />
               </div>
@@ -295,7 +295,7 @@ const AddEvent = ({ setEvents }) => {
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 css={`
-                  width: 498px;
+                  width: 502px;
                   height: 200px;
                 `}
               />
