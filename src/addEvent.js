@@ -277,7 +277,7 @@ const AddEvent = ({ setEvents }) => {
                   font-family: monospace;
                 `}
               >
-                https://coinosis.github.io/#/
+                coinosis.co/
                 <input
                   value={url}
                   onChange={preSetUrl}

@@ -112,7 +112,7 @@ const Meet = ({
         `}
       >
       ¿Tienes problemas con el audio y el video? Haz clic
-        <a css="margin: 5px" href="webrtc.html" target="_blank">aquí</a>.
+        <a css="margin: 5px" href="/webrtc.html" target="_blank">aquí</a>.
       </div>
       { settings[environment].jitsi.enabled && (
         <Jitsi
