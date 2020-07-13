@@ -217,20 +217,21 @@ const Event = () => {
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
       { inCall === false && (<Title text={event.name} />) }
-      { userState === userStates.UNREGISTERED && (
-        <Attendance
-          eventName={event.name}
-          event={event.url}
-          fee={event.fee}
-          feeWei={event.feeWei}
-          organizer={event.organizer}
-          attendees={attendees}
-          getAttendees={getAttendees}
-          beforeStart={new Date(event.beforeStart)}
-          end={new Date(event.end)}
-          updateState={updateUserState}
-          />
-      ) }
+      { userState === userStates.UNREGISTERED
+        && eventState < eventStates.EVENT_ENDED && (
+          <Attendance
+            eventName={event.name}
+            event={event.url}
+            fee={event.fee}
+            feeWei={event.feeWei}
+            organizer={event.organizer}
+            attendees={attendees}
+            getAttendees={getAttendees}
+            beforeStart={new Date(event.beforeStart)}
+            end={new Date(event.end)}
+            updateState={updateUserState}
+            />
+        ) }
       <div
         css={`
           display: flex;
