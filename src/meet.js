@@ -6,6 +6,7 @@ import settings from '../settings.json';
 
 const Meet = ({
   id,
+  eventName,
   account,
   userName,
   users,
@@ -33,7 +34,7 @@ const Meet = ({
 
   const handleAPI = useCallback(API => {
 
-    API.executeCommand('subject', ' ');
+    API.executeCommand('subject', eventName);
 
     API.on('videoConferenceJoined', jitster  => {
       participantChanged(jitster, { present: true });

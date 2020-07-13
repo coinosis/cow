@@ -54,6 +54,15 @@ const Event = () => {
   const [eventState, setEventState] = useState();
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
+  const [inCall, setInCall] = useState();
+
+  useEffect(() => {
+    if (eventState === undefined || userState === undefined) setInCall(false);
+    const callOngoing = eventState >= eventStates.CALL_STARTED
+    && eventState < eventStates.CALL_ENDED;
+    const userRegistered = userState >= userStates.REGISTERED;
+    setInCall(callOngoing && userRegistered);
+  }, [ eventState, userState, setInCall ]);
 
   const updateEventState = useCallback(() => {
     const now = new Date();
@@ -207,7 +216,7 @@ const Event = () => {
 
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
-      <Title text={event.name} />
+      { inCall === false && (<Title text={event.name} />) }
       <Attendance
         eventName={event.name}
         event={event.url}
@@ -251,6 +260,7 @@ const Event = () => {
         </div>
         <Meet
           id={event._id}
+          eventName={event.name}
           account={account}
           userName={userName}
           users={users}
