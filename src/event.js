@@ -79,6 +79,14 @@ const Event = () => {
 
   const updateUserState = useCallback(async () => {
     if (!contract || account === undefined) return;
+    const transferFilter = await contract.getPastEvents(
+      'Transfer',
+      {filter: {attendee: account}, fromBlock: 0}
+    );
+    if (transferFilter.length > 0) {
+      setUserState(userStates.REWARDED);
+      return;
+    }
     const userState = await contract.methods.states(account).call();
     setUserState(userState);
   }, [ contract, account, setUserState ]);
