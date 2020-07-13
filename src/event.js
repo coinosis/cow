@@ -59,10 +59,11 @@ const Event = () => {
   useEffect(() => {
     if (eventState === undefined || userState === undefined) setInCall(false);
     const callOngoing = eventState >= eventStates.CALL_STARTED
-    && eventState < eventStates.CALL_ENDED;
+    && (eventState < eventStates.CALL_ENDED
+      || contractState < contractStates.DISTRIBUTION_MADE);
     const userRegistered = userState >= userStates.REGISTERED;
-    setInCall(callOngoing && userRegistered);
-  }, [ eventState, userState, setInCall ]);
+    setInCall(userRegistered && callOngoing);
+  }, [ eventState, userState, contractState, setInCall ]);
 
   const updateEventState = useCallback(() => {
     const now = new Date();
@@ -232,46 +233,48 @@ const Event = () => {
             updateState={updateUserState}
             />
         ) }
-      <div
-        css={`
-          display: flex;
-          `}
-        >
-        <div
-          css={`
-            display: flex;
-            flex-direction: column;
-            `}
-          >
-          <Assessment
-            state={userState}
-            setState={setUserState}
-            updateState={updateUserState}
-            url={event.url}
-            attendees={attendees}
-            users={users}
-            setUsers={setUsers}
-            />
-          { event.version === 2 && userState >= ATTENDEE_REGISTERED && (
-            <Distribute
-              eventURL={event.url}
-              end={new Date(event.end)}
-              state={userState}
-              updateState={updateUserState}
+        { inCall && (
+          <div
+            css={`
+              display: flex;
+              `}
+            >
+            <div
+              css={`
+                display: flex;
+                flex-direction: column;
+                `}
+              >
+              <Assessment
+                state={userState}
+                setState={setUserState}
+                updateState={updateUserState}
+                url={event.url}
+                attendees={attendees}
+                users={users}
+                setUsers={setUsers}
+                />
+              { event.version === 2 && userState >= ATTENDEE_REGISTERED && (
+                <Distribute
+                  eventURL={event.url}
+                  end={new Date(event.end)}
+                  state={userState}
+                  updateState={updateUserState}
+                  />
+              )}
+            </div>
+            <Meet
+              id={event._id}
+              eventName={event.name}
+              account={account}
+              userName={userName}
+              users={users}
+              setUsers={setUsers}
+              beforeStart={new Date(event.beforeStart)}
+              afterEnd={new Date(event.afterEnd)}
               />
-          )}
-        </div>
-        <Meet
-          id={event._id}
-          eventName={event.name}
-          account={account}
-          userName={userName}
-          users={users}
-          setUsers={setUsers}
-          beforeStart={new Date(event.beforeStart)}
-          afterEnd={new Date(event.afterEnd)}
-          />
-      </div>
+          </div>
+        )}
       <Result url={event.url} />
       <Footer hidden={event.version < 2} />
     </ContractContext.Provider>
