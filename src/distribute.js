@@ -25,23 +25,22 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
   const [txState, setTxState] = useState(state);
   const getGasPrice = useGasPrice();
 
-  useEffect(() => {
-    if (state === undefined) return;
-    if (state == ATTENDEE_REWARDED) {
+
+  const getPastEvents = useCallback(async () => {
+    const pastEvents = await contract.getPastEvents(
+      'Transfer',
+      {filter: {attendee: account}, fromBlock: 0}
+    );
+    if (pastEvents.length > 0) {
       setTxState(ATTENDEE_REWARDED);
-      const getPastEvents = async () => {
-        const pastEvents = await contract.getPastEvents(
-          'Transfer',
-          {filter: {attendee: account}, fromBlock: 0}
-        );
-        if (pastEvents.length > 0) {
-          const reward = pastEvents[0].returnValues.reward;
-          setReward(reward);
-        }
-      }
-      getPastEvents();
+      const reward = pastEvents[0].returnValues.reward;
+      setReward(reward);
     }
-  }, [ state, account ]);
+  }, [ contract, account, setTxState, setReward ]);
+
+  useEffect(() => {
+    setInterval(getPastEvents, 10000);
+  }, [ getPastEvents ]);
 
   const updateTime = useCallback(() => {
     setTime(new Date());
