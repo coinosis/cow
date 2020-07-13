@@ -30,6 +30,7 @@ module.exports = {
     historyApiFallback: {
       disableDotRule: true,
     },
+    publicPath: '/',
   },
   output: {
     filename: '[name].[contenthash].js',
