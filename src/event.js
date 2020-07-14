@@ -233,6 +233,9 @@ const Event = () => {
             updateState={updateUserState}
             />
         ) }
+        { contractState === contractStates.DISTRIBUTION_MADE && (
+          <Result url={event.url} />
+        ) }
         { inCall && (
           <div
             css={`
@@ -275,7 +278,6 @@ const Event = () => {
               />
           </div>
         )}
-      <Result url={event.url} />
       <Footer hidden={event.version < 2} />
     </ContractContext.Provider>
   );
