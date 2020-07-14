@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/d86011f4-2a2f-4dda-a8e2-cdfed18285aa/deploy-status)](https://app.netlify.com/sites/coinosis/deploys)
+
 ## Developing
 
 ### clone & install
