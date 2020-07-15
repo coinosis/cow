@@ -57,6 +57,7 @@ const Event = () => {
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
   const [inCall, setInCall] = useState();
+  const [inEvent, setInEvent] = useState();
   const [reward, setReward] = useState();
   const [now, setNow] = useState(new Date());
 
@@ -69,11 +70,17 @@ const Event = () => {
 
   useEffect(() => {
     if (eventState === undefined || userState === undefined) setInCall(false);
-    const callOngoing = eventState >= eventStates.CALL_STARTED
-    && (eventState < eventStates.CALL_ENDED
-      || contractState < contractStates.DISTRIBUTION_MADE);
+    const callOngoing = eventState >= eventStates.CALL_STARTED && (
+      eventState < eventStates.CALL_ENDED
+      || contractState < contractStates.DISTRIBUTION_MADE
+    );
+    const eventOngoing = eventState >= eventStates.EVENT_STARTED && (
+      eventState < eventStates.EVENT_ENDED
+      || contractState < contractStates.DISTRIBUTION_MADE
+    );
     const userRegistered = userState >= userStates.REGISTERED;
     setInCall(userRegistered && callOngoing);
+    setInEvent(userRegistered && eventOngoing);
   }, [ eventState, userState, contractState, setInCall ]);
 
   const updateEventState = useCallback(() => {
@@ -232,7 +239,7 @@ const Event = () => {
 
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
-      { inCall === false && (
+      { inEvent === false && (
         <Title
           text={event.name}
           now={now}
@@ -241,8 +248,9 @@ const Event = () => {
           eventState={eventState}
           />
       ) }
-      { userState === userStates.UNREGISTERED
-        && eventState < eventStates.EVENT_ENDED && (
+      { (eventState < eventStates.CALL_STARTED
+        || (userState === userStates.UNREGISTERED
+        && eventState < eventStates.EVENT_ENDED)) && (
           <Attendance
             eventName={event.name}
             event={event.url}
@@ -257,8 +265,8 @@ const Event = () => {
             />
         ) }
         <Result url={event.url} />
-        { inCall && (
-          <div css="display: flex">
+        <div css="display: flex">
+          { inEvent && (
             <div
               css={`
                 display: flex;
@@ -282,6 +290,8 @@ const Event = () => {
                 reward={reward}
                 />
             </div>
+          ) }
+          { inCall && (
             <Meet
               id={event._id}
               eventName={event.name}
@@ -292,8 +302,8 @@ const Event = () => {
               beforeStart={event.beforeStart}
               afterEnd={event.afterEnd}
               />
-          </div>
-        )}
+          ) }
+        </div>
       <Footer hidden={event.version < 2} />
     </ContractContext.Provider>
   );
