@@ -233,9 +233,7 @@ const Event = () => {
             updateState={updateUserState}
             />
         ) }
-        { contractState === contractStates.DISTRIBUTION_MADE && (
-          <Result url={event.url} />
-        ) }
+        <Result url={event.url} />
         { inCall && (
           <div
             css={`

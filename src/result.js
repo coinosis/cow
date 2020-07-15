@@ -17,6 +17,7 @@ import {
   NoContract,
   useDistributionPrice,
   useGetUser,
+  useETHPrice,
 } from './helpers';
 import { ContractContext } from './event';
 import Footer from './footer';
@@ -63,65 +64,56 @@ const Assessments = ({ eventURL }) => {
   const web3 = useContext(Web3Context);
   const { contract, version } = useContext(ContractContext);
   const [assessments, setAssessments] = useState([]);
-  const distributionPrice = useDistributionPrice(eventURL);
+  const getETHPrice = useETHPrice();
   const getUser = useGetUser();
+  const distributionPrice = useDistributionPrice(eventURL);
 
-  const setAssessmentsV2 = useCallback(() => {
-    if (!contract || !distributionPrice) return;
-    contract.events.Distribution(
-      { fromBlock: 0, filter: { topic: '0' } },
-      async (error, event) => {
-        if (error) {
-          console.error(error);
-          return;
-        }
-        const blockNumber = event.blockNumber;
-        const id = event.transactionHash;
-        const totalFeesWei = event.returnValues.totalReward;
-        const ETHPriceUSDWei = distributionPrice;
-        const addresses = await contract.methods.getAttendees().call();
-        const block = await web3.eth.getBlock(blockNumber);
-        const { timestamp } = block;
-        const claps = await Promise.all(addresses.map(address =>
-          contract.methods.claps(address).call()
-        ));
-        const users = await Promise.all(addresses.map(address =>
-          getUser(address)
-        ));
-        const names = users.map(user => user.name);
-        const registrationFeeWei = await contract.methods.fee().call();
-        const transfers = await contract.getPastEvents(
-          'Transfer',
-          { fromBlock: 0 }
-        );
-        const rewards = addresses.map(address => {
-          const transfer = transfers.find(transfer =>
-            transfer.returnValues.attendee === address
-          );
-          if (transfer !== undefined) {
-            return transfer.returnValues.reward;
-          } else {
-            return '0';
-          }
-        });
-        const totalClaps = await contract.methods.totalClaps().call();
-        const assessment = {
-          id,
-          blockNumber,
-          timestamp,
-          ETHPriceUSDWei,
-          names,
-          addresses,
-          claps,
-          registrationFeeWei,
-          totalFeesWei,
-          totalClaps,
-          rewards,
-        };
-        setAssessments([ assessment ]);
-      }
+  const setAssessmentsV2 = useCallback(async (event, distributionPrice) => {
+    const blockNumber = event.blockNumber;
+    const id = event.transactionHash;
+    const totalFeesWei = event.returnValues.totalReward;
+    const ETHPriceUSDWei = distributionPrice;
+    const addresses = await contract.methods.getAttendees().call();
+    const block = await web3.eth.getBlock(blockNumber);
+    const { timestamp } = block;
+    const claps = await Promise.all(addresses.map(address =>
+      contract.methods.claps(address).call()
+    ));
+    const users = await Promise.all(addresses.map(address =>
+      getUser(address)
+    ));
+    const names = users.map(user => user.name);
+    const registrationFeeWei = await contract.methods.fee().call();
+    const transfers = await contract.getPastEvents(
+      'Transfer',
+      { fromBlock: 0 }
     );
-  }, [ contract, distributionPrice ]);
+    const rewards = addresses.map(address => {
+      const transfer = transfers.find(transfer =>
+        transfer.returnValues.attendee === address
+      );
+      if (transfer !== undefined) {
+        return transfer.returnValues.reward;
+      } else {
+        return '0';
+      }
+    });
+    const totalClaps = await contract.methods.totalClaps().call();
+    const assessment = {
+      id,
+      blockNumber,
+      timestamp,
+      ETHPriceUSDWei,
+      names,
+      addresses,
+      claps,
+      registrationFeeWei,
+      totalFeesWei,
+      totalClaps,
+      rewards,
+    };
+    setAssessments([ assessment ]);
+  }, [ contract, getETHPrice, web3, eventURL ]);
 
   const setAssessmentsV1And0 = useCallback(version => {
     if (!contract) return;
@@ -147,23 +139,27 @@ const Assessments = ({ eventURL }) => {
     }
   }, [ contract ]);
 
+  const awaitDistribution = useCallback(() => {
+    if (contract === undefined || distributionPrice === undefined) return;
+    contract.events.Distribution(
+      { fromBlock: 0 },
+      async (error, event) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setAssessmentsV2(event, distributionPrice);
+      });
+  }, [ contract, setAssessmentsV2, distributionPrice ]);
+
   useEffect(() => {
     if (version === undefined) return;
-    if (version === 2) setAssessmentsV2();
+    if (version === 2) awaitDistribution();
     else if (version === 1 || version === 0) setAssessmentsV1And0(version);
-  }, [ version, setAssessmentsV2, setAssessmentsV1And0 ]);
+  }, [ version, awaitDistribution, setAssessmentsV1And0 ]);
 
   if (!assessments.length) {
-    return (
-      <div
-        css={`
-          display: flex;
-          justify-content: center;
-        `}
-      >
-        aquí aparecerá la distribución apenas ocurra.
-      </div>
-    );
+    return <div/>;
   }
 
   return (
