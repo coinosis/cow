@@ -8,7 +8,7 @@ import React, {
 import { useParams } from 'react-router-dom';
 import abi from '../contracts/ProxyEvent.abi.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
-import { Link, Loading, ATTENDEE_REGISTERED, NoContract } from './helpers';
+import { Link, Loading, NoContract } from './helpers';
 import Account from './account';
 import Attendance from './attendance';
 import Distribute from './distribute';
@@ -235,11 +235,7 @@ const Event = () => {
         ) }
         <Result url={event.url} />
         { inCall && (
-          <div
-            css={`
-              display: flex;
-              `}
-            >
+          <div css="display: flex">
             <div
               css={`
                 display: flex;
@@ -255,14 +251,12 @@ const Event = () => {
                 users={users}
                 setUsers={setUsers}
                 />
-              { event.version === 2 && userState >= ATTENDEE_REGISTERED && (
-                <Distribute
-                  eventURL={event.url}
-                  end={new Date(event.end)}
-                  state={userState}
-                  updateState={updateUserState}
-                  />
-              )}
+              <Distribute
+                eventURL={event.url}
+                end={new Date(event.end)}
+                state={userState}
+                updateState={updateUserState}
+                />
             </div>
             <Meet
               id={event._id}
