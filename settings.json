@@ -11,6 +11,12 @@
     "jitsi": {
       "enabled": true,
       "video": false
+    },
+    "addEvent": {
+      "prepopulate": true,
+      "duration": 1,
+      "before": 1,
+      "after": 1
     }
   },
   "testing": {
@@ -25,6 +31,12 @@
     "jitsi": {
       "enabled": true,
       "video": true
+    },
+    "addEvent": {
+      "prepopulate": false,
+      "duration": 60,
+      "before": 30,
+      "after": 30
     }
   },
   "staging": {
@@ -39,6 +51,12 @@
     "jitsi": {
       "enabled": true,
       "video": true
+    },
+    "addEvent": {
+      "prepopulate": false,
+      "duration": 60,
+      "before": 30,
+      "after": 30
     }
   },
   "production": {
@@ -53,6 +71,12 @@
     "jitsi": {
       "enabled": true,
       "video": true
+    },
+    "addEvent": {
+      "prepopulate": false,
+      "duration": 60,
+      "before": 30,
+      "after": 30
     }
   }
 }

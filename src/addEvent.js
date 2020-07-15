@@ -3,7 +3,6 @@ import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { es } from 'date-fns/esm/locale';
 import {
-  addHours,
   addMinutes,
   subMinutes
 } from 'date-fns';
@@ -11,12 +10,14 @@ import abi from '../contracts/ProxyEvent.abi.json';
 import bin from '../contracts/ProxyEvent.bin.txt';
 import { Web3Context, AccountContext } from './coinosis';
 import {
+  environment,
   usePost,
   useConversions,
   useGasPrice,
   timestampInSeconds,
   dateFromTimestamp,
 } from './helpers';
+import settings from '../settings.json';
 
 registerLocale('es', es);
 
@@ -35,11 +36,25 @@ const AddEvent = ({ setEvents }) => {
   const [now] = useState(new Date());
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
-  const [minutesBefore, setMinutesBefore] = useState(30);
-  const [minutesAfter, setMinutesAfter] = useState(30);
+  const [minutesBefore, setMinutesBefore] = useState(
+    settings[environment].addEvent.before
+  );
+  const [minutesAfter, setMinutesAfter] = useState(
+    settings[environment].addEvent.after
+  );
   const [formValid, setFormValid] = useState(false);
   const [creating, setCreating] = useState(false);
   const [status, setStatus] = useState();
+
+  useEffect(() => {
+    if (!settings[environment].addEvent.prepopulate) return;
+    const seed = Math.random();
+    preSetName({ target: { value: `test ${seed}` } });
+    setDescription('test event');
+    setFeeETH(`${(seed / 10).toFixed(3)}`);
+    setFee(`${(seed * 100).toFixed(2)}`);
+    preSetStart(addMinutes(new Date(), 2));
+  }, [settings, environment]);
 
   useEffect(() => {
     const valid =
@@ -108,7 +123,7 @@ const AddEvent = ({ setEvents }) => {
 
   const preSetStart = useCallback(start => {
     setStart(start);
-    setEnd(addHours(start, 1));
+    setEnd(addMinutes(start, settings[environment].addEvent.duration));
   }, []);
 
   const makeNatural = useCallback(value => {
