@@ -75,52 +75,52 @@ const Assessments = ({ eventURL }) => {
           console.error(error);
           return;
         }
-        const distributions = [event];
-      const blockNumber = distributions[0].blockNumber;
-      const id = distributions[0].transactionHash;
-      const totalFeesWei = distributions[0].returnValues.totalReward;
-      const ETHPriceUSDWei = distributionPrice;
-      const addresses = await contract.methods.getAttendees().call();
-      const block = await web3.eth.getBlock(blockNumber);
-      const { timestamp } = block;
-      const claps = await Promise.all(addresses.map(address =>
-        contract.methods.claps(address).call()
-      ));
-      const users = await Promise.all(addresses.map(address =>
-        getUser(address)
-      ));
-      const names = users.map(user => user.name);
-      const registrationFeeWei = await contract.methods.fee().call();
-      const transfers = await contract.getPastEvents(
-        'Transfer',
-        { fromBlock: 0 }
-      );
-      const rewards = addresses.map(address => {
-        const transfer = transfers.find(transfer =>
-          transfer.returnValues.attendee === address
+        const blockNumber = event.blockNumber;
+        const id = event.transactionHash;
+        const totalFeesWei = event.returnValues.totalReward;
+        const ETHPriceUSDWei = distributionPrice;
+        const addresses = await contract.methods.getAttendees().call();
+        const block = await web3.eth.getBlock(blockNumber);
+        const { timestamp } = block;
+        const claps = await Promise.all(addresses.map(address =>
+          contract.methods.claps(address).call()
+        ));
+        const users = await Promise.all(addresses.map(address =>
+          getUser(address)
+        ));
+        const names = users.map(user => user.name);
+        const registrationFeeWei = await contract.methods.fee().call();
+        const transfers = await contract.getPastEvents(
+          'Transfer',
+          { fromBlock: 0 }
         );
-        if (transfer !== undefined) {
-          return transfer.returnValues.reward;
-        } else {
-          return '0';
-        }
-      });
-      const totalClaps = await contract.methods.totalClaps().call();
-      const assessment = {
-        id,
-        blockNumber,
-        timestamp,
-        ETHPriceUSDWei,
-        names,
-        addresses,
-        claps,
-        registrationFeeWei,
-        totalFeesWei,
-        totalClaps,
-        rewards,
-      };
-      setAssessments([ assessment ]);
-    });
+        const rewards = addresses.map(address => {
+          const transfer = transfers.find(transfer =>
+            transfer.returnValues.attendee === address
+          );
+          if (transfer !== undefined) {
+            return transfer.returnValues.reward;
+          } else {
+            return '0';
+          }
+        });
+        const totalClaps = await contract.methods.totalClaps().call();
+        const assessment = {
+          id,
+          blockNumber,
+          timestamp,
+          ETHPriceUSDWei,
+          names,
+          addresses,
+          claps,
+          registrationFeeWei,
+          totalFeesWei,
+          totalClaps,
+          rewards,
+        };
+        setAssessments([ assessment ]);
+      }
+    );
   }, [ contract, distributionPrice ]);
 
   const setAssessmentsV1And0 = useCallback(version => {
