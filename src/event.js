@@ -8,7 +8,7 @@ import React, {
 import { useParams } from 'react-router-dom';
 import abi from '../contracts/ProxyEvent.abi.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
-import { Link, Loading, NoContract } from './helpers';
+import { Link, Loading, NoContract, convertDates } from './helpers';
 import Account from './account';
 import Attendance from './attendance';
 import Distribute from './distribute';
@@ -78,13 +78,13 @@ const Event = () => {
 
   const updateEventState = useCallback(() => {
     if (event === undefined) return;
-    if (now < new Date(event.beforeStart)) {
+    if (now < event.beforeStart) {
       setEventState(eventStates.EVENT_CREATED);
-    } else if (now < new Date(event.start)) {
+    } else if (now < event.start) {
       setEventState(eventStates.CALL_STARTED);
-    } else if (now < new Date(event.end)) {
+    } else if (now < event.end) {
       setEventState(eventStates.EVENT_STARTED);
-    } else if (now < new Date(event.afterEnd)) {
+    } else if (now < event.afterEnd) {
       setEventState(eventStates.EVENT_ENDED);
     } else {
       setEventState(eventStates.CALL_ENDED);
@@ -197,7 +197,8 @@ const Event = () => {
         } else if (event.version === 1 || event.version === 0) {
           setAttendees(event.attendees);
         }
-        setEvent(event);
+        const eventWithDates = convertDates(event);
+        setEvent(eventWithDates);
       }).catch(err => {
         console.error(err);
       });
@@ -250,8 +251,8 @@ const Event = () => {
             organizer={event.organizer}
             attendees={attendees}
             getAttendees={getAttendees}
-            beforeStart={new Date(event.beforeStart)}
-            end={new Date(event.end)}
+            beforeStart={event.beforeStart}
+            end={event.end}
             updateState={updateUserState}
             />
         ) }
@@ -275,7 +276,7 @@ const Event = () => {
                 />
               <Distribute
                 eventURL={event.url}
-                end={new Date(event.end)}
+                end={event.end}
                 state={userState}
                 updateState={updateUserState}
                 reward={reward}
@@ -288,8 +289,8 @@ const Event = () => {
               userName={userName}
               users={users}
               setUsers={setUsers}
-              beforeStart={new Date(event.beforeStart)}
-              afterEnd={new Date(event.afterEnd)}
+              beforeStart={event.beforeStart}
+              afterEnd={event.afterEnd}
               />
           </div>
         )}
@@ -305,7 +306,7 @@ const Title = ({ text, now, start, end, eventState }) => {
 
   useEffect(() => {
     if (now === undefined || start === undefined) return;
-    const difference = differenceInDays(now, new Date(start));
+    const difference = differenceInDays(now, start);
     setClose(difference === 0);
   }, [ setClose, now, start ]);
 
@@ -319,15 +320,15 @@ const Title = ({ text, now, start, end, eventState }) => {
     ) return;
     const dateOptions = { locale: es, addSuffix: true, includeSeconds: true };
     if (close === false) {
-      setSubtitle(new Date(start).toLocaleString());
+      setSubtitle(start.toLocaleString());
     } else if (eventState >= eventStates.EVENT_ENDED) {
-      const distance = formatDistance(new Date(end), now, dateOptions);
+      const distance = formatDistance(end, now, dateOptions);
       setSubtitle(`terminó ${distance}`);
     } else if (eventState < eventStates.EVENT_STARTED) {
-      const distance = formatDistance(new Date(start), now, dateOptions);
+      const distance = formatDistance(start, now, dateOptions);
       setSubtitle(`comenzará ${distance}`);
     } else if (eventState === eventStates.EVENT_STARTED) {
-      const distance = formatDistance(new Date(start), now, dateOptions);
+      const distance = formatDistance(start, now, dateOptions);
       setSubtitle(`comenzó ${distance}`);
     }
   }, [ close, now, start, end, setSubtitle, eventState ]);

@@ -341,3 +341,11 @@ export const dateFromTimestamp = timestamp => {
   const date = new Date(number);
   return date
 }
+
+export const convertDates = event => {
+  event.beforeStart = new Date(event.beforeStart);
+  event.start = new Date(event.start);
+  event.end = new Date(event.end);
+  event.afterEnd = new Date(event.afterEnd);
+  return event;
+}
