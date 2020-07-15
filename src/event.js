@@ -25,7 +25,7 @@ const eventStates = {
   CALL_ENDED: 4,
 };
 
-const userStates = {
+export const userStates = {
   UNREGISTERED: 0,
   REGISTERED: 1,
   CLAPPED: 2,
@@ -55,6 +55,7 @@ const Event = () => {
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
   const [inCall, setInCall] = useState();
+  const [reward, setReward] = useState();
 
   useEffect(() => {
     if (eventState === undefined || userState === undefined) setInCall(false);
@@ -94,12 +95,14 @@ const Event = () => {
       {filter: {attendee: account}, fromBlock: 0}
     );
     if (transferFilter.length > 0) {
+      const { reward } = transferFilter[0].returnValues;
+      setReward(reward);
       setUserState(userStates.REWARDED);
       return;
     }
     const userState = await contract.methods.states(account).call();
     setUserState(Number(userState));
-  }, [ contract, account, setUserState ]);
+  }, [ contract, account, setUserState, setReward ]);
 
   useEffect(() => {
     if (event === undefined || event.version !== 2) return;
@@ -256,6 +259,7 @@ const Event = () => {
                 end={new Date(event.end)}
                 state={userState}
                 updateState={updateUserState}
+                reward={reward}
                 />
             </div>
             <Meet

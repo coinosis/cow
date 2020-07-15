@@ -3,15 +3,14 @@ import { formatDistance } from 'date-fns';
 import { es } from 'date-fns/esm/locale';
 import {
   useGasPrice,
-  ATTENDEE_REWARDED,
   ATTENDEE_CLICKED_DISTRIBUTE,
   ATTENDEE_SENT_DISTRIBUTION,
 } from './helpers';
 import Amount from './amount';
 import { BackendContext, AccountContext } from './coinosis';
-import { ContractContext } from './event';
+import { ContractContext, userStates } from './event';
 
-const Distribute = ({ eventURL, end, state, updateState }) => {
+const Distribute = ({ eventURL, end, state, updateState, reward }) => {
 
   const { contract } = useContext(ContractContext);
   const backendURL = useContext(BackendContext);
@@ -20,27 +19,9 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
   const [message, setMessage] = useState();
   const [time, setTime] = useState();
   const [updater, setUpdater] = useState();
-  const [reward, setReward] = useState();
   const [distributed, setDistributed] = useState(false);
   const [txState, setTxState] = useState(state);
   const getGasPrice = useGasPrice();
-
-
-  const getPastEvents = useCallback(async () => {
-    const pastEvents = await contract.getPastEvents(
-      'Transfer',
-      {filter: {attendee: account}, fromBlock: 0}
-    );
-    if (pastEvents.length > 0) {
-      setTxState(ATTENDEE_REWARDED);
-      const reward = pastEvents[0].returnValues.reward;
-      setReward(reward);
-    }
-  }, [ contract, account, setTxState, setReward ]);
-
-  useEffect(() => {
-    setInterval(getPastEvents, 10000);
-  }, [ getPastEvents ]);
 
   const updateTime = useCallback(() => {
     setTime(new Date());
@@ -121,7 +102,7 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
         padding: 10px;
         background: ${time < end
                         ? '#d0d0d0'
-                        : txState < ATTENDEE_REWARDED
+                        : state < userStates.REWARDED
                         ? '#a0d0a0'
                         : '#a0a0d0'
                      };
@@ -170,7 +151,7 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
           </ul>
         </div>
       )}
-      { txState == ATTENDEE_REWARDED && (
+      { state == userStates.REWARDED && (
         <div
           css={`
             width: 100%;
