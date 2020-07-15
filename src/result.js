@@ -68,12 +68,14 @@ const Assessments = ({ eventURL }) => {
 
   const setAssessmentsV2 = useCallback(() => {
     if (!contract || !distributionPrice) return;
-    const getAssessment = async () => {
-      const distributions = await contract.getPastEvents(
-        'Distribution',
-        { fromBlock: 0 }
-      );
-      if (!distributions.length) return;
+    contract.events.Distribution(
+      { fromBlock: 0, filter: { topic: '0' } },
+      async (error, event) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        const distributions = [event];
       const blockNumber = distributions[0].blockNumber;
       const id = distributions[0].transactionHash;
       const totalFeesWei = distributions[0].returnValues.totalReward;
@@ -118,8 +120,7 @@ const Assessments = ({ eventURL }) => {
         rewards,
       };
       setAssessments([ assessment ]);
-    }
-    getAssessment();
+    });
   }, [ contract, distributionPrice ]);
 
   const setAssessmentsV1And0 = useCallback(version => {
