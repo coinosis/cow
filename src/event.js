@@ -16,6 +16,8 @@ import Meet from './meet';
 import Assessment from './assessment';
 import Result from './result';
 import Footer from './footer';
+import { differenceInDays, formatDistance } from 'date-fns'
+import { es } from 'date-fns/esm/locale';
 
 const eventStates = {
   EVENT_CREATED: 0,
@@ -229,7 +231,15 @@ const Event = () => {
 
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
-      { inCall === false && (<Title text={event.name} />) }
+      { inCall === false && (
+        <Title
+          text={event.name}
+          now={now}
+          start={event.start}
+          end={event.end}
+          eventState={eventState}
+          />
+      ) }
       { userState === userStates.UNREGISTERED
         && eventState < eventStates.EVENT_ENDED && (
           <Attendance
@@ -288,26 +298,70 @@ const Event = () => {
   );
 }
 
-const Title = ({ text }) => {
+const Title = ({ text, now, start, end, eventState }) => {
+
+  const [close, setClose] = useState();
+  const [subtitle, setSubtitle] = useState();
+
+  useEffect(() => {
+    if (now === undefined || start === undefined) return;
+    const difference = differenceInDays(now, new Date(start));
+    setClose(difference === 0);
+  }, [ setClose, now, start ]);
+
+  useEffect(() => {
+    if (
+      now === undefined
+      || start === undefined
+      || end == undefined
+      || close === undefined
+      || eventState === undefined
+    ) return;
+    const dateOptions = { locale: es, addSuffix: true, includeSeconds: true };
+    if (close === false) {
+      setSubtitle(new Date(start).toLocaleString());
+    } else if (eventState >= eventStates.EVENT_ENDED) {
+      const distance = formatDistance(new Date(end), now, dateOptions);
+      setSubtitle(`terminó ${distance}`);
+    } else if (eventState < eventStates.EVENT_STARTED) {
+      const distance = formatDistance(new Date(start), now, dateOptions);
+      setSubtitle(`comenzará ${distance}`);
+    } else if (eventState === eventStates.EVENT_STARTED) {
+      const distance = formatDistance(new Date(start), now, dateOptions);
+      setSubtitle(`comenzó ${distance}`);
+    }
+  }, [ close, now, start, end, setSubtitle, eventState ]);
+
   return (
     <div
       css={`
         display: flex;
+        flex-direction: column;
+        margin: 40px 10px;
         `}
       >
-      <Link to="/" css={'width: 60px'}>← atrás</Link>
+      <div css="display: flex">
+        <Link to="/" css={'width: 60px'}>← atrás</Link>
+        <div
+          css={`
+            display: flex;
+            justify-content: center;
+            font-size: 32px;
+            flex-grow: 1;
+            text-align: center;
+            `}
+          >
+          {text}
+        </div>
+        <div css={'width: 60px'}/>
+      </div>
       <div
         css={`
-          display: flex;
-          justify-content: center;
-          margin: 40px;
-          font-size: 32px;
-          flex-grow: 1;
+          align-self: center;
           `}
         >
-        {text}
+        {subtitle}
       </div>
-      <div css={'width: 60px'}/>
     </div>
   );
 }
