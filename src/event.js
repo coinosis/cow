@@ -56,6 +56,14 @@ const Event = () => {
   const [contractState, setContractState] = useState();
   const [inCall, setInCall] = useState();
   const [reward, setReward] = useState();
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const time = setInterval(() => { setNow(new Date()); }, 1000);
+    return () => {
+      clearInterval(time);
+    }
+  }, [ setNow ]);
 
   useEffect(() => {
     if (eventState === undefined || userState === undefined) setInCall(false);
@@ -68,7 +76,6 @@ const Event = () => {
 
   const updateEventState = useCallback(() => {
     if (event === undefined) return;
-    const now = new Date();
     if (now < new Date(event.beforeStart)) {
       setEventState(eventStates.EVENT_CREATED);
     } else if (now < new Date(event.start)) {
@@ -80,7 +87,7 @@ const Event = () => {
     } else {
       setEventState(eventStates.CALL_ENDED);
     }
-  }, [ event, setEventState ]);
+  }, [ event, setEventState, now ]);
 
   useEffect(() => {
     updateEventState();
