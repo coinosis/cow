@@ -67,6 +67,7 @@ const Event = () => {
   }, [ eventState, userState, contractState, setInCall ]);
 
   const updateEventState = useCallback(() => {
+    if (event === undefined) return;
     const now = new Date();
     if (now < new Date(event.beforeStart)) {
       setEventState(eventStates.EVENT_CREATED);
@@ -82,6 +83,7 @@ const Event = () => {
   }, [ event, setEventState ]);
 
   useEffect(() => {
+    updateEventState();
     const eventStateUpdater = setInterval(updateEventState, 3000);
     return () => {
       clearInterval(eventStateUpdater);
