@@ -304,18 +304,21 @@ export const useDistributionPrice = event => {
 
   const web3 = useContext(Web3Context);
   const backendURL = useContext(BackendContext);
-  const [ethPrice, setEthPrice] = useState();
+  const getETHPrice = useETHPrice();
+  const [ethPrice, setETHPrice] = useState();
 
   useEffect(() => {
     const getPrice = async () => {
       const response = await fetch(`${backendURL}/distribution/${event}`);
       if (!response.ok) {
-        console.error(response.status);
-        return;
+        fetch(`${backendURL}/distribution/${event}`, { method: 'put' });
+        const ethPrice = await getETHPrice();
+        const ethPriceWei = web3.utils.toWei(ethPrice);
+        setETHPrice(ethPriceWei);
       }
       const data = await response.json();
       const ethPriceWei = web3.utils.toWei(data.ethPrice);
-      setEthPrice(ethPriceWei);
+      setETHPrice(ethPriceWei);
     }
     getPrice();
   }, [ backendURL, web3 ]);
