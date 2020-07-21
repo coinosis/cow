@@ -152,6 +152,7 @@ const Meet = ({
               'tileview',
               'mute-everyone',
               'settings',
+              'fullscreen',
             ],
             SETTINGS_SECTIONS: ['language'],
             SHOW_CHROME_EXTENSION_BANNER: false,
