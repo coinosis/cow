@@ -293,7 +293,7 @@ export const useGetUser = () => {
 
   return useCallback(async address => {
     const response = await fetch(`${backendURL}/user/${address}`);
-    if (!response.ok) throw new Error(response.status);
+    if (!response.ok) return { address, name: address };
     const data = await response.json();
     return data;
   }, [ backendURL ])
