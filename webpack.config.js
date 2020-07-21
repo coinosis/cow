@@ -16,6 +16,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'src/assets/index.html',
       chunks: ['main'],
+      base: '/',
     }),
     new HtmlWebpackPlugin({
       template: 'src/assets/webrtc.html',
@@ -30,7 +31,6 @@ module.exports = {
     historyApiFallback: {
       disableDotRule: true,
     },
-    publicPath: '/',
   },
   output: {
     filename: '[name].[contenthash].js',
