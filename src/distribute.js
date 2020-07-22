@@ -93,6 +93,7 @@ const Distribute = ({ eventURL, end, state, updateState }) => {
     const sendOptions = {
       from: account,
       gasPrice: gasPrice.propose,
+      gas: 900000,
     }
     setMessage('usa Metamask para enviar la transacción.');
     contract.methods.distribute().send(sendOptions)
