@@ -35,7 +35,7 @@ const Assessment = ({
   const { contract, version } = useContext(ContractContext);
   const { account, name } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
-  const [totalClaps, setTotalClaps] = useState();
+  const [totalClaps] = useState(100);
   const [clapsLeft, setClapsLeft] = useState();
   const [assessment, setAssessment] = useState({});
   const [clapsError, setClapsError] = useState(false);
@@ -57,7 +57,6 @@ const Assessment = ({
       }
     }
     setAssessment(assessment);
-    setTotalClaps((attendees.length - 1) * 3);
   }, [ attendees ]);
 
   useEffect(() => {
