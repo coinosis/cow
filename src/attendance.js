@@ -208,6 +208,7 @@ const Attendance = ({
       from: account,
       value: feeWei,
       gasPrice: gasPrice.propose,
+      gas: 200000,
     };
     contract.methods.register().send(txOptions)
       .on('transactionHash', hash => {
