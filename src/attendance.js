@@ -10,7 +10,6 @@ import {
   EtherscanLink,
   environment,
   formatDate,
-  Link,
   Loading,
   SectionTitle,
   useGasPrice,
@@ -28,7 +27,6 @@ const Attendance = ({
   feeWei,
   attendees,
   getAttendees,
-  beforeStart,
   end,
   updateState,
 }) => {
