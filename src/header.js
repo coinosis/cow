@@ -67,6 +67,7 @@ const Icon = ({ icon, href }) => {
     <a
       href={href}
       target="_blank"
+      rel="noreferrer"
       css={`
         margin: 8px;
         color: initial;
