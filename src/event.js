@@ -264,7 +264,9 @@ const Event = () => {
             updateState={updateUserState}
             />
         ) }
+      { contractState === contractStates.DISTRIBUTION_MADE && (
         <Result url={event.url} />
+      ) }
         <div css="display: flex">
           { inEvent && (
             <div
