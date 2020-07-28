@@ -2,6 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import logo from './assets/logo.png';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faTwitter,
+  faMedium,
+  faTelegram,
+  faGithub,
+} from '@fortawesome/free-brands-svg-icons';
 
 import Account from './account';
 
@@ -23,7 +30,12 @@ const Header = () => {
         css={`
           justify-content: flex-start;
         `}
-      />
+      >
+        <Icon icon={faTwitter} href="https://twitter.com/coinosis" />
+        <Icon icon={faMedium} href="https://medium.com/coinosis" />
+        <Icon icon={faTelegram} href="https://t.me/coinosisdapp" />
+        <Icon icon={faGithub} href="https://github.com/coinosis" />
+      </HeaderItem>
       <HeaderItem
         css={`
           justify-content: center;
@@ -49,5 +61,23 @@ const HeaderItem = styled.div`
   width: 33.333%;
   display: flex;
 `
+
+const Icon = ({ icon, href }) => {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      css={`
+        margin: 8px;
+        color: initial;
+        &:hover {
+          color: #0e8f00;
+        };
+      `}
+    >
+      <FontAwesomeIcon icon={icon} />
+    </a>
+  );
+}
 
 export default Header;
