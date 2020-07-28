@@ -56,7 +56,6 @@ const Event = () => {
   const [eventState, setEventState] = useState();
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
-  const [inCall, setInCall] = useState();
   const [inEvent, setInEvent] = useState();
   const [reward, setReward] = useState();
   const [now, setNow] = useState(new Date());
@@ -69,19 +68,12 @@ const Event = () => {
   }, [ setNow ]);
 
   useEffect(() => {
-    if (eventState === undefined || userState === undefined) setInCall(false);
-    const callOngoing = eventState >= eventStates.CALL_STARTED && (
-      eventState < eventStates.CALL_ENDED
-      || contractState < contractStates.DISTRIBUTION_MADE
-    );
-    const eventOngoing = eventState >= eventStates.EVENT_STARTED && (
-      eventState < eventStates.EVENT_ENDED
-      || contractState < contractStates.DISTRIBUTION_MADE
-    );
+    if (eventState === undefined || userState === undefined) return;
+    const eventOngoing = eventState >= eventStates.EVENT_STARTED
+          && eventState < eventStates.EVENT_ENDED;
     const userRegistered = userState >= userStates.REGISTERED;
-    setInCall(userRegistered && callOngoing);
     setInEvent(userRegistered && eventOngoing);
-  }, [ eventState, userState, contractState, setInCall ]);
+  }, [ eventState, userState ]);
 
   const updateEventState = useCallback(() => {
     if (event === undefined) return;
@@ -268,8 +260,11 @@ const Event = () => {
         <Result url={event.url} />
       ) }
         <div css="display: flex">
-          { inEvent && (
-            <div
+          { userState >= userStates.REGISTERED
+            && eventState >= eventStates.EVENT_STARTED
+            && contractState < contractStates.DISTRIBUTION_MADE
+            && (
+              <div
               css={`
                 display: flex;
                 flex-direction: column;
@@ -293,7 +288,10 @@ const Event = () => {
                 />
             </div>
           ) }
-          { inCall && (
+          { userState >= userStates.REGISTERED
+            && eventState >= eventStates.CALL_STARTED
+            && contractState < contractStates.DISTRIBUTION_MADE
+            && (
             <Meet
               id={event._id}
               eventName={event.name}
