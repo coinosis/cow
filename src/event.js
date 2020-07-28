@@ -170,7 +170,7 @@ const Event = () => {
             attendees={attendees}
             getAttendees={getAttendees}
             beforeStart={beforeStart}
-            afterEnd={afterEnd}
+            end={end}
             updateState={updateState}
           />
         </Route>

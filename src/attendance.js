@@ -29,7 +29,7 @@ const Attendance = ({
   attendees,
   getAttendees,
   beforeStart,
-  afterEnd,
+  end,
   updateState,
 }) => {
 
@@ -280,7 +280,7 @@ const Attendance = ({
         <SectionTitle>
           te inscribiste exitosamente
         </SectionTitle>
-          {now >= beforeStart && now <= afterEnd && (
+          {now >= beforeStart && now <= end && (
             <div>
               dirígete a
               <Link to={`${ASSESSMENT}`}>{ASSESSMENT}</Link>
@@ -290,8 +290,8 @@ const Attendance = ({
         </div>
       ) : paymentList === undefined ? (
         <Loading/>
-      ) : now > afterEnd ? (
-        <div>Este evento finalizó el {formatDate(afterEnd)}</div>
+      ) : now > end ? (
+        <div>Este evento finalizó el {formatDate(end)}</div>
       ) : (
         <div
           css={`
