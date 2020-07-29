@@ -23,8 +23,10 @@ const eventStates = {
   EVENT_CREATED: 0,
   CALL_STARTED: 1,
   EVENT_STARTED: 2,
-  EVENT_ENDED: 3,
-  CALL_ENDED: 4,
+  EVENT_HALFWAY_THROUGH: 3,
+  EVENT_ABOUT_TO_END: 4,
+  EVENT_ENDED: 5,
+  CALL_ENDED: 6,
 };
 
 export const userStates = {
@@ -81,8 +83,12 @@ const Event = () => {
       setEventState(eventStates.EVENT_CREATED);
     } else if (now < event.start) {
       setEventState(eventStates.CALL_STARTED);
-    } else if (now < event.end) {
+    } else if (now < event.end - (event.end - event.start) * 0.5) {
       setEventState(eventStates.EVENT_STARTED);
+    } else if (now < event.end - (event.end - event.start) * 0.1) {
+      setEventState(eventStates.EVENT_HALFWAY_THROUGH);
+    } else if (now < event.end) {
+      setEventState(eventStates.EVENT_ABOUT_TO_END);
     } else if (now < event.afterEnd) {
       setEventState(eventStates.EVENT_ENDED);
     } else {
@@ -242,6 +248,8 @@ const Event = () => {
     );
   }
 
+  if (attendees === undefined) return <Loading/>;
+
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
       { inEvent === false && (
@@ -255,7 +263,7 @@ const Event = () => {
       ) }
       { (eventState < eventStates.CALL_STARTED
         || (userState === userStates.UNREGISTERED
-        && eventState < eventStates.EVENT_ENDED)) && (
+        && eventState < eventStates.EVENT_ABOUT_TO_END)) && (
           <Attendance
             eventName={event.name}
             event={event.url}
@@ -353,6 +361,9 @@ const Title = ({ text, now, start, end, eventState }) => {
     } else if (eventState === eventStates.EVENT_STARTED) {
       const distance = formatDistance(start, now, dateOptions);
       setSubtitle(`comenzó ${distance}`);
+    } else if (eventState === eventStates.EVENT_HALFWAY_THROUGH) {
+      const distance = formatDistance(end, now, dateOptions);
+      setSubtitle(`terminará ${distance}`);
     }
   }, [ close, now, start, end, setSubtitle, eventState ]);
 
