@@ -203,6 +203,8 @@ const Event = () => {
       });
   }, [ backendURL, eventURL, setContractRaw ]);
 
+  if (event === undefined) return <Loading/>;
+
   if (web3 === null || account === null) {
     return (
       <div>
@@ -239,14 +241,6 @@ const Event = () => {
       </div>
     );
   }
-
-  if (
-    attendees === undefined
-    || userName === undefined
-    || event === undefined
-  ) return (
-    <Loading/>
-  );
 
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
