@@ -99,7 +99,7 @@ const Event = () => {
   }, [ updateEventState ]);
 
   const updateUserState = useCallback(async () => {
-    if (!contract || account === undefined) return;
+    if (!contract || !account) return;
     const transferFilter = await contract.getPastEvents(
       'Transfer',
       {filter: {attendee: account}, fromBlock: 0}
@@ -203,11 +203,24 @@ const Event = () => {
       });
   }, [ backendURL, eventURL, setContractRaw ]);
 
-  if (web3 === null) {
+  if (web3 === null || account === null) {
     return (
       <div>
-        <Title text={event.name} />
-        <Account/>
+        <Title
+          text={event.name}
+          now={now}
+          start={event.start}
+          end={event.end}
+          eventState={eventState}
+        />
+        <div
+          css={`
+            display: flex;
+            justify-content: center;
+          `}
+        >
+          <Account />
+        </div>
       </div>
     );
   }
@@ -215,7 +228,13 @@ const Event = () => {
   if (contract === null) {
     return (
       <div>
-        <Title text={event.name}/>
+        <Title
+          text={event.name}
+          now={now}
+          start={event.start}
+          end={event.end}
+          eventState={eventState}
+        />
         <NoContract/>
       </div>
     );
