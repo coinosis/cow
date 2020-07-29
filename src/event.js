@@ -311,7 +311,8 @@ const Event = () => {
           ) }
           { userState >= userStates.REGISTERED
             && eventState >= eventStates.CALL_STARTED
-            && contractState < contractStates.DISTRIBUTION_MADE
+            && (contractState < contractStates.DISTRIBUTION_MADE
+                || eventState < eventStates.CALL_ENDED)
             && (
             <Meet
               id={event._id}
