@@ -116,6 +116,8 @@ const Assessment = ({
             setTxHash(transactionHash);
           }).on('receipt', () => {
             updateState();
+          }).on('error', () => {
+            setTxState(ATTENDEE_REGISTERED);
           });
   }, [ getGasPrice, contract, account ]);
 
@@ -123,6 +125,7 @@ const Assessment = ({
     const object = { event, sender: account, addresses, claps };
     post('assessments', object, async (error, data) => {
       if (error) {
+        setTxState(ATTENDEE_REGISTERED);
         console.error(error);
         return;
       }
