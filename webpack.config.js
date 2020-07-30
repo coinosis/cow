@@ -17,6 +17,7 @@ module.exports = {
       template: 'src/assets/index.html',
       chunks: ['main'],
       base: '/',
+      favicon: 'src/assets/favicon.png',
     }),
     new HtmlWebpackPlugin({
       template: 'src/assets/webrtc.html',
