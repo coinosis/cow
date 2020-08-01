@@ -229,17 +229,17 @@ const Assessment = ({
                 background: #d0d0d0;
               `}
             >
-              <th>participante</th>
-              <th>aplausos</th>
-              <th>porcentaje</th>
-              <th>recompensa</th>
+              <th>attendee</th>
+              <th>claps</th>
+              <th>percentage</th>
+              <th>reward</th>
               <th>balance</th>
               <th
                 css={`
                   padding: 10px 20px;
                 `}
               >
-                estado
+                status
               </th>
             </tr>
           </thead>
@@ -327,7 +327,7 @@ const Header = ({
           `}
         >
           <div>
-            distribución
+            distribution
           </div>
           <div
             css={`
@@ -356,7 +356,7 @@ const Header = ({
             margin-left: 5px;
           `}
         >
-          participantes)
+          attendees)
         </div>
       </div>
       <div
@@ -364,7 +364,7 @@ const Header = ({
           display: flex;
         `}
       >
-        <div>aporte por persona:</div>
+        <div>contribution per person:</div>
         <div
           css={`
             margin-left: 5px;
@@ -381,7 +381,7 @@ const Header = ({
             margin-left: 5px;
           `}
         >
-          aporte total:
+          total contribution:
         </div>
         <div
           css={`
@@ -538,7 +538,7 @@ const Status = ({tx}) => {
       value={tx}
       internal
     >
-      enviada
+      sent
     </EtherscanLink>
   );
 }

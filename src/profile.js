@@ -117,7 +117,7 @@ const Profile = () => {
           width: 40%;
         `}
       >
-        <Link to="/" css="width: 60px">← atrás</Link>
+        <Link to="/" css="width: 60px">← back</Link>
       </div>
       <div
         css={`
@@ -169,7 +169,7 @@ const Profile = () => {
             register={registerEmail}
             editing={editingEmail}
             setEditing={setEditingEmail}
-            placeholder={firstName => `${firstName}@ejemplo.com`}
+            placeholder={firstName => `${firstName}@example.com`}
             validator={isEmail}
             tabIndex="1"
           />
@@ -274,7 +274,7 @@ const Form = ({
   useEffect(() => {
     if (name === undefined) return;
     if (name === null) {
-      setFirstName('hola');
+      setFirstName('hello');
       return;
     }
     const firstName = name.split(' ')[0].toLowerCase();

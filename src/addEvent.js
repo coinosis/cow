@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useCallback, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { es } from 'date-fns/esm/locale';
+import { en } from 'date-fns/esm/locale';
 import {
   addMinutes,
   subMinutes
@@ -19,7 +19,7 @@ import {
 } from './helpers';
 import settings from '../settings.json';
 
-registerLocale('es', es);
+registerLocale('en', en);
 
 const AddEvent = ({ setEvents }) => {
 
@@ -215,7 +215,7 @@ const AddEvent = ({ setEvents }) => {
       arguments: [feeWei, endTimestamp],
     };
     const deployment = await contract.deploy(deployData);
-    setStatus('use Metamask to display the contract. '
+    setStatus('use Metamask to deploy contract. '
               + 'This action has a cost.');
     const txOptions = {
       from: account,
@@ -414,7 +414,7 @@ const AddEvent = ({ setEvents }) => {
                 disabled={!formValid || creating}
                 onClick={add}
               >
-                crear
+                create
               </button>
             </td>
           </tr>

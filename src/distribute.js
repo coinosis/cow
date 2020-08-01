@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { formatDistance } from 'date-fns';
-import { es } from 'date-fns/esm/locale';
+import { en } from 'date-fns/esm/locale';
 import {
   useGasPrice,
   ATTENDEE_CLICKED_DISTRIBUTE,
@@ -59,7 +59,7 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
                  + 'make sure everyone has sent their claps.');
       setDisabled(false);
     } else {
-      const dateOptions = { locale: es, addSuffix: true, includeSeconds: true };
+      const dateOptions = { locale: en, addSuffix: true, includeSeconds: true };
       const distance = formatDistance(end, time, dateOptions);
       setMessage(`the distribution of funds will be enabled ${distance}.`);
     }

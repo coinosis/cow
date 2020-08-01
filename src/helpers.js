@@ -224,7 +224,7 @@ export const NoContract = () => {
 }
 
 export const formatDate = date => (
-  date.toLocaleString('es-CO', {dateStyle: 'full', timeStyle: 'long'})
+  date.toLocaleString('en', {dateStyle: 'full', timeStyle: 'long'})
 );
 
 export const SectionTitle = styled.div`

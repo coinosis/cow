@@ -30,18 +30,18 @@ const ContractInfo = () => {
   useEffect(() => {
     if (contract === undefined) return;
     setAddress(contract._address);
-    if (version == 0) setVersionString('versión 0.2.0');
-    else if (version == 1) setVersionString('versión 1.3.1');
+    if (version == 0) setVersionString('version 0.2.0');
+    else if (version == 1) setVersionString('version 1.3.1');
     else {
       contract.methods
       .version()
       .call()
       .then(versionHex => {
         const versionNumber = web3.utils.hexToUtf8(versionHex);
-        setVersionString(`versión ${versionNumber}`);
+        setVersionString(`version ${versionNumber}`);
       })
       .catch(() => {
-        setVersionString('(fuera de servicio)');
+        setVersionString('(out of service)');
         setColor('#a04040');
       });
     }
@@ -57,7 +57,7 @@ const ContractInfo = () => {
       `}
     >
       <div>
-        contrato
+        contract
       </div>
       <div
         css={`

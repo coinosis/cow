@@ -17,7 +17,7 @@ import Assessment from './assessment';
 import Result from './result';
 import Footer from './footer';
 import { differenceInDays, formatDistance } from 'date-fns'
-import { es } from 'date-fns/esm/locale';
+import { en } from 'date-fns/esm/locale';
 
 const eventStates = {
   EVENT_CREATED: 0,
@@ -350,21 +350,21 @@ const Title = ({ text, now, start, end, eventState }) => {
       || close === undefined
       || eventState === undefined
     ) return;
-    const dateOptions = { locale: es, addSuffix: true, includeSeconds: true };
+    const dateOptions = { locale: en, addSuffix: true, includeSeconds: true };
     if (close === false) {
       setSubtitle(start.toLocaleString());
     } else if (eventState >= eventStates.EVENT_ENDED) {
       const distance = formatDistance(end, now, dateOptions);
-      setSubtitle(`terminó ${distance}`);
+      setSubtitle(`finished ${distance}`);
     } else if (eventState < eventStates.EVENT_STARTED) {
       const distance = formatDistance(start, now, dateOptions);
-      setSubtitle(`comenzará ${distance}`);
+      setSubtitle(`will start ${distance}`);
     } else if (eventState === eventStates.EVENT_STARTED) {
       const distance = formatDistance(start, now, dateOptions);
-      setSubtitle(`comenzó ${distance}`);
+      setSubtitle(`started ${distance}`);
     } else if (eventState === eventStates.EVENT_HALFWAY_THROUGH) {
       const distance = formatDistance(end, now, dateOptions);
-      setSubtitle(`terminará ${distance}`);
+      setSubtitle(`will end ${distance}`);
     }
   }, [ close, now, start, end, setSubtitle, eventState ]);
 
@@ -377,7 +377,7 @@ const Title = ({ text, now, start, end, eventState }) => {
         `}
       >
       <div css="display: flex">
-        <Link to="/" css={'width: 60px'}>← atrás</Link>
+        <Link to="/" css={'width: 60px'}>← back</Link>
         <div
           css={`
             display: flex;

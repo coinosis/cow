@@ -65,7 +65,7 @@ const Account = () => {
     post('users', object, (error, data) => {
       if (error) {
         if (error.toString().includes('400')) {
-          setMessage('ese nombre ya existe en nuestra base de datos');
+          setMessage('that name already exists in our database');
         }
         return;
       }
@@ -115,7 +115,7 @@ const Account = () => {
               onClick={signup}
               disabled={unsavedName === ''}
             >
-              regístrate
+              register
             </button>
           </div>
         </div>

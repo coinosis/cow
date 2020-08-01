@@ -74,8 +74,8 @@ const Meet = ({
           text-align: right;
         `}
       >
-      ¿Tienes problemas con el audio y el video? Haz clic
-        <a css="margin: 5px" href="/webrtc.html" target="_blank">aquí</a>.
+      Having problems with audio and video? click
+        <a css="margin: 5px" href="/webrtc.html" target="_blank">here</a>
       </div>
       { settings[environment].jitsi.enabled && (
         <Jitsi
