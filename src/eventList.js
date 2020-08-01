@@ -59,11 +59,11 @@ const EventList = () => {
       `}
     >
       <EventSection
-        title="events happening right now"
+        title="eventos sucediendo en este momento"
         events={live}
       />
       <EventSection
-        title="next events"
+        title="próximos eventos"
         events={upcoming}
       />
       { name && (
@@ -75,13 +75,13 @@ const EventList = () => {
         `}
         >
           <SectionTitle>
-            create a new event
+            crea un nuevo evento
           </SectionTitle>
           <AddEvent setEvents={setEvents} />
         </div>
       )}
       <EventSection
-        title="past events"
+        title="eventos pasados"
         events={past}
       />
     </div>

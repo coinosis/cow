@@ -210,11 +210,11 @@ const Attendance = ({
     contract.methods.register().send(txOptions)
       .on('transactionHash', hash => {
         setTxHash(hash);
-        setEthState('transaction created');
-        setEthMessage('waiting to be included in the blockchain...');
+        setEthState('transacción creada');
+        setEthMessage('esperando a que sea incluida en la blockchain...');
       }).on('receipt', () => {
-        setEthState('accepted transaction');
-        setEthMessage('registering your payment...');
+        setEthState('transacción aceptada');
+        setEthMessage('registrando tu pago...');
         getAttendees();
         updateState();
       });
@@ -253,7 +253,7 @@ const Attendance = ({
           `}
       >
         <div>
-          make a deposit of
+          haz un depósito de
         </div>
         <div
           css={`
@@ -263,7 +263,7 @@ const Attendance = ({
           <Amount usd={feeUSDWei} eth={feeWei} />
         </div>
         <div>
-          to participate.
+          para participar.
         </div>
       </div>
       { attendees.includes(account) ? (
@@ -275,13 +275,13 @@ const Attendance = ({
           `}
         >
         <SectionTitle>
-          you successfully signed up
+          te inscribiste exitosamente
         </SectionTitle>
         </div>
       ) : paymentList === undefined ? (
         <Loading/>
       ) : now > end ? (
-        <div>This event finished on {formatDate(end)}</div>
+        <div>Este evento finalizó el {formatDate(end)}</div>
       ) : (
         <div
           css={`
@@ -308,17 +308,17 @@ const Attendance = ({
                 <button
                   onClick={sendEther}
                 >
-                  send ether
+                  envía ether
                 </button>
                 <button
                   onClick={attend}
                 >
-                  use credit card
+                  paga con PayU
                 </button>
               </div>
               <div css="margin: 10px">
-                the deposited money will be distributed among the attendees
-                according to the claps received.
+                el dinero depositado se repartirá entre los asistentes por
+                votación.
               </div>
             </div>
           ) : approved ? (
@@ -330,14 +330,14 @@ const Attendance = ({
               `}
             >
               <SectionTitle>
-                your payment was accepted
+                tu pago fue aceptado
               </SectionTitle>
               { txHash ? (
                 <EtherscanLink type="tx" value={txHash} >
-                  sending transaction to smart contract...
+                  enviando transacción al contrato inteligente...
                 </EtherscanLink>
               ) : (
-                <div>waiting confirmation from PayU...</div>
+                <div>esperando confirmación por parte de PayU...</div>
               ) }
             </div>
           ) : ethState ? (
@@ -366,16 +366,16 @@ const Attendance = ({
               `}
             >
               <SectionTitle>
-                cash payments are disabled
+                los pagos en efectivo están deshabilitados
               </SectionTitle>
-              please use another payment method
+              por favor usa otro medio de pago
               <button onClick={attend}>
-                use credit card
+                paga con PayU
               </button>
               <button
                 onClick={sendEther}
               >
-                send ether
+                envía ether
               </button>
             </div>
           ) : (
@@ -387,17 +387,17 @@ const Attendance = ({
               `}
             >
               <SectionTitle>
-                your payment was rejected
+                tu pago fue rechazado
               </SectionTitle>
               <button
                 onClick={attend}
               >
-                try again
+                intenta de nuevo
               </button>
               <button
                 onClick={sendEther}
               >
-                send ether
+                envía ether
               </button>
             </div>
           )}
@@ -416,22 +416,22 @@ const Attendance = ({
           >
             <caption>
               <SectionTitle>
-                transaction history
+                historial de transacciones
               </SectionTitle>
             </caption>
             <thead>
               <tr>
-                <th>date</th>
-                <th>amount</th>
-                <th>result</th>
-                <th>reference</th>
+                <th>fecha</th>
+                <th>monto</th>
+                <th>resultado</th>
+                <th>referencia</th>
               </tr>
             </thead>
             <tbody>
               { paymentList.map(payment => {
                 const { pull } = payment;
                 if (pull === null) return (
-                  <tr><td>Trying to connect with PayU...</td></tr>
+                  <tr><td>Intentando conectar con PayU...</td></tr>
                 );
                 return (
                   <tr key={payment.referenceCode}>

@@ -190,7 +190,7 @@ const AddEvent = ({ setEvents }) => {
       setEnd('');
       setMinutesBefore(30);
       setMinutesAfter(30);
-      setStatus('event created.');
+      setStatus('evento creado.');
       setCreating(false);
     });
   }, [
@@ -205,7 +205,7 @@ const AddEvent = ({ setEvents }) => {
 
   const deployContract = useCallback(async () => {
     setCreating(true);
-    setStatus('starting creation process ...');
+    setStatus('iniciando proceso de creación...');
     const contract = new web3.eth.Contract(abi);
     const feeWei = web3.utils.toWei(String(feeETH));
     const endTimestamp = timestampInSeconds(end);
@@ -215,8 +215,8 @@ const AddEvent = ({ setEvents }) => {
       arguments: [feeWei, endTimestamp],
     };
     const deployment = await contract.deploy(deployData);
-    setStatus('use Metamask to display the contract. '
-              + 'This action has a cost.');
+    setStatus('usa Metamask para desplegar el contrato. '
+              + 'Esta acción tiene costo.');
     const txOptions = {
       from: account,
       gas: 850000,
@@ -228,10 +228,10 @@ const AddEvent = ({ setEvents }) => {
             setCreating(false);
           }).on('transactionHash', () => {
             setStatus(
-              'waiting for the transaction to be included in the blockchain...'
+              'esperando a que la transacción sea incluida en la blockchain...'
             );
           }).on('receipt', () => {
-            setStatus('use Metamask to sign the contract.');
+            setStatus('usa Metamask para firmar el contrato.');
           });
     const actualFeeWei = await instance.methods.fee().call();
     const actualEnd = await instance.methods.end().call();
@@ -273,7 +273,7 @@ const AddEvent = ({ setEvents }) => {
       >
         <tbody>
           <Field
-            label="event name:"
+            label="nombre del evento:"
             element={
               <input
                 value={name}
@@ -304,7 +304,7 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="description:"
+            label="descripción:"
             element={
               <textarea
                 value={description}
@@ -317,7 +317,7 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="registration fee:"
+            label="costo de inscripción:"
             element={
               <div
                 css={`
@@ -346,41 +346,41 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="start date and time:"
+            label="fecha y hora de inicio:"
             element={
               <DatePicker
-                dateFormat="dd '/' MMMM '/' yyyy, h:mm aa"
+                dateFormat="dd 'de' MMMM 'de' yyyy, h:mm aa"
                 selected={start}
                 onChange={preSetStart}
                 showTimeSelect
-                timeCaption="hour"
+                timeCaption="hora"
                 timeFormat="h:mm aa"
                 timeIntervals={30}
                 minDate={now}
-                locale="en"
+                locale="es"
                 css="width: 250px;"
               />
             }
           />
           <Field
-            label="end date and time:"
+            label="fecha y hora de finalización:"
             element={
               <DatePicker
-                dateFormat="dd '/' MMMM '/' yyyy, h:mm aa"
+                dateFormat="dd 'de' MMMM 'de' yyyy, h:mm aa"
                 selected={end}
                 onChange={setEnd}
                 showTimeSelect
-                timeCaption="hour"
+                timeCaption="hora"
                 timeFormat="h:mm aa"
                 timeIntervals={30}
                 minDate={start || now}
-                locale="en"
+                locale="es"
                 css="width: 250px;"
               />
             }
           />
           <Field
-            label="start the video conference"
+            label="comenzar la videoconferencia"
             element={
               <input
                 value={minutesBefore}
@@ -391,10 +391,10 @@ const AddEvent = ({ setEvents }) => {
                 `}
               />
             }
-            unit="minutes before"
+            unit="minutos antes"
           />
           <Field
-            label="and finish it"
+            label="y finalizarla"
             element={
               <input
                 value={minutesAfter}
@@ -405,7 +405,7 @@ const AddEvent = ({ setEvents }) => {
                 `}
               />
             }
-            unit="minutes later"
+            unit="minutos después"
           />
           <tr>
             <td/>
@@ -419,7 +419,7 @@ const AddEvent = ({ setEvents }) => {
             </td>
           </tr>
           <Field
-            label={status ? 'status:' : ''}
+            label={status ? 'estado:' : ''}
             element={status}
           />
         </tbody>

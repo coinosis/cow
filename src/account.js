@@ -107,7 +107,7 @@ const Account = () => {
             <input
               value={unsavedName}
               onChange={e => setUnsavedName(e.target.value)}
-              placeholder="what is your name?"
+              placeholder="¿cómo te llamas?"
             />
           </div>
           <div>
@@ -149,7 +149,7 @@ const Login = () => {
     <button
       onClick={login}
     >
-      log in
+      inicia sesión
     </button>
   );
 
@@ -161,9 +161,9 @@ const Install = ({ awaitingReload, setAwaitingReload }) => {
 
   useEffect(() => {
     if (awaitingReload) {
-      setMessage('I already installed Metamask');
+      setMessage('ya instalé Metamask');
     } else {
-      setMessage('install your wallet');
+      setMessage('instala tu billetera');
     }
   }, [ awaitingReload, setMessage ])
 

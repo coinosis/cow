@@ -29,7 +29,7 @@ export const Loading = () => {
         justify-content: center;
       `}
     >
-      please wait...
+      por favor espera...
     </div>
   );
 }
@@ -200,8 +200,8 @@ export const NoContract = () => {
       setProvider('Metamask');
       setMainnet('Main Ethereum Network');
     } else {
-      setProvider('your Web3 provider');
-      setMainnet('the main Ethereum network');
+      setProvider('tu proveedor de Web3');
+      setMainnet('la red principal de Ethereum');
     }
   }, [ web3 ]);
 
@@ -214,10 +214,10 @@ export const NoContract = () => {
       `}
     >
       <SectionTitle>
-        no contract has been deployed on this network
+        ningún contrato ha sido desplegado en esta red
       </SectionTitle>
       <div>
-        please point {provider} to {mainnet}.
+        por favor apunta {provider} a {mainnet}.
       </div>
     </div>
   )

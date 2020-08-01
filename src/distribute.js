@@ -44,7 +44,7 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
       );
       if (pastEvents.length > 0) {
         setDistributed(true);
-        setMessage('Distribution made. Thanks for joining in!');
+        setMessage('Distribución efectuada. Gracias por tu participación!');
         clearInterval(updater);
       }
     }
@@ -55,19 +55,19 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
     if (time === undefined || end === undefined) return;
     if (txState >= ATTENDEE_CLICKED_DISTRIBUTE) return;
     if (time >= end) {
-      setMessage('Before you distribute the funds, '
-                 + 'make sure everyone has sent their claps.');
+      setMessage('antes de distribuir los fondos, asegúrate de que todo el '
+                 + 'mundo haya enviado sus aplausos.');
       setDisabled(false);
     } else {
       const dateOptions = { locale: es, addSuffix: true, includeSeconds: true };
       const distance = formatDistance(end, time, dateOptions);
-      setMessage(`the distribution of funds will be enabled ${distance}.`);
+      setMessage(`la distribución de los fondos se habilitará ${distance}.`);
     }
   }, [ time, end, updater ]);
 
   const distribute = useCallback(() => {
     setTxState(ATTENDEE_CLICKED_DISTRIBUTE);
-    setMessage('preparing transaction...');
+    setMessage('preparando transacción...');
     setDisabled(true);
     const gasPrice = getGasPrice();
     const sendOptions = {
@@ -75,14 +75,14 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
       gasPrice: gasPrice.propose,
       gas: 900000,
     }
-    setMessage('use Metamask to send the transaction.');
+    setMessage('usa Metamask para enviar la transacción.');
     contract.methods.distribute().send(sendOptions)
       .on('error', error => {
         setTxState(state);
         setMessage(error.message.substring(0, 60));
         setDisabled(false);
       }).on('transactionHash', () => {
-        setMessage('waiting for the transaction to be included in the '
+        setMessage('esperando a que la transacción sea incluida en la '
                    + 'blockchain...');
       }).on('receipt', () => {
         setTxState(ATTENDEE_SENT_DISTRIBUTION);
@@ -131,7 +131,7 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
             onClick={distribute}
             css="margin: 10px 0"
           >
-            distribute funds to everyone!
+            distribuir fondos para todo el mundo
           </button>
         </div>
       )}
@@ -143,11 +143,11 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
             align-items: center;
           `}
         >
-          this action:
+          esta acción:
           <ul>
-            <li>only one person has to do it,</li>
-            <li>any assistant can do it,</li>
-            <li>and it has cost.</li>
+            <li>sólo la tiene que hacer una persona,</li>
+            <li>cualquier asistente puede hacerla,</li>
+            <li>tiene costo</li>
           </ul>
         </div>
       )}
@@ -160,7 +160,7 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
           `}
         >
           <div css="margin-right: 10px">
-            you received
+            recibiste
           </div>
           <Amount eth={reward}/>
         </div>
