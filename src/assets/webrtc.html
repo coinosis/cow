@@ -2,47 +2,47 @@
 <html>
   <body style="font-family: arial">
     <img src="<%= require('./logo.png').default %>" width="100px" />
-    <h1>Mi cámara y micrófono no funcionan</h1>
-    <h2>Síntomas</h2>
+    <h1>My camera and microphone doesn't work</h1>
+    <h2>Symptoms</h2>
     <img src="<%= require('./unmute.png').default %>" border="1px solid black" />
     <ul>
-      <li>Estás usando Brave o Firefox,</li>
-      <li>No puedes activar la cámara ni el micrófono,</li>
-      <li>No ves ni oyes a otros participantes de la videollamada,</li>
-      <li>Pero sí puedes leer los mensajes del chat y escribir en él.</li>
+      <li>You are using Brave or Firefox,</li>
+      <li>You can't activate the camera or the microphone,</li>
+      <li>You don't see or hear other participants in the video call,</li>
+      <li>But you can read the chat messages and write to it.</li>
     </ul>
-    <h2>Diagnóstico</h2>
-    Es posible que tu navegador haya deshabilitado
-    <a href="https://es.wikipedia.org/wiki/WebRTC" target="_blank">WebRTC</a>
-    para evitar la filtración de tu dirección IP.
-    <h2>Explicación</h2>
-    Tu dirección IP es como la placa de tu carro. La web es como una ciudad llena de cámaras. Por medio de estas cámaras, un computador puede detectar la placa de tu carro y saber los lugares que visitaste y así vigilarte o mostrarte publicidad personalizada. Para evitar esto, puedes usar una <a href="https://es.wikipedia.org/wiki/Red_privada_virtual" target="_blank">VPN</a>, que es como una placa falsa, y así proteger tu privacidad. Sin embargo, algunos sitios web utilizan WebRTC, que es una tecnología para compartir audio y video, la cual, en algunas circunstancias, permite revelar tu verdadera dirección IP. Para más información, haz clic <a href="https://restoreprivacy.com/webrtc-leaks/" target="_blank">aquí</a>.
-    <h2>¿Es seguro habilitar WebRTC?</h2>
+    <h2>Diagnosis</h2>
+    It is possible that your browser has disabled
+    <a href="https://en.wikipedia.org/wiki/WebRTC" target="_blank">WebRTC</a>
+    to avoid leaking your IP address.
+    <h2>Explanation</h2>
+    Your IP address is like your license plate. The web is like a city full of cameras. Through these cameras, a computer can detect the license plate of your car and know the places you visited and thus monitor you or show you personalized advertising. To avoid this, you can use a <a href="https://en.wikipedia.org/wiki/Virtual_private_network" target="_blank">VPN</a>, which is like a fake badge, and thus protect your privacy . However, some websites use WebRTC, an audio and video sharing technology. So, in some circumstances, allows you to reveal your true IP address. For more information, click <a href="https://restoreprivacy.com/webrtc-leaks/" target="_blank">here</a>.
+    <h2>Is it safe to enable WebRTC?</h2>
     <ul>
-      <li>Habilitar WebRTC no tiene impacto sobre tu seguridad, pero sí sobre tu privacidad.</li>
-      <li>Si estás usando una VPN, habilitar WebRTC puede revelar tu verdadera dirección IP. Para comprobarlo, <a href="https://browserleaks.com/webrtc" target="_blank">haz esta prueba</a>.</li>
-      <li>Si no estás usando una VPN, habilitar WebRTC no va a cambiar en nada tu privacidad. Sin embargo, sólo por las dudas, <a href="https://browserleaks.com/webrtc" target="_blank">haz la prueba</a>.</li>
+      <li>Enabling WebRTC has no impact on your security, but it does have an impact on your privacy.</li>
+      <li>If you are using a VPN, enabling WebRTC can reveal your true IP address. To check, <a href="https://www.expressvpn.com/webrtc-leak-test" target="_blank">do this test</a>.</li>
+      <li>If you are not using a VPN, enabling WebRTC will not change your privacy at all. However, just in case, <a href="https://www.expressvpn.com/webrtc-leak-test" target="_blank">do the test</a>.</li>
     </ul>
-    <h2>Solución</h2>
+    <h2>Solution</h2>
     <h3>Brave</h3>
     <ol>
-      <li>En la barra de direcciones, escribe <code style="background: lightgrey">brave://settings/help</code> para actualizar Brave a la última versión.</li>
-      <li>Entra a <a href="https://coinosis.co" target="_blank">coinosis.co</a>.</li>
-      <li>En la barra de Brave, haz clic en <i>Brave shields</i>.</li>
-      <li>Selecciona <i>Advanced View</i>.</li>
-      <li>Busca la opción de bloqueo de <i>fingerprinting</i>.</li>
-      <li>Selecciona <i>All fingerprinting attempts allowed</i>.</li>
-      <li>Refresca la página.</li>
+      <li>In the address bar, type <code style="background: lightgrey">brave://settings/help</code> to update Brave to the latest version.</li>
+      <li>Go to <a href="https://coinosis.co" target="_blank">coinosis.co</a>.</li>
+      <li>In the Brave bar, click <i>Brave shields</i>.</li>
+      <li>Select <i>Advanced View</i>.</li>
+      <li>Look for the lock option <i>fingerprinting</i>.</li>
+      <li>Select <i>All fingerprinting attempts allowed</i>.</li>
+      <li>Refresh the page.</li>
     </ol>
     <img src="<%= require('./brave.png').default %>" border="1px solid black"/>
     <h3>Firefox</h3>
-    <i>Nota: este procedimiento habilita WebRTC en todos los sitios web.</i>
+    <i>Note: This procedure enables WebRTC on all websites.</i>
     <ol>
-      <li>En la barra de direcciones, escribe <code style="background: lightgrey">about:config</code>.</li>
-      <li>En el campo de búsqueda de opciones de configuración, escribe <code style="background: lightgrey">media.peerconnection.enabled</code>.</li>
-      <li>Pasa el valor a <code style="background: lightgrey">true</code> haciendo clic en el botón de la derecha.</li>
-      <li>Cierra la pestaña de opciones de configuración.</li>
-      <li>Refresca la página.</li>
+      <li>In the address bar, type <code style="background: lightgrey">about:config</code>.</li>
+      <li>In the configuration options search field, type <code style="background: lightgrey">media.peerconnection.enabled</code>.</li>
+      <li>Change the value to <code style="background: lightgrey">true</code> by clicking the button on the right.</li>
+      <li>Close the configuration options tab.</li>
+      <li>Refresh the page.</li>
     </ol>
     <img src="<%= require('./firefox.png').default %>" border="1px solid black"/>
     <br/><br/><br/>
