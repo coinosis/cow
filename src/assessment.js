@@ -184,7 +184,7 @@ const Assessment = ({
           justify-content: center;
         `}
       >
-      inscríbete para poder aplaudir.
+      sign up to be able to clap.
       </div>
     );
   }
@@ -197,7 +197,7 @@ const Assessment = ({
           justify-content: center;
         `}
       >
-        nadie más se ha inscrito todavía.
+        no one else has signed up yet.
       </div>
     );
   }
@@ -237,9 +237,9 @@ const Assessment = ({
               disabled={txState > ATTENDEE_REGISTERED}
             >
               {state >= ATTENDEE_CLAPPED
-               ? 'enviado'
-               : txState >= ATTENDEE_SENT_CLAPS ? 'enviando...'
-               : 'enviar'
+               ? 'sent'
+               : txState >= ATTENDEE_SENT_CLAPS ? 'sending...'
+               : 'send'
               }
             </button>
           </td>
@@ -264,16 +264,16 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState }) => {
             `}
           >
             { state == ATTENDEE_CLAPPED
-              ? 'gracias por tu tiempo!'
+              ? 'thanks for your time!'
               : txState == ATTENDEE_CLICKED_SEND
-              ? 'envía tus aplausos usando Metamask.'
+              ? 'send your claps using Metamask.'
               : txState == ATTENDEE_SENT_CLAPS
               ? (
                 <EtherscanLink
                   type="tx"
                   value={txHash}
                 >
-                  confirmando transacción...
+                  validating transaction...
                 </EtherscanLink>
               )
               : ''
@@ -296,7 +296,7 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState }) => {
             text-align: right;
           `}
         >
-          aplausos restantes:
+          remaining claps:
         </td>
         <td
           css={`
