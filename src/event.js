@@ -54,6 +54,7 @@ const Event = () => {
   const [contract, setContract] = useState();
   const [event, setEvent] = useState();
   const [attendees, setAttendees] = useState();
+  const [jitsters, setJitsters] = useState();
   const [eventState, setEventState] = useState();
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
@@ -329,17 +330,13 @@ const Event = () => {
             && (contractState < contractStates.DISTRIBUTION_MADE
                 || eventState < eventStates.CALL_ENDED)
             && (
-            <Meet
-              id={event._id}
-              eventName={event.name}
-              account={account}
-              userName={userName}
-              users={attendees}
-              setUsers={setAttendees}
-              beforeStart={event.beforeStart}
-              afterEnd={event.afterEnd}
+              <Meet
+                id={event._id}
+                eventName={event.name}
+                userName={userName}
+                setJitsters={setJitsters}
               />
-          ) }
+            ) }
         </div>
       <Footer hidden={event.version < 2} />
     </ContractContext.Provider>
