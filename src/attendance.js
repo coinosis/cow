@@ -62,9 +62,9 @@ const Attendance = ({
           && data[0].pull.status === 'PENDING'
         );
         setPaymentList(data);
-        const payment = data.find(d => d.transaction && d.transaction.hash);
+        const payment = data.find(d => d.transaction && d.transaction.txHash);
         if (payment !== undefined) {
-          setTxHash(payment.transaction.hash);
+          setTxHash(payment.transaction.txHash);
         }
        }).catch(err => {
         console.error(err);
