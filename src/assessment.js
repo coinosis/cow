@@ -174,32 +174,6 @@ const Assessment = ({
 
   if (state === undefined) return <Loading/>
 
-  if (!attendees.map(a => a.address).includes(account)) {
-    return (
-      <div
-        css={`
-          display: flex;
-          justify-content: center;
-        `}
-      >
-      inscríbete para poder aplaudir.
-      </div>
-    );
-  }
-
-  if (attendees.length === 1) {
-    return (
-      <div
-        css={`
-          display: flex;
-          justify-content: center;
-        `}
-      >
-        nadie más se ha inscrito todavía.
-      </div>
-    );
-  }
-
   return (
     <div
       css={`
@@ -326,8 +300,6 @@ const Users = ({
       return newAssessment;
     });
   }, [assessment]);
-
-  if (users === undefined) return <Loading/>
 
   return (
     <tbody>
