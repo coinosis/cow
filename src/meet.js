@@ -60,6 +60,10 @@ const Meet = ({
       });
     });
 
+    API.on('displayNameChange', () => {
+      API.executeCommand('subject', eventName);
+    });
+
     API.on('videoConferenceLeft', () => {
       API.executeCommand('subject', eventName);
       API.dispose();
