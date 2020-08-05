@@ -30,14 +30,17 @@ const Meet = ({
     API.executeCommand('subject', eventName);
 
     API.on('videoConferenceJoined', jitster  => {
+      API.executeCommand('subject', eventName);
       participantChanged(jitster, { present: true });
     });
 
     API.on('participantJoined', jitster => {
+      API.executeCommand('subject', eventName);
       participantChanged(jitster, { present: true });
     });
 
     API.on('dominantSpeakerChanged', jitster => {
+      API.executeCommand('subject', eventName);
       setUsers(prevUsers => {
         const nextUsers = [ ...prevUsers ];
         const index = nextUsers.findIndex(a => a.speaker);
@@ -49,14 +52,17 @@ const Meet = ({
     });
 
     API.on('displayNameChange', jitster => {
+      API.executeCommand('subject', eventName);
       participantChanged(jitster, {});
     });
 
     API.on('participantLeft', jitster => {
+      API.executeCommand('subject', eventName);
       participantChanged(jitster, { present: false });
     });
 
     API.on('videoConferenceLeft', () => {
+      API.executeCommand('subject', eventName);
       API.dispose();
     });
 
