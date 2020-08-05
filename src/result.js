@@ -131,7 +131,12 @@ const Assessments = ({ eventURL }) => {
       event.returnValues.id = event.transactionHash;
       event.returnValues.blockNumber = event.blockNumber;
       if (isMounted.current) {
-        setAssessments(assessments => [ event.returnValues, ...assessments ]);
+        setAssessments(assessments => {
+          if (assessments.map(a => a.id).includes(event.returnValues.id)) {
+            return assessments;
+          }
+          return [ event.returnValues, ...assessments ];
+        });
       }
     });
     return () => {

@@ -215,6 +215,9 @@ const Event = () => {
           setContractRaw(event.address);
         } else if (event.version === 1 || event.version === 0) {
           setAttendees(event.attendees);
+          setEventState(eventStates.CALL_ENDED);
+          setUserState(userStates.UNREGISTERED); // TODO
+          setContractState(contractStates.DISTRIBUTION_MADE);
         }
         const eventWithDates = convertDates(event);
         setEvent(eventWithDates);
