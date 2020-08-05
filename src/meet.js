@@ -7,58 +7,57 @@ const Meet = ({
   id,
   eventName,
   userName,
-  setUsers,
+  setJitsters,
 }) => {
-
-  const participantChanged = useCallback((jitster, change) => {
-    setUsers(prevUsers => {
-      if (!prevUsers) return prevUsers;
-      const nextUsers = [ ...prevUsers ];
-      let index = nextUsers.findIndex(user => user.id === jitster.id);
-      if (index === -1 && jitster.displayName) {
-        index = nextUsers.findIndex(user => user.name === jitster.displayName);
-      }
-      if (index === -1) return prevUsers;
-      let joinedAttendee = {...nextUsers[index], ...jitster, ...change};
-      nextUsers[index] = joinedAttendee;
-      return nextUsers;
-    });
-  }, []);
 
   const handleAPI = useCallback(API => {
 
     API.executeCommand('subject', eventName);
 
-    API.on('videoConferenceJoined', jitster  => {
-      API.executeCommand('subject', eventName);
-      participantChanged(jitster, { present: true });
+    API.on('videoConferenceJoined', me  => {
+      setJitsters(prevJitsters => {
+        if (!prevJitsters) return [ me ];
+        return [ ...prevJitsters, me ];
+      });
     });
 
     API.on('participantJoined', jitster => {
-      API.executeCommand('subject', eventName);
-      participantChanged(jitster, { present: true });
-    });
-
-    API.on('dominantSpeakerChanged', jitster => {
-      API.executeCommand('subject', eventName);
-      setUsers(prevUsers => {
-        const nextUsers = [ ...prevUsers ];
-        const index = nextUsers.findIndex(a => a.speaker);
-        if (index === -1) return prevUsers;
-        nextUsers[index].speaker = false;
-        return nextUsers;
+      setJitsters(prevJitsters => {
+        if (!prevJitsters) return [ jitster ];
+        return [ ...prevJitsters, jitster ];
       });
-      participantChanged(jitster, { speaker: true });
     });
 
-    API.on('displayNameChange', jitster => {
-      API.executeCommand('subject', eventName);
-      participantChanged(jitster, {});
+    API.on('dominantSpeakerChanged', ({ id }) => {
+      setJitsters(prevJitsters => {
+        if (!prevJitsters) return prevJitsters;
+        const nextJitsters = [ ...prevJitsters ];
+        const prevSpeaker = nextJitsters.findIndex(j => j.speaker);
+        if (prevSpeaker !== -1) {
+          nextJitsters[prevSpeaker].speaker = false;
+        }
+        const nextSpeaker = nextJitsters.findIndex(j => j.id === id);
+        if (nextSpeaker !== -1) {
+          nextJitsters[nextSpeaker].speaker = true;
+        } else {
+          console.log(`next speaker ${id} not found in`, nextJitsters);
+        }
+        return nextJitsters;
+      });
     });
 
-    API.on('participantLeft', jitster => {
-      API.executeCommand('subject', eventName);
-      participantChanged(jitster, { present: false });
+    API.on('participantLeft', ({ id }) => {
+      setJitsters(prevJitsters => {
+        if (!prevJitsters) return prevJitsters;
+        const nextJitsters = [ ...prevJitsters ];
+        const index = nextJitsters.findIndex(j => j.id === id);
+        if (index !== -1) {
+          nextJitsters.splice(index, 1);
+        } else {
+          console.log(`leaving jitster ${id} not found in`, nextJitsters);
+        }
+        return nextJitsters;
+      });
     });
 
     API.on('videoConferenceLeft', () => {
