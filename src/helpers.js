@@ -59,15 +59,19 @@ export const ToolTip = ({ value, show, position="top" }) => {
   );
 }
 
+const shorten = address => {
+  const prefix = address.substring(0, 6);
+  const postfix = address.substring(address.length - 4);
+  return `${prefix}...${postfix}`;
+}
+
 export const Hash = ({ type, value, toolTipPosition="top" }) => {
 
   const [short, setShort] = useState();
 
   useEffect(() => {
     if (!value) return;
-    const length = value.length;
-    const short = value.substring(0, 6) + '...' + value.substring(length - 4);
-    setShort(short);
+    setShort(shorten(value));
   }, [value]);
 
   return (
@@ -293,7 +297,7 @@ export const useGetUser = () => {
 
   return useCallback(async address => {
     const response = await fetch(`${backendURL}/user/${address}`);
-    if (!response.ok) return { address, name: address };
+    if (!response.ok) return { address, name: shorten(address) };
     const data = await response.json();
     return data;
   }, [ backendURL ])
