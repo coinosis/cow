@@ -65,7 +65,7 @@ const Meet = ({
       API.dispose();
     });
 
-  }, []);
+  }, [ eventName ]);
 
   return (
     <div
