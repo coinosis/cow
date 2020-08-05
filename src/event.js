@@ -315,6 +315,7 @@ const Event = () => {
                 updateState={updateUserState}
                 url={event.url}
                 attendees={attendees}
+                jitsters={jitsters}
                 />
               <Distribute
                 eventURL={event.url}

@@ -25,6 +25,7 @@ const Assessment = ({
   updateState,
   url: event,
   attendees,
+  jitsters,
 }) => {
 
   const web3 = useContext(Web3Context);
@@ -215,7 +216,8 @@ const Assessment = ({
         txState={txState}
       />
       <Users
-        users={attendees}
+        attendees={attendees}
+        jitsters={jitsters}
         assessment={assessment}
         attemptAssessment={attemptAssessment}
         clapsError={clapsError}
@@ -306,7 +308,8 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState }) => {
 }
 
 const Users = ({
-  users,
+  attendees,
+  jitsters,
   assessment,
   attemptAssessment,
   state,
@@ -328,8 +331,10 @@ const Users = ({
 
   return (
     <tbody>
-      {users.map((user, i) => {
-        const { address, name, present, speaker } = user;
+      {attendees.map((attendee, i) => {
+        const { address, name } = attendee;
+        const jitster = jitsters && jitsters.find(j => j.displayName === name);
+        const speaker = jitster && jitster.speaker;
         const claps = assessment[address] || '';
         const hasFocus = i === 0;
          return (
@@ -338,7 +343,7 @@ const Users = ({
              hasFocus={hasFocus}
              name={name}
              address={address}
-             present={present}
+             present={Boolean(jitster)}
              speaker={speaker}
              claps={claps}
              setClaps={value => setClaps(address, value)}
