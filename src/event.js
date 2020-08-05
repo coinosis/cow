@@ -8,7 +8,7 @@ import React, {
 import { useParams } from 'react-router-dom';
 import abi from '../contracts/ProxyEvent.abi.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
-import { Link, Loading, NoContract, convertDates } from './helpers';
+import { Link, Loading, NoContract, convertDates, useGetUser } from './helpers';
 import Account from './account';
 import Attendance from './attendance';
 import Distribute from './distribute';
@@ -54,13 +54,13 @@ const Event = () => {
   const [contract, setContract] = useState();
   const [event, setEvent] = useState();
   const [attendees, setAttendees] = useState();
-  const [users, setUsers] = useState([]);
   const [eventState, setEventState] = useState();
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
   const [inEvent, setInEvent] = useState();
   const [reward, setReward] = useState();
   const [now, setNow] = useState(new Date());
+  const getUser = useGetUser();
 
   useEffect(() => {
     const time = setInterval(() => { setNow(new Date()); }, 1000);
@@ -163,12 +163,26 @@ const Event = () => {
 
   const getAttendees = useCallback(async () => {
     if (!contract) return;
-    const attendees = await contract.methods.getAttendees().call();
-    setAttendees(previous => {
-      if (previous && previous.length === attendees.length) return previous;
-      return attendees;
-    });
-  }, [ contract ]);
+    const addresses = await contract.methods.getAttendees().call();
+    if (!addresses.length) {
+      setAttendees([]);
+      return;
+    }
+    if (attendees === undefined) {
+      const nextAttendees = await Promise.all(addresses.map(a => getUser(a)));
+      setAttendees(nextAttendees);
+      return;
+    }
+    if (attendees.length === addresses.length) return;
+    const currentAddresses = attendees.map(a => a.address);
+    const nextAttendees = [ ...attendees ];
+    for (const address of addresses) {
+      if (currentAddresses.includes(address)) continue;
+      const attendee = await getUser(address);
+      nextAttendees.push(attendee);
+    }
+    setAttendees(nextAttendees);
+  }, [ contract, attendees, setAttendees, getUser ]);
 
   useEffect(() => {
     getAttendees();
@@ -270,7 +284,7 @@ const Event = () => {
             fee={event.fee}
             feeWei={event.feeWei}
             organizer={event.organizer}
-            attendees={attendees}
+            attendees={attendees.map(a => a.address)}
             getAttendees={getAttendees}
             beforeStart={event.beforeStart}
             end={event.end}
@@ -297,8 +311,6 @@ const Event = () => {
                 updateState={updateUserState}
                 url={event.url}
                 attendees={attendees}
-                users={users}
-                setUsers={setUsers}
                 />
               <Distribute
                 eventURL={event.url}
@@ -319,8 +331,8 @@ const Event = () => {
               eventName={event.name}
               account={account}
               userName={userName}
-              users={users}
-              setUsers={setUsers}
+              users={attendees}
+              setUsers={setAttendees}
               beforeStart={event.beforeStart}
               afterEnd={event.afterEnd}
               />

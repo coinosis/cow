@@ -10,7 +10,6 @@ import { ContractContext } from './event';
 import {
   EtherscanLink,
   Loading,
-  useGetUser,
   useGasPrice,
   usePost,
   ATTENDEE_REGISTERED,
@@ -26,8 +25,6 @@ const Assessment = ({
   updateState,
   url: event,
   attendees,
-  users,
-  setUsers,
 }) => {
 
   const web3 = useContext(Web3Context);
@@ -51,8 +48,8 @@ const Assessment = ({
 
   useEffect(() => {
     for (const i in attendees) {
-      if (!(attendees[i] in assessment)) {
-        assessment[attendees[i]] = 0;
+      if (!(attendees[i].address in assessment)) {
+        assessment[attendees[i].address] = 0;
       }
     }
     setAssessment(assessment);
@@ -176,7 +173,7 @@ const Assessment = ({
 
   if (state === undefined) return <Loading/>
 
-  if (!attendees.includes(account)) {
+  if (!attendees.map(a => a.address).includes(account)) {
     return (
       <div
         css={`
@@ -218,9 +215,7 @@ const Assessment = ({
         txState={txState}
       />
       <Users
-        attendees={attendees}
-        users={users}
-        setUsers={setUsers}
+        users={attendees}
         assessment={assessment}
         attemptAssessment={attemptAssessment}
         clapsError={clapsError}
@@ -311,34 +306,13 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState }) => {
 }
 
 const Users = ({
-  attendees,
   users,
-  setUsers,
   assessment,
   attemptAssessment,
   state,
   version,
   txState,
 }) => {
-
-  const getUser = useGetUser();
-
-  useEffect(() => {
-    if (users && users.length === attendees.length) return;
-    const updateUsers = async () => {
-      const userAddresses = users.map(user => user.address);
-      for (const i in attendees) {
-        if (userAddresses.includes(attendees[i])) continue;
-        const user = await getUser(attendees[i]);
-        setUsers(prevUsers => {
-          const nextUsers = [ ...prevUsers, user ];
-          nextUsers.sort((a, b) => a.name.localeCompare(b.name));
-          return nextUsers;
-        });
-      }
-    }
-    updateUsers();
-  }, [ attendees, getUser ]);
 
   const setClaps = useCallback((address, value) => {
     if (isNaN(value)) return;
