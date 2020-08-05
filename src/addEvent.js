@@ -53,7 +53,8 @@ const AddEvent = ({ setEvents }) => {
     setDescription('test event');
     setFeeETH(`${(seed / 10).toFixed(3)}`);
     setFee(`${(seed * 100).toFixed(2)}`);
-    preSetStart(addMinutes(new Date(), 2));
+    const { minutesFromNow } = settings[environment].addEvent.prepopulate;
+    preSetStart(addMinutes(new Date(), minutesFromNow));
   }, [settings, environment]);
 
   useEffect(() => {
