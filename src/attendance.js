@@ -200,6 +200,7 @@ const Attendance = ({
   }
 
   const sendEther = useCallback(async () => {
+    setEthState('usa Metamask para confirmar la transacción.');
     const gasPrice = await getGasPrice();
     const txOptions = {
       from: account,
@@ -208,7 +209,9 @@ const Attendance = ({
       gas: 200000,
     };
     contract.methods.register().send(txOptions)
-      .on('transactionHash', hash => {
+      .on('error', () => {
+        setEthState('');
+      }).on('transactionHash', hash => {
         setTxHash(hash);
         setEthState('transacción creada');
         setEthMessage('esperando a que sea incluida en la blockchain...');
