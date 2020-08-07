@@ -247,15 +247,15 @@ const Attendance = ({
   return (
     <div
       css={`
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        `}
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      `}
     >
       <div
         css={`
-            display: flex;
-          `}
+          display: flex;
+        `}
       >
         <div>
           haz un depósito de
@@ -271,135 +271,135 @@ const Attendance = ({
           para participar.
         </div>
       </div>
-        <div
-          css={`
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          `}
-        >
-          { !paymentList.length && !ethState ? (
+      <div
+        css={`
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        `}
+      >
+        { !paymentList.length && !ethState ? (
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
             <div
               css={`
                 display: flex;
-                flex-direction: column;
-                align-items: center;
+                width: 50%;
+                justify-content: space-around;
               `}
             >
-              <div
-                css={`
-                  display: flex;
-                  width: 50%;
-                  justify-content: space-around;
-                `}
-              >
-                <button
-                  onClick={sendEther}
-                >
-                  envía ether
-                </button>
-                <button
-                  onClick={attend}
-                >
-                  paga con PayU
-                </button>
-              </div>
-              <div css="margin: 10px">
-                el dinero depositado se repartirá entre los asistentes por
-                votación.
-              </div>
-            </div>
-          ) : approved ? (
-            <div
-              css={`
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-              `}
-            >
-              <SectionTitle>
-                tu pago fue aceptado
-              </SectionTitle>
-              { txHash ? (
-                <EtherscanLink type="tx" value={txHash} >
-                  enviando transacción al contrato inteligente...
-                </EtherscanLink>
-              ) : (
-                <div>esperando confirmación por parte de PayU...</div>
-              ) }
-            </div>
-          ) : ethState ? (
-            <div
-              css={`
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-              `}
-            >
-              <SectionTitle>
-                { ethState }
-              </SectionTitle>
-              { txHash ? (
-                <EtherscanLink type="tx" value={txHash}>
-                  { ethMessage }
-                </EtherscanLink>
-              ) : ethMessage }
-            </div>
-          ) : pending ? (
-            <div
-              css={`
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-              `}
-            >
-              <SectionTitle>
-                esperando a que se confirme la transacción usando PSE...
-              </SectionTitle>
-              <button onClick={attend}>
-                intenta de nuevo con PayU
-              </button>
               <button
                 onClick={sendEther}
               >
                 envía ether
               </button>
-            </div>
-          ) : (
-            <div
-              css={`
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-              `}
-            >
-              <SectionTitle>
-                tu pago fue rechazado
-              </SectionTitle>
-              { cashPayment && ('los pagos en efectivo están deshabilitados')}
               <button
                 onClick={attend}
               >
-                intenta de nuevo con PayU
-              </button>
-              <button
-                onClick={sendEther}
-              >
-                envía ether
+                paga con PayU
               </button>
             </div>
-          )}
-        </div>
+            <div css="margin: 10px">
+              el dinero depositado se repartirá entre los asistentes por
+              votación.
+            </div>
+          </div>
+        ) : approved ? (
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
+            <SectionTitle>
+              tu pago fue aceptado
+            </SectionTitle>
+            { txHash ? (
+              <EtherscanLink type="tx" value={txHash} >
+                enviando transacción al contrato inteligente...
+              </EtherscanLink>
+            ) : (
+              <div>esperando confirmación por parte de PayU...</div>
+            ) }
+          </div>
+        ) : ethState ? (
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
+            <SectionTitle>
+              { ethState }
+            </SectionTitle>
+            { txHash ? (
+              <EtherscanLink type="tx" value={txHash}>
+                { ethMessage }
+              </EtherscanLink>
+            ) : ethMessage }
+          </div>
+        ) : pending ? (
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
+            <SectionTitle>
+              esperando a que se confirme la transacción usando PSE...
+            </SectionTitle>
+            <button onClick={attend}>
+              intenta de nuevo con PayU
+            </button>
+            <button
+              onClick={sendEther}
+            >
+              envía ether
+            </button>
+          </div>
+        ) : (
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
+            <SectionTitle>
+              tu pago fue rechazado
+            </SectionTitle>
+            { cashPayment && ('los pagos en efectivo están deshabilitados')}
+            <button
+              onClick={attend}
+            >
+              intenta de nuevo con PayU
+            </button>
+            <button
+              onClick={sendEther}
+            >
+              envía ether
+            </button>
+          </div>
+        )}
+      </div>
       { !!paymentList && !!paymentList.length && (
         <div>
           <table
             css={`
-                border-collapse: collapse;
-                td {
-                  border: 1px solid black;
-                  padding: 10px;
-                };
-              `}
+              border-collapse: collapse;
+              td {
+                border: 1px solid black;
+                padding: 10px;
+              };
+            `}
           >
             <caption>
               <SectionTitle>
