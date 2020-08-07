@@ -42,6 +42,7 @@ const Attendance = ({
   const [paymentList, setPaymentList] = useState();
   const [approved, setApproved] = useState();
   const [pending, setPending] = useState();
+  const [cashPayment, setCashPayment] = useState();
   const [ethState, setEthState] = useState();
   const [ethMessage, setEthMessage] = useState();
   const [txHash, setTxHash] = useState();
@@ -57,9 +58,13 @@ const Attendance = ({
         }
       }).then(data => {
         setApproved(data.some(d => d.pull && d.pull.status === 'APPROVED'));
-        setPending(data.length
-          && data[0].pull
-          && data[0].pull.status === 'PENDING'
+        setPending(
+          data.length && data[0].pull && data[0].pull.status === 'PENDING'
+            && data[0].pull.method === 'PSE'
+        );
+        setCashPayment(
+          data.length && data[0].pull && data[0].pull.status === 'PENDING'
+            && data[0].pull.method !== 'PSE'
         );
         setPaymentList(data);
         const payment = data.find(d => d.transaction && d.transaction.txHash);
@@ -369,11 +374,10 @@ const Attendance = ({
               `}
             >
               <SectionTitle>
-                los pagos en efectivo están deshabilitados
+                esperando a que se confirme la transacción usando PSE...
               </SectionTitle>
-              por favor usa otro medio de pago
               <button onClick={attend}>
-                paga con PayU
+                intenta de nuevo con PayU
               </button>
               <button
                 onClick={sendEther}
@@ -392,10 +396,11 @@ const Attendance = ({
               <SectionTitle>
                 tu pago fue rechazado
               </SectionTitle>
+              { cashPayment && ('los pagos en efectivo están deshabilitados')}
               <button
                 onClick={attend}
               >
-                intenta de nuevo
+                intenta de nuevo con PayU
               </button>
               <button
                 onClick={sendEther}
@@ -425,6 +430,7 @@ const Attendance = ({
             <thead>
               <tr>
                 <th>fecha</th>
+                <th>método</th>
                 <th>monto</th>
                 <th>resultado</th>
                 <th>referencia</th>
@@ -439,6 +445,7 @@ const Attendance = ({
                 return (
                   <tr key={payment.referenceCode}>
                     <td>{formatDate(new Date(pull.requestDate))}</td>
+                    <td>{pull.method}</td>
                     <td>{pull.value} {pull.currency}</td>
                     <td>{pull.response}</td>
                     <td>{payment.referenceCode}</td>
