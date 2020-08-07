@@ -25,9 +25,7 @@ const Attendance = ({
   event,
   fee,
   feeWei,
-  attendees,
   getAttendees,
-  end,
   updateState,
 }) => {
 
@@ -38,7 +36,6 @@ const Attendance = ({
   const backendURL = useContext(BackendContext);
   const post = usePost();
   const [feeUSDWei, setFeeUSDWei] = useState();
-  const [now] = useState(new Date());
   const [paymentList, setPaymentList] = useState();
   const [approved, setApproved] = useState();
   const [pending, setPending] = useState();
@@ -241,7 +238,7 @@ const Attendance = ({
     );
   }
 
-  if (user === undefined) return <Loading/>
+  if (user === undefined || paymentList === undefined) return <Loading/>
 
   if (user === null) {
     return <Account/>
@@ -274,23 +271,6 @@ const Attendance = ({
           para participar.
         </div>
       </div>
-      { attendees.includes(account) ? (
-        <div
-          css={`
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          `}
-        >
-        <SectionTitle>
-          te inscribiste exitosamente
-        </SectionTitle>
-        </div>
-      ) : paymentList === undefined ? (
-        <Loading/>
-      ) : now > end ? (
-        <div>Este evento finalizó el {formatDate(end)}</div>
-      ) : (
         <div
           css={`
             display: flex;
@@ -410,7 +390,6 @@ const Attendance = ({
             </div>
           )}
         </div>
-      )}
       { !!paymentList && !!paymentList.length && (
         <div>
           <table
