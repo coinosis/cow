@@ -64,7 +64,7 @@ const Event = () => {
   const getUser = useGetUser();
 
   useEffect(() => {
-    const time = setInterval(() => { setNow(new Date()); }, 1000);
+    const time = setInterval(() => { setNow(new Date()); }, 3000);
     return () => {
       clearInterval(time);
     }

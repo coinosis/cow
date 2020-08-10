@@ -76,7 +76,7 @@ const Attendance = ({
   useEffect(() => {
     if (!backendURL || !event || !account) return;
     fetchPayments();
-    const paymentsFetcher = setInterval(fetchPayments, 10000);
+    const paymentsFetcher = setInterval(fetchPayments, 3000);
     return () => {
       clearInterval(paymentsFetcher);
     };
@@ -112,13 +112,14 @@ const Attendance = ({
   const awaitClosable = useCallback(async (formWindow, referenceCode) => {
     await sleep(20000);
     do {
-      await sleep(2000);
+      await sleep(1000);
       const response = await fetch(`${backendURL}/closable/${referenceCode}`);
       const closable = await response.json();
       if (closable == true) {
         formWindow.close();
         break;
       }
+      // if payment made, break
     } while (true);
   }, [ backendURL ]);
 
