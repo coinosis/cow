@@ -1,32 +1,57 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import {
   Web3Context,
   AccountContext,
   BackendContext,
 } from './coinosis';
-import { ContractContext } from './event';
+import { ContractContext, userStates } from './event';
 import Amount from './amount';
 import {
-  EtherscanLink,
   environment,
-  formatDate,
   Loading,
-  SectionTitle,
   useGasPrice,
-  usePost,
   useConversions,
   sleep,
 } from './helpers';
 import settings from '../settings.json';
 import Account from './account';
+import userIcon from './assets/user.png';
+import loadingIcon from './assets/loading.gif';
+import passIcon from './assets/pass.png';
+import failIcon from './assets/fail.png';
+import arrowIcon from './assets/arrow.png';
+import payuIcon from './assets/payu.png';
+import coinosisIcon from './assets/coinosis.png';
+import contractIcon from './assets/contract.png';
+
+const transactionStates = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  DECLINED: 'DECLINED',
+  EXPIRED: 'EXPIRED',
+};
+
+const paymentModes = {
+  ETHER: 1,
+  PAYU: 2,
+};
+
+const txTypes = {
+  REGISTER: 1,
+  PULL: 2,
+  PUSH: 3,
+  REGISTER_FOR: 4,
+};
 
 const Attendance = ({
   eventName,
   event,
   fee,
   feeWei,
-  getAttendees,
-  updateState,
+  userState,
+  contractAddress,
 }) => {
 
   const { contract } = useContext(ContractContext);
@@ -34,63 +59,134 @@ const Attendance = ({
   const web3 = useContext(Web3Context);
   const { account, name: user } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
-  const post = usePost();
   const [feeUSDWei, setFeeUSDWei] = useState();
-  const [paymentList, setPaymentList] = useState();
-  const [approved, setApproved] = useState();
-  const [pending, setPending] = useState();
-  const [cashPayment, setCashPayment] = useState();
-  const [ethState, setEthState] = useState();
-  const [ethMessage, setEthMessage] = useState();
-  const [txHash, setTxHash] = useState();
   const { toUSD } = useConversions();
+  const [paymentMode, setPaymentMode] = useState();
+  const [paymentModePreview, setPaymentModePreview] = useState();
+  const [pullPayments, setPullPayments] = useState();
+  const [pullState, setPullState] = useState();
+  const [pushPayments, setPushPayments] = useState();
+  const [pushState, setPushState] = useState();
+  const [registerForTxs, setRegisterForTxs] = useState();
+  const [registerForState, setRegisterForState] = useState();
+  const [registerTxs, setRegisterTxs] = useState();
+  const [registerState, setRegisterState] = useState();
+  const [txType, setTxType] = useState();
 
-  const fetchPayments = useCallback(() => {
-    fetch(`${backendURL}/payu/${event}/${account}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(response.status);
-        } else {
-          return response.json();
+  const fetchTransaction = useCallback(async () => {
+    if (!backendURL || !event || !account) return;
+    const response = await fetch(`${backendURL}/payu/${event}/${account}`);
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    const transaction = await response.json();
+    if (!transaction) {
+      setPullPayments();
+      setPushPayments();
+      setRegisterForTxs();
+      return;
+    }
+    if (transaction.pull) {
+      setPullPayments(prev => {
+        if (prev && prev.length === transaction.pull.length) {
+          const prevAccount = prev[0].referenceCode.split(':')[1];
+          if (prevAccount === account) {
+            return prev;
+          }
         }
-      }).then(data => {
-        setApproved(data.some(d => d.pull && d.pull.status === 'APPROVED'));
-        setPending(
-          data.length && data[0].pull && data[0].pull.status === 'PENDING'
-            && data[0].pull.method === 'PSE'
-        );
-        setCashPayment(
-          data.length && data[0].pull && data[0].pull.status === 'PENDING'
-            && data[0].pull.method !== 'PSE'
-        );
-        setPaymentList(data);
-        const payment = data.find(d => d.transaction && d.transaction.txHash);
-        if (payment !== undefined) {
-          setTxHash(payment.transaction.txHash);
-        }
-       }).catch(err => {
-        console.error(err);
-       });
-  }, [ backendURL, event, account ]);
+        return transaction.pull;
+      });
+    }
+    if (transaction.push) {
+      setPushPayments(prev => {
+        if (prev && prev.length === transaction.push.length) return prev;
+        return transaction.push;
+      });
+    }
+    if (transaction.register) {
+      setRegisterForTxs(prev => {
+        if (prev && prev.length === transaction.register.length) return prev;
+        return transaction.register;
+      });
+    }
+  }, [
+    backendURL,
+    event,
+    account,
+    setPullPayments,
+    setPushPayments,
+    setRegisterTxs,
+  ]);
 
   useEffect(() => {
-    if (!backendURL || !event || !account) return;
-    fetchPayments();
-    const paymentsFetcher = setInterval(fetchPayments, 3000);
+    fetchTransaction();
+    if (pullPayments) {
+      setPaymentMode(paymentModes.PAYU);
+    }
+  }, [ fetchTransaction, pullPayments ]);
+
+  const setTransactionFetcher = useCallback(() => {
+    fetchTransaction();
+    const transactionInterval = setInterval(fetchTransaction, 3000);
     return () => {
-      clearInterval(paymentsFetcher);
+      clearInterval(transactionInterval);
     };
-  }, [ backendURL, event, account ]);
+  }, [ fetchTransaction ]);
+
+  useEffect(() => {
+    if (!pullPayments) return;
+    setPullState(prev => {
+      const { state } = pullPayments[pullPayments.length - 1];
+      if (state === prev) return prev;
+      if (state === transactionStates.APPROVED) {
+        setPushState(transactionStates.PENDING);
+      }
+      return state;
+    });
+  }, [ pullPayments ]);
+
+  useEffect(() => {
+    if (!pushPayments) return;
+    setPushState(prev => {
+      const { state } = pushPayments[pushPayments.length - 1];
+      if (state === prev) return prev;
+      if (state === transactionStates.APPROVED) {
+        setRegisterForState(transactionStates.PENDING);
+      }
+      return state;
+    });
+  }, [ pushPayments ]);
+
+  useEffect(() => {
+    if (!registerForTxs) return;
+    setRegisterForState(registerForTxs[registerForTxs.length - 1].state);
+  }, [ registerForTxs ]);
+
+  useEffect(() => {
+    if (!registerTxs) return;
+    setRegisterState(registerTxs[registerTxs.length - 1].state);
+  }, [ registerTxs ]);
 
   useEffect(() => {
     if (fee === undefined) return;
     const feeUSDWei = web3.utils.toWei(String(fee));
     setFeeUSDWei(feeUSDWei);
-  }, [fee]);
+  }, [ fee ]);
 
   useEffect(() => {
-    setEthState();
-  }, [ account ]);
+    if (account === undefined) return;
+    setPaymentMode(pullPayments && pullPayments.length && paymentModes.PAYU);
+    setTxType();
+    setRegisterForState();
+    setRegisterState();
+  }, [
+    account,
+    setPaymentMode,
+    pullPayments,
+    setTxType,
+    setRegisterForState,
+    setRegisterState,
+  ]);
 
   const formSubmit = useCallback((url, object) => {
     const form = document.createElement('form');
@@ -119,14 +215,13 @@ const Attendance = ({
         formWindow.close();
         break;
       }
-      // if payment made, break
     } while (true);
   }, [ backendURL ]);
 
   const payU = useCallback(() => {
     const payUGateway = settings[environment].payU.gateway;
     const environmentId = settings[environment].id
-    const counter = paymentList.length + 1;
+    const counter = pullPayments ? pullPayments.length : 0;
     const referenceCode = `${event}:${account}:${counter}:${environmentId}`;
     const fee = Math.round(toUSD(web3.utils.fromWei(feeWei)) * 100) / 100;
     const test = settings[environment].payU.test;
@@ -166,6 +261,7 @@ const Attendance = ({
     }).then(hash => {
       object.signature = hash;
       const formWindow = formSubmit(payUGateway, object);
+      setTransactionFetcher();
       awaitClosable(formWindow, referenceCode);
     }).catch(err => {
       console.error(err);
@@ -177,33 +273,23 @@ const Attendance = ({
     feeWei,
     account,
     user,
-    paymentList,
     backendURL,
     toUSD,
     awaitClosable,
     formSubmit,
+    pullPayments,
   ]);
 
-  const attendFree = useCallback(() => {
-    const object = { attendee: account, event };
-    post('attend', object, err => {
-      if (err) {
-        console.error(err);
-      }
-    });
-  }, [event, account]);
-
-  const attend = () => {
-    if (fee == 0) {
-      attendFree();
-    }
-    else {
-      payU();
-    }
-  }
+  const attend = useCallback(() => {
+    setPaymentMode(paymentModes.PAYU);
+    setPullState(transactionStates.PENDING);
+    setTxType();
+    payU();
+  }, [ setPaymentMode, setPullState, setTxType, payU ]);
 
   const sendEther = useCallback(async () => {
-    setEthState('usa Metamask para confirmar la transacción.');
+    setPaymentMode(paymentModes.ETHER);
+    setTxType();
     const gasPrice = await getGasPrice();
     const txOptions = {
       from: account,
@@ -211,20 +297,44 @@ const Attendance = ({
       gasPrice: gasPrice.propose,
       gas: 200000,
     };
-    contract.methods.register().send(txOptions)
-      .on('error', () => {
-        setEthState('');
-      }).on('transactionHash', hash => {
-        setTxHash(hash);
-        setEthState('transacción creada');
-        setEthMessage('esperando a que sea incluida en la blockchain...');
-      }).on('receipt', () => {
-        setEthState('transacción aceptada');
-        setEthMessage('registrando tu pago...');
-        getAttendees();
-        updateState();
+    setRegisterTxs(prev => {
+      const next = [];
+      if(prev) {
+        next.push(...prev);
+      }
+      next.push({
+        amount: web3.utils.fromWei(feeWei),
+        currency: 'ETH',
+        date: new Date().toISOString(),
+        state: transactionStates.PENDING,
       });
-  }, [ contract, account, getGasPrice, feeWei, updateState ]);
+      return next;
+    });
+    contract.methods.register().send(txOptions)
+      .on('error', error => {
+        setRegisterTxs(prev => {
+          const next = [ ...prev ];
+          const last = next.length - 1;
+          next[last].state = transactionStates.REJECTED;
+          next[last].message = error.message;
+          return next;
+        });
+      }).on('transactionHash', txHash => {
+        setRegisterTxs(prev => {
+          const next = [ ...prev ];
+          const last = next.length - 1;
+          next[last].txHash = txHash;
+          return next;
+        });
+      }).on('receipt', () => {
+        setRegisterTxs(prev => {
+          const next = [ ...prev ];
+          const last = next.length - 1;
+          next[last].state = transactionStates.APPROVED;
+          return next;
+        });
+      });
+  }, [ contract, account, getGasPrice, feeWei ]);
 
   if (account === null) {
     return (
@@ -239,10 +349,341 @@ const Attendance = ({
     );
   }
 
-  if (user === undefined || paymentList === undefined) return <Loading/>
+  if (user === undefined) return <Loading/>
 
   if (user === null) {
     return <Account/>
+  }
+
+  return (
+    <div
+      css={`
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      `}
+    >
+      <PaymentOptions
+        feeUSDWei={feeUSDWei}
+        feeWei={feeWei}
+        sendEther={sendEther}
+        attend={attend}
+        setPaymentMode={setPaymentModePreview}
+        userState={userState}
+        registerForState={registerForState}
+        registerState={registerState}
+      />
+      <PaymentProcess
+        paymentMode={paymentMode}
+        paymentModePreview={paymentModePreview}
+        registerState={registerState}
+        pullState={pullState}
+        pushState={pushState}
+        registerForState={registerForState}
+        txType={txType}
+        setTxType={setTxType}
+      />
+      <PaymentInfo
+        txType={txType}
+        pullPayments={pullPayments}
+        pushPayments={pushPayments}
+        registerForTxs={registerForTxs}
+        registerTxs={registerTxs}
+        userName={user}
+        contractAddress={contractAddress}
+        paymentModePreview={paymentModePreview}
+      />
+    </div>
+  );
+}
+
+const PaymentInfo = ({
+  txType,
+  pullPayments,
+  pushPayments,
+  registerForTxs,
+  registerTxs,
+  userName,
+  contractAddress,
+  paymentModePreview,
+}) => {
+
+  const [tx, setTx] = useState();
+  const [from, setFrom] = useState();
+  const [to, setTo] = useState();
+
+  useEffect(() => {
+    if (!txType) {
+      setTx(null);
+    }
+    else if (txType === txTypes.PULL) {
+      setFrom(userName);
+      setTo('PayU');
+      if (pullPayments && pullPayments.length) {
+        setTx(pullPayments[pullPayments.length - 1]);
+      } else {
+        setTx({});
+      }
+    } else if (txType === txTypes.PUSH) {
+      setFrom('PayU');
+      setTo('coinosis');
+      if (pushPayments && pushPayments.length) {
+        setTx(pushPayments[pushPayments.length - 1]);
+      } else {
+        setTx({});
+      }
+    } else if (txType === txTypes.REGISTER_FOR) {
+      setFrom(`coinosis (a nombre de ${userName})`);
+      setTo(`contrato ${contractAddress}`);
+      if (registerForTxs && registerForTxs.length) {
+        setTx(registerForTxs[registerForTxs.length - 1]);
+      } else {
+        setTx({});
+      }
+    } else if (txType === txTypes.REGISTER) {
+      setFrom(userName);
+      setTo(`contrato ${contractAddress}`);
+      if (registerTxs && registerTxs.length) {
+        setTx(registerTxs[registerTxs.length - 1]);
+      } else {
+        setTx({});
+      }
+    }
+  }, [
+    txType,
+    pullPayments,
+    pushPayments,
+    registerForTxs,
+    registerTxs,
+    userName,
+    contractAddress,
+  ]);
+
+  if (!tx || paymentModePreview) return null;
+
+  return (
+    <Table>
+      <Field name="Transacción">
+        {tx.txHash || tx.referenceCode}
+      </Field>
+      <Field name="Fecha">
+        {tx.date}
+      </Field>
+      <Field name="Origen">
+        {from}
+      </Field>
+      <Field name="Destino">
+        {to}
+      </Field>
+      <Field name="Cantidad">
+        {tx.amount}
+      </Field>
+      <Field name="Moneda">
+        {tx.currency}
+      </Field>
+      <Field name="Medio de pago">
+        {tx.method}
+      </Field>
+      <Field name="Estado">
+        {tx.state}
+      </Field>
+      <Field name="Mensaje">
+        {tx.message}
+      </Field>
+      <Field name="recibo">
+        {tx.receipt}
+      </Field>
+    </Table>
+  );
+}
+
+const Table = styled.div`
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0 10px;
+  margin-top: 30px;
+  max-width: 90%;
+`
+
+const Field = ({ name, children }) => {
+  if (!children) return null;
+  return (
+    <Row>
+      <Name>{name}:</Name>
+      <Value>{children}</Value>
+    </Row>
+  );
+}
+
+const Row = styled.div`
+  display: flex;
+  border-bottom: 1px solid #0e8f00;
+  padding: 10px;
+  &:last-of-type {
+    border: none;
+}
+`
+
+const Name = styled.div`
+  display: flex;
+  min-width: 150px;
+`
+
+const Value = styled.div`
+  display: flex;
+  word-break: break-all;
+`
+
+const PaymentProcess = ({
+  paymentMode,
+  paymentModePreview,
+  registerState,
+  pullState,
+  pushState,
+  registerForState,
+  txType,
+  setTxType,
+}) => {
+
+  if (!paymentMode && !paymentModePreview) return null;
+
+  return (
+    <div
+      css={`
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+      `}
+    >
+      <img src={userIcon} width="150" />
+      <TransactionIcon
+        setTxType={setTxType}
+        id={
+          paymentMode === paymentModes.ETHER
+            ? txTypes.REGISTER
+            : txTypes.PULL
+        }
+        selected={
+          paymentModePreview
+            ? false
+            : paymentMode === paymentModes.ETHER
+            ? txType === txTypes.REGISTER
+            : txType === txTypes.PULL
+        }
+        state={
+          paymentModePreview
+            ? ''
+            : paymentMode === paymentModes.ETHER
+            ? registerState
+            : paymentMode === paymentModes.PAYU
+            ? pullState
+            : ''
+        }
+      />
+      { (
+        paymentModePreview === paymentModes.PAYU
+          || (paymentMode === paymentModes.PAYU && !paymentModePreview)
+      ) && (
+        <>
+          <img src={payuIcon} width="150" />
+          <TransactionIcon
+            setTxType={setTxType}
+            id={txTypes.PUSH}
+            selected={paymentModePreview ? false : txType === txTypes.PUSH}
+            state={paymentModePreview ? '' : pushState}
+          />
+          <img src={coinosisIcon} width="150" />
+          <TransactionIcon
+            setTxType={setTxType}
+            id={txTypes.REGISTER_FOR}
+            selected={
+              paymentModePreview
+                ? false
+                : txType === txTypes.REGISTER_FOR
+            }
+            state={paymentModePreview ? '' : registerForState}
+          />
+        </>
+      ) }
+      <img src={contractIcon} width="150" />
+    </div>
+  );
+}
+
+const TransactionIcon = ({ state, setTxType, id, selected }) => {
+  const icon = state === transactionStates.PENDING
+        ? loadingIcon
+        : state === transactionStates.APPROVED
+        ? passIcon
+        : state === transactionStates.REJECTED
+        || state === transactionStates.DECLINED
+        || state === transactionStates.EXPIRED
+        ? failIcon
+        : '';
+  return (
+    <div
+      css={`
+        width: 141px;
+        height: 80px;
+        margin: 0 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: ${selected ? '#d0dfd0': 'initial'};
+        &:hover {
+          background: #d0dfd0;
+        };
+        border-radius: 5px;
+      `}
+      onClick={() => { setTxType(id) }}
+    >
+      <img
+        src={arrowIcon}
+        css={`
+          position: absolute;
+          width: 100px;
+        `}
+      />
+      <img
+        src={icon}
+        css={`
+          position: absolute;
+          width: 40px;
+        `}
+      />
+    </div>
+  );
+}
+
+const PaymentOptions = ({
+  feeUSDWei,
+  feeWei,
+  sendEther,
+  attend,
+  setPaymentMode,
+  userState,
+  registerForState,
+  registerState,
+}) => {
+
+  if (
+    userState >= userStates.REGISTERED
+      || registerForState === transactionStates.APPROVED
+      || registerState === transactionStates.APPROVED
+  ) {
+    return (
+      <div
+        css={`
+          font-size: 20px;
+          margin-bottom: 40px;
+        `}
+      >
+        Te inscribiste exitosamente
+      </div>
+    );
   }
 
   return (
@@ -275,167 +716,29 @@ const Attendance = ({
       <div
         css={`
           display: flex;
-          flex-direction: column;
-          align-items: center;
+          width: 50%;
+          justify-content: space-around;
         `}
       >
-        { !paymentList.length && !ethState ? (
-          <div
-            css={`
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            `}
-          >
-            <div
-              css={`
-                display: flex;
-                width: 50%;
-                justify-content: space-around;
-              `}
-            >
-              <button
-                onClick={sendEther}
-              >
-                envía ether
-              </button>
-              <button
-                onClick={attend}
-              >
-                paga con PayU
-              </button>
-            </div>
-            <div css="margin: 10px">
-              el dinero depositado se repartirá entre los asistentes por
-              votación.
-            </div>
-          </div>
-        ) : approved ? (
-          <div
-            css={`
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            `}
-          >
-            <SectionTitle>
-              tu pago fue aceptado
-            </SectionTitle>
-            { txHash ? (
-              <EtherscanLink type="tx" value={txHash} >
-                enviando transacción al contrato inteligente...
-              </EtherscanLink>
-            ) : (
-              <div>esperando confirmación por parte de PayU...</div>
-            ) }
-          </div>
-        ) : ethState ? (
-          <div
-            css={`
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            `}
-          >
-            <SectionTitle>
-              { ethState }
-            </SectionTitle>
-            { txHash ? (
-              <EtherscanLink type="tx" value={txHash}>
-                { ethMessage }
-              </EtherscanLink>
-            ) : ethMessage }
-          </div>
-        ) : pending ? (
-          <div
-            css={`
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            `}
-          >
-            <SectionTitle>
-              esperando a que se confirme la transacción usando PSE...
-            </SectionTitle>
-            <button onClick={attend}>
-              intenta de nuevo con PayU
-            </button>
-            <button
-              onClick={sendEther}
-            >
-              envía ether
-            </button>
-          </div>
-        ) : (
-          <div
-            css={`
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            `}
-          >
-            <SectionTitle>
-              tu pago fue rechazado
-            </SectionTitle>
-            { cashPayment && ('los pagos en efectivo están deshabilitados')}
-            <button
-              onClick={attend}
-            >
-              intenta de nuevo con PayU
-            </button>
-            <button
-              onClick={sendEther}
-            >
-              envía ether
-            </button>
-          </div>
-        )}
+        <button
+          onMouseOver={() => { setPaymentMode(paymentModes.ETHER) }}
+          onMouseOut={() => { setPaymentMode() }}
+          onClick={sendEther}
+        >
+          envía ether
+        </button>
+        <button
+          onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}
+          onMouseOut={() => { setPaymentMode() }}
+          onClick={attend}
+        >
+          envía dinero tradicional
+        </button>
       </div>
-      { !!paymentList && !!paymentList.length && (
-        <div>
-          <table
-            css={`
-              border-collapse: collapse;
-              td {
-                border: 1px solid black;
-                padding: 10px;
-              };
-            `}
-          >
-            <caption>
-              <SectionTitle>
-                historial de transacciones
-              </SectionTitle>
-            </caption>
-            <thead>
-              <tr>
-                <th>fecha</th>
-                <th>método</th>
-                <th>monto</th>
-                <th>resultado</th>
-                <th>referencia</th>
-              </tr>
-            </thead>
-            <tbody>
-              { paymentList.map(payment => {
-                const { pull } = payment;
-                if (pull === null) return (
-                  <tr><td>Intentando conectar con PayU...</td></tr>
-                );
-                return (
-                  <tr key={payment.referenceCode}>
-                    <td>{formatDate(new Date(pull.requestDate))}</td>
-                    <td>{pull.method}</td>
-                    <td>{pull.value} {pull.currency}</td>
-                    <td>{pull.response}</td>
-                    <td>{payment.referenceCode}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div css="margin: 10px">
+        el dinero depositado se repartirá entre los asistentes según los
+        aplausos recibidos.
+      </div>
     </div>
   );
 }

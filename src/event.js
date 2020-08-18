@@ -53,6 +53,7 @@ const Event = () => {
   const backendURL = useContext(BackendContext);
   const [contract, setContract] = useState();
   const [event, setEvent] = useState();
+  const [attendeeAddresses, setAttendeeAddresses] = useState();
   const [attendees, setAttendees] = useState();
   const [jitsters, setJitsters] = useState();
   const [eventState, setEventState] = useState();
@@ -162,36 +163,44 @@ const Event = () => {
     }
   }, [ event, updateContractState ]);
 
-  const getAttendees = useCallback(async () => {
+  const getAttendeeAddresses = useCallback(async () => {
     if (!contract) return;
     const addresses = await contract.methods.getAttendees().call();
-    if (!addresses.length) {
-      setAttendees([]);
-      return;
-    }
-    if (attendees === undefined) {
-      const nextAttendees = await Promise.all(addresses.map(a => getUser(a)));
-      setAttendees(nextAttendees);
-      return;
-    }
-    if (attendees.length === addresses.length) return;
-    const currentAddresses = attendees.map(a => a.address);
-    const nextAttendees = [ ...attendees ];
-    for (const address of addresses) {
-      if (currentAddresses.includes(address)) continue;
-      const attendee = await getUser(address);
-      nextAttendees.push(attendee);
-    }
-    setAttendees(nextAttendees);
-  }, [ contract, attendees, setAttendees, getUser ]);
+    setAttendeeAddresses(prev => {
+      if (!addresses || !addresses.length) return [];
+      if (prev && prev.length === addresses.length) return prev;
+      return addresses;
+    });
+  }, [ contract, setAttendeeAddresses ]);
 
   useEffect(() => {
-    getAttendees();
-    const updateAttendees = setInterval(getAttendees, 3000);
+    getAttendeeAddresses();
+    const updateAttendees = setInterval(getAttendeeAddresses, 3000);
     return () => {
       clearInterval(updateAttendees);
     }
-  }, [ getAttendees ]);
+  }, [ getAttendeeAddresses ]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (
+        !attendeeAddresses
+          || !attendeeAddresses.length
+          || (attendees && attendees.length === attendeeAddresses.length)
+      ) {
+        setAttendees([]);
+        return;
+      }
+      const nextAttendees = attendees ? [ ...attendees ] : [];
+      for (const address of attendeeAddresses) {
+        if (nextAttendees.map(a => a.address).includes(address)) continue;
+        const attendee = await getUser(address);
+        nextAttendees.push(attendee);
+      }
+      setAttendees(nextAttendees);
+    };
+    fetchUsers();
+  }, [ attendeeAddresses, setAttendees ]);
 
   const setContractRaw = useCallback(async address => {
     if (web3 === undefined || web3 === null) return;
@@ -266,7 +275,7 @@ const Event = () => {
     );
   }
 
-  if (attendees === undefined) return <Loading/>;
+  if (attendees === undefined || contract === undefined) return <Loading/>;
 
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
@@ -287,12 +296,8 @@ const Event = () => {
             event={event.url}
             fee={event.fee}
             feeWei={event.feeWei}
-            organizer={event.organizer}
-            attendees={attendees.map(a => a.address)}
-            getAttendees={getAttendees}
-            beforeStart={event.beforeStart}
-            end={event.end}
-            updateState={updateUserState}
+            userState={userState}
+            contractAddress={contract._address}
             />
         ) }
       { contractState === contractStates.DISTRIBUTION_MADE && (
