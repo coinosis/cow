@@ -290,13 +290,6 @@ const Attendance = ({
   const sendEther = useCallback(async () => {
     setPaymentMode(paymentModes.ETHER);
     setTxType();
-    const gasPrice = await getGasPrice();
-    const txOptions = {
-      from: account,
-      value: feeWei,
-      gasPrice: gasPrice.propose,
-      gas: 200000,
-    };
     setRegisterTxs(prev => {
       const next = [];
       if(prev) {
@@ -310,6 +303,13 @@ const Attendance = ({
       });
       return next;
     });
+    const gasPrice = await getGasPrice();
+    const txOptions = {
+      from: account,
+      value: feeWei,
+      gasPrice: gasPrice.propose,
+      gas: 200000,
+    };
     contract.methods.register().send(txOptions)
       .on('error', error => {
         setRegisterTxs(prev => {
