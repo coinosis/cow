@@ -677,11 +677,24 @@ const PaymentOptions = ({
     return (
       <div
         css={`
-          font-size: 20px;
+          display: flex;
           margin-bottom: 40px;
+          flex-direction: column;
+          align-items: center;
         `}
       >
-        Te inscribiste exitosamente
+        <div
+          css={`
+            font-size: 20px;
+          `}
+        >
+          Te inscribiste exitosamente
+        </div>
+        { userState < userStates.REGISTERED && (
+          <div>
+            Esperando a que tu inscripción se refleje en el contrato...
+          </div>
+        )}
       </div>
     );
   }
