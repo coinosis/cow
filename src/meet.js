@@ -60,12 +60,13 @@ const Meet = ({
       });
     });
 
-    API.on('displayNameChange', () => {
-      API.executeCommand('subject', eventName);
+    API.on('subjectChange', ({ subject }) => {
+      if (subject !== eventName) {
+        API.executeCommand('subject', eventName);
+      }
     });
 
     API.on('videoConferenceLeft', () => {
-      API.executeCommand('subject', eventName);
       API.dispose();
     });
 
