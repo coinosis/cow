@@ -228,6 +228,7 @@ const Event = () => {
           setEventState(eventStates.CALL_ENDED);
           setUserState(userStates.UNREGISTERED); // TODO
           setContractState(contractStates.DISTRIBUTION_MADE);
+          setContract(true);
         }
         const eventWithDates = convertDates(event);
         setEvent(eventWithDates);
@@ -270,7 +271,7 @@ const Event = () => {
           end={event.end}
           eventState={eventState}
         />
-        <NoContract/>
+        <NoContract currency={event.currency} />
       </div>
     );
   }
@@ -301,7 +302,7 @@ const Event = () => {
             />
         ) }
       { contractState === contractStates.DISTRIBUTION_MADE && (
-        <Result url={event.url} />
+        <Result url={event.url} currency={event.currency} />
       ) }
         <div css="display: flex">
           { userState >= userStates.REGISTERED

@@ -11,14 +11,20 @@ import { ToolTip, useETHPrice } from './helpers.js';
 const ethColor = '#97b9ca';
 const usdColor = '#97cab3';
 
-const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
+const Amount = ({
+  usd: usdWei,
+  eth: wei,
+  rate: rateWei,
+  currency: cryptocurrency,
+  ...props
+}) => {
 
   const web3 = useContext(Web3Context);
   const [currencyType, setCurrencyType] = useContext(CurrencyContext);
   const getETHPrice = useETHPrice();
 
   const [usd, setUSD] = useState();
-  const [eth, setETH] = useState('_.___ xDAI');
+  const [eth, setETH] = useState(`_.___ ${cryptocurrency}`);
   const [currency, setCurrency] = useState();
   const [rate, setRate] = useState();
   const [displayRate, setDisplayRate] = useState(false);
@@ -29,7 +35,7 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
     const ethRounded = Math.round(
       Number(web3.utils.fromWei(String(wei))) * 1000
     ) / 1000;
-    setETH(`${ethRounded} xDAI`);
+    setETH(`${ethRounded} ${cryptocurrency}`);
   }, [ wei ]);
 
   useEffect(() => {
@@ -45,14 +51,14 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
       else if (!wei) {
         wei = BigInt(usdWei) * BigInt(1e18) / BigInt(rateWei);
         const ethRounded = Number(web3.utils.fromWei(String(wei))).toFixed(3);
-        setETH(`${ethRounded} xDAI`);
+        setETH(`${ethRounded} ${cryptocurrency}`);
       }
       const usdRounded = Number(web3.utils.fromWei(String(usdWei))).toFixed(2);
       const rateRounded = Number(
         web3.utils.fromWei(String(rateWei))
       ).toFixed(2);
       setUSD(`${usdRounded} USD`);
-      setRate(`${rateRounded} USD/xDAI`);
+      setRate(`${rateRounded} USD/${cryptocurrency}`);
     }
     setValues();
   }, [ usdWei, wei, rateWei ]);

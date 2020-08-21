@@ -22,7 +22,7 @@ import {
 import { ContractContext } from './event';
 import Footer from './footer';
 
-const Result = ({ url: eventURL }) => {
+const Result = ({ url: eventURL, currency }) => {
 
   const web3 = useContext(Web3Context);
   const { version, contract: contractV2 } = useContext(ContractContext);
@@ -52,13 +52,13 @@ const Result = ({ url: eventURL }) => {
 
   return (
     <ContractContext.Provider value={{ contract, version }}>
-      <Assessments eventURL={eventURL} />
+      <Assessments eventURL={eventURL} currency={currency} />
       <Footer hidden={version >= 2} />
     </ContractContext.Provider>
   );
 }
 
-const Assessments = ({ eventURL }) => {
+const Assessments = ({ eventURL, currency }) => {
 
   const isMounted = useRef(true);
   const web3 = useContext(Web3Context);
@@ -171,7 +171,11 @@ const Assessments = ({ eventURL }) => {
     <div>
       {assessments.map(assessment => {
         return (
-          <Assessment key={assessment.id} { ...assessment } />
+          <Assessment
+            key={assessment.id}
+            currency={currency}
+            { ...assessment }
+          />
         );
       })}
     </div>
@@ -192,6 +196,7 @@ const Assessment = ({
   totalFeesWei,
   totalClaps,
   rewards,
+  currency,
 }) => {
 
   const [totalBalance, setTotalBalance] = useState();
@@ -221,6 +226,7 @@ const Assessment = ({
         registrationFeeWei={registrationFeeWei}
         ETHPriceUSDWei={ETHPriceUSDWei}
         totalFeesWei={totalFeesWei}
+        currency={currency}
       />
       <div
         css={`
@@ -262,6 +268,7 @@ const Assessment = ({
                   rate={ETHPriceUSDWei}
                   registrationFeeWei={registrationFeeWei}
                   ETHPriceUSDWei={ETHPriceUSDWei}
+                  currency={currency}
                 />
               );
             })}
@@ -287,6 +294,7 @@ const Assessment = ({
                 <Amount
                   eth={totalFeesWei}
                   rate={ETHPriceUSDWei}
+                  currency={currency}
                   css={`font-weight: bold`}
                 />
               </th>
@@ -295,6 +303,7 @@ const Assessment = ({
                   <Amount
                     eth={totalBalance}
                     rate={ETHPriceUSDWei}
+                    currency={currency}
                     css={`font-weight: bold`}
                   />
                 )}
@@ -316,6 +325,7 @@ const Header = ({
   registrationFeeWei,
   ETHPriceUSDWei,
   totalFeesWei,
+  currency,
 }) => {
   return (
     <div>
@@ -379,6 +389,7 @@ const Header = ({
             usd={registrationFeeUSDWei}
             eth={registrationFeeWei}
             rate={ETHPriceUSDWei}
+            currency={currency}
           />
         </div>
         <div
@@ -396,6 +407,7 @@ const Header = ({
           <Amount
             eth={totalFeesWei}
             rate={ETHPriceUSDWei}
+            currency={currency}
           />
         </div>
       </div>
@@ -413,6 +425,7 @@ const Participant = ({
   rate,
   registrationFeeWei,
   ETHPriceUSDWei,
+  currency,
 }) => {
 
   const isMounted = useRef(true);
@@ -510,17 +523,14 @@ const Participant = ({
           padding: 0 30px;
         `}
       >
-        <Amount eth={reward} rate={rate} />
+        <Amount eth={reward} rate={rate} currency={currency} />
       </td>
       <td
         css={`
           padding: 0 30px;
         `}
       >
-        <Amount
-          eth={balance}
-          rate={ETHPriceUSDWei}
-        />
+        <Amount eth={balance} rate={ETHPriceUSDWei} currency={currency} />
       </td>
       <td
         css={`

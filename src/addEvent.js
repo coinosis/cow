@@ -157,12 +157,14 @@ const AddEvent = ({ setEvents }) => {
     const beforeStart = subMinutes(start, minutesBefore);
     const endDate = dateFromTimestamp(end);
     const afterEnd = addMinutes(endDate, minutesAfter);
+    const currency = 'xDAI';
     const object = {
       address,
       name,
       url,
       description,
       feeWei,
+      currency,
       start,
       end: endDate,
       beforeStart,
@@ -216,6 +218,7 @@ const AddEvent = ({ setEvents }) => {
     const txOptions = {
       from: account,
       gas: 850000,
+      gasPrice: '50000000000',
     };
     const instance = await deployment.send(txOptions)
           .on('error', error => {

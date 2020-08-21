@@ -188,7 +188,7 @@ export const usePost = () => {
   }, [account, backendURL, web3]);
 }
 
-export const NoContract = () => {
+export const NoContract = ({ currency }) => {
 
   const web3 = useContext(Web3Context);
   const [provider, setProvider] = useState();
@@ -199,13 +199,17 @@ export const NoContract = () => {
     const { currentProvider } = web3;
     if (currentProvider.isNiftyWallet) {
       setProvider('Nifty Wallet');
-      setMainnet('xDAI');
+      setMainnet(currency === 'xDAI' ? 'xDai' : 'Ethereum');
     } else if (currentProvider.isMetaMask) {
       setProvider('Metamask');
-      setMainnet('xDAI');
+      if (currency === 'ETH') {
+        setMainnet('Main Ethereum Network');
+      } else if (currency === 'xDAI') {
+        setMainnet('xDai mediante un custom RPC, o instala Nifty Wallet');
+      }
     } else {
       setProvider('tu proveedor de Web3');
-      setMainnet('xDAI');
+      setMainnet(currency === 'xDAI' ? 'xDai' : 'Ethereum');
     }
   }, [ web3 ]);
 
@@ -321,7 +325,6 @@ export const useDistributionPrice = event => {
         setETHPrice(ethPriceWei);
       }
       const data = await response.json();
-      console.log(data);
       const ethPriceWei = web3.utils.toWei(data.ethPrice);
       setETHPrice(ethPriceWei);
     }
