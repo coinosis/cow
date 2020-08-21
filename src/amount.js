@@ -18,7 +18,7 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
   const getETHPrice = useETHPrice();
 
   const [usd, setUSD] = useState();
-  const [eth, setETH] = useState('_.___ ETH');
+  const [eth, setETH] = useState('_.___ xDAI');
   const [currency, setCurrency] = useState();
   const [rate, setRate] = useState();
   const [displayRate, setDisplayRate] = useState(false);
@@ -29,7 +29,7 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
     const ethRounded = Math.round(
       Number(web3.utils.fromWei(String(wei))) * 1000
     ) / 1000;
-    setETH(`${ethRounded} ETH`);
+    setETH(`${ethRounded} xDAI`);
   }, [ wei ]);
 
   useEffect(() => {
@@ -45,14 +45,14 @@ const Amount = ({ usd: usdWei, eth: wei, rate: rateWei, ...props }) => {
       else if (!wei) {
         wei = BigInt(usdWei) * BigInt(1e18) / BigInt(rateWei);
         const ethRounded = Number(web3.utils.fromWei(String(wei))).toFixed(3);
-        setETH(`${ethRounded} ETH`);
+        setETH(`${ethRounded} xDAI`);
       }
       const usdRounded = Number(web3.utils.fromWei(String(usdWei))).toFixed(2);
       const rateRounded = Number(
         web3.utils.fromWei(String(rateWei))
       ).toFixed(2);
       setUSD(`${usdRounded} USD`);
-      setRate(`${rateRounded} USD/ETH`);
+      setRate(`${rateRounded} USD/xDAI`);
     }
     setValues();
   }, [ usdWei, wei, rateWei ]);

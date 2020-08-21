@@ -2,7 +2,6 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { formatDistance } from 'date-fns';
 import { es } from 'date-fns/esm/locale';
 import {
-  useGasPrice,
   ATTENDEE_CLICKED_DISTRIBUTE,
   ATTENDEE_SENT_DISTRIBUTION,
 } from './helpers';
@@ -21,7 +20,6 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
   const [updater, setUpdater] = useState();
   const [distributed, setDistributed] = useState(false);
   const [txState, setTxState] = useState(state);
-  const getGasPrice = useGasPrice();
 
   const updateTime = useCallback(() => {
     setTime(new Date());
@@ -69,10 +67,8 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
     setTxState(ATTENDEE_CLICKED_DISTRIBUTE);
     setMessage('preparando transacción...');
     setDisabled(true);
-    const gasPrice = getGasPrice();
     const sendOptions = {
       from: account,
-      gasPrice: gasPrice.propose,
       gas: 900000,
     }
     setMessage('usa Metamask para enviar la transacción.');
@@ -89,7 +85,7 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
         updateState();
         fetch(`${backendURL}/distribution/${eventURL}`, { method: 'put' });
       });
-  }, [ backendURL, eventURL, contract, account, getGasPrice ]);
+  }, [ backendURL, eventURL, contract, account ]);
 
   return (
     <div

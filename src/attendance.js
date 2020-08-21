@@ -10,7 +10,6 @@ import Amount from './amount';
 import {
   environment,
   Loading,
-  useGasPrice,
   useConversions,
   sleep,
 } from './helpers';
@@ -55,7 +54,6 @@ const Attendance = ({
 }) => {
 
   const { contract } = useContext(ContractContext);
-  const getGasPrice = useGasPrice();
   const web3 = useContext(Web3Context);
   const { account, name: user } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
@@ -223,7 +221,7 @@ const Attendance = ({
     const environmentId = settings[environment].id
     const counter = pullPayments ? pullPayments.length : 0;
     const referenceCode = `${event}:${account}:${counter}:${environmentId}`;
-    const fee = Math.round(toUSD(web3.utils.fromWei(feeWei)) * 100) / 100;
+    const fee = Number(web3.utils.fromWei(feeWei)).toFixed(2);
     const test = settings[environment].payU.test;
     const callback = process.env.CALLBACK || backendURL;
     const object = {
@@ -297,17 +295,15 @@ const Attendance = ({
       }
       next.push({
         amount: web3.utils.fromWei(feeWei),
-        currency: 'ETH',
+        currency: 'xDAI',
         date: new Date().toISOString(),
         state: transactionStates.PENDING,
       });
       return next;
     });
-    const gasPrice = await getGasPrice();
     const txOptions = {
       from: account,
       value: feeWei,
-      gasPrice: gasPrice.propose,
       gas: 200000,
     };
     contract.methods.register().send(txOptions)
@@ -334,7 +330,7 @@ const Attendance = ({
           return next;
         });
       });
-  }, [ contract, account, getGasPrice, feeWei ]);
+  }, [ contract, account, feeWei ]);
 
   if (account === null) {
     return (
@@ -720,7 +716,7 @@ const PaymentOptions = ({
             margin: 0 5px 10px;
           `}
         >
-          <Amount usd={feeUSDWei} eth={feeWei} />
+          <Amount usd={feeUSDWei} eth={feeWei} rate={1e18} />
         </div>
         <div>
           para participar.
@@ -738,7 +734,7 @@ const PaymentOptions = ({
           onMouseOut={() => { setPaymentMode() }}
           onClick={sendEther}
         >
-          envía ether
+          envía xDAI
         </button>
         <button
           onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}

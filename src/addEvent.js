@@ -12,8 +12,6 @@ import { Web3Context, AccountContext } from './coinosis';
 import {
   environment,
   usePost,
-  useConversions,
-  useGasPrice,
   timestampInSeconds,
   dateFromTimestamp,
 } from './helpers';
@@ -24,8 +22,6 @@ registerLocale('es', es);
 const AddEvent = ({ setEvents }) => {
 
   const post = usePost();
-  const { toETH, toUSD } = useConversions();
-  const getGasPrice = useGasPrice();
   const web3 = useContext(Web3Context);
   const { account, name: userName } = useContext(AccountContext);
   const [name, setName] = useState('');
@@ -108,19 +104,19 @@ const AddEvent = ({ setEvents }) => {
     const feeETH = getFee(value, 3);
     if (feeETH === null) return;
     setFeeETH(feeETH);
-    const valueUSD = toUSD(feeETH);
+    const valueUSD = feeETH;
     const fee = getFee(valueUSD, 2);
     setFee(fee);
-  }, [ getFee, toUSD ]);
+  }, [ getFee ]);
 
   const setFeeRaw = useCallback(({ target: { value }}) => {
     const fee = getFee(value, 2);
     if (fee === null) return;
     setFee(fee);
-    const valueETH = toETH(fee);
+    const valueETH = fee;
     const feeETH = getFee(valueETH, 3);
     setFeeETH(feeETH);
-  }, [ getFee, toETH ]);
+  }, [ getFee ]);
 
   const preSetStart = useCallback(start => {
     setStart(start);
@@ -210,7 +206,6 @@ const AddEvent = ({ setEvents }) => {
     const contract = new web3.eth.Contract(abi);
     const feeWei = web3.utils.toWei(String(feeETH));
     const endTimestamp = timestampInSeconds(end);
-    const gasPrice = await getGasPrice();
     const deployData = {
       data: bin,
       arguments: [feeWei, endTimestamp],
@@ -221,7 +216,6 @@ const AddEvent = ({ setEvents }) => {
     const txOptions = {
       from: account,
       gas: 850000,
-      gasPrice: gasPrice.propose,
     };
     const instance = await deployment.send(txOptions)
           .on('error', error => {
@@ -248,7 +242,6 @@ const AddEvent = ({ setEvents }) => {
     url,
     feeETH,
     account,
-    getGasPrice,
     end,
     minutesAfter,
   ]);
@@ -318,7 +311,7 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="costo de inscripción:"
+            label="depósito por participante:"
             element={
               <div
                 css={`
@@ -331,7 +324,7 @@ const AddEvent = ({ setEvents }) => {
                   type="text"
                   css="width: 60px"
                 />
-                <div css="margin-left: 5px">ETH</div>
+                <div css="margin-left: 5px">xDAI</div>
                 <div css="margin-left: 20px">(</div>
                 <input
                   value={fee}

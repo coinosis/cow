@@ -10,7 +10,6 @@ import { ContractContext } from './event';
 import {
   EtherscanLink,
   Loading,
-  useGasPrice,
   usePost,
   ATTENDEE_REGISTERED,
   ATTENDEE_CLICKED_SEND,
@@ -40,7 +39,6 @@ const Assessment = ({
   const [txHash, setTxHash] = useState();
   const [txState, setTxState] = useState(ATTENDEE_REGISTERED);
   const post = usePost();
-  const getGasPrice = useGasPrice();
 
   useEffect(() => {
     setAssessment({});
@@ -105,10 +103,9 @@ const Assessment = ({
   }, [assessment]);
 
   const sendToContract = useCallback(async (addresses, claps) => {
-    const gasPrice = await getGasPrice();
     const gas = 8500 * addresses.length + 40000;
     await contract.methods.clap(addresses, claps)
-          .send({ from: account, gasPrice: gasPrice.propose, gas })
+          .send({ from: account, gas })
           .on('transactionHash', transactionHash => {
             setTxState(ATTENDEE_SENT_CLAPS);
             setTxHash(transactionHash);
@@ -117,7 +114,7 @@ const Assessment = ({
           }).on('error', () => {
             setTxState(ATTENDEE_REGISTERED);
           });
-  }, [ getGasPrice, contract, account ]);
+  }, [ contract, account ]);
 
   const sendToBackend = useCallback((addresses, claps) => {
     const object = { event, sender: account, addresses, claps };

@@ -116,7 +116,7 @@ export const EtherscanLink = ({
   const [showToolTip, setShowToolTip] = useState(false);
 
   useEffect(() => {
-    let href = `https://etherscan.io/${type}/${value}`;
+    let href = `https://blockscout.com/poa/dai/${type}/${value}`;
     if (internal) {
       href += '#internal';
       if (type === 'address') {
@@ -198,14 +198,14 @@ export const NoContract = () => {
     if (web3 === undefined) return;
     const { currentProvider } = web3;
     if (currentProvider.isNiftyWallet) {
-      setProvider('Nifty');
-      setMainnet('Ethereum');
+      setProvider('Nifty Wallet');
+      setMainnet('xDAI');
     } else if (currentProvider.isMetaMask) {
       setProvider('Metamask');
-      setMainnet('Main Ethereum Network');
+      setMainnet('xDAI');
     } else {
       setProvider('tu proveedor de Web3');
-      setMainnet('la red principal de Ethereum');
+      setMainnet('xDAI');
     }
   }, [ web3 ]);
 
@@ -321,6 +321,7 @@ export const useDistributionPrice = event => {
         setETHPrice(ethPriceWei);
       }
       const data = await response.json();
+      console.log(data);
       const ethPriceWei = web3.utils.toWei(data.ethPrice);
       setETHPrice(ethPriceWei);
     }
