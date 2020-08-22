@@ -299,6 +299,7 @@ const Event = () => {
             feeWei={event.feeWei}
             userState={userState}
             contractAddress={contract._address}
+            currency={event.currency}
             />
         ) }
       { contractState === contractStates.DISTRIBUTION_MADE && (
@@ -322,14 +323,15 @@ const Event = () => {
                 url={event.url}
                 attendees={attendees}
                 jitsters={jitsters}
-                />
+              />
               <Distribute
                 eventURL={event.url}
                 end={event.end}
                 state={userState}
                 updateState={updateUserState}
                 reward={reward}
-                />
+                currency={event.currency}
+              />
             </div>
           ) }
           { userState >= userStates.REGISTERED

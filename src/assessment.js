@@ -104,16 +104,17 @@ const Assessment = ({
 
   const sendToContract = useCallback(async (addresses, claps) => {
     const gas = 8500 * addresses.length + 40000;
+    const gasPrice = '50000000000';
     await contract.methods.clap(addresses, claps)
-          .send({ from: account, gas })
-          .on('transactionHash', transactionHash => {
-            setTxState(ATTENDEE_SENT_CLAPS);
-            setTxHash(transactionHash);
-          }).on('receipt', () => {
-            updateState();
-          }).on('error', () => {
-            setTxState(ATTENDEE_REGISTERED);
-          });
+      .send({ from: account, gas, gasPrice })
+      .on('transactionHash', transactionHash => {
+        setTxState(ATTENDEE_SENT_CLAPS);
+        setTxHash(transactionHash);
+      }).on('receipt', () => {
+        updateState();
+      }).on('error', () => {
+        setTxState(ATTENDEE_REGISTERED);
+      });
   }, [ contract, account ]);
 
   const sendToBackend = useCallback((addresses, claps) => {

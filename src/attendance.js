@@ -51,6 +51,7 @@ const Attendance = ({
   feeWei,
   userState,
   contractAddress,
+  currency,
 }) => {
 
   const { contract } = useContext(ContractContext);
@@ -305,6 +306,7 @@ const Attendance = ({
       from: account,
       value: feeWei,
       gas: 200000,
+      gasPrice: '50000000000',
     };
     contract.methods.register().send(txOptions)
       .on('error', error => {
@@ -368,6 +370,7 @@ const Attendance = ({
         userState={userState}
         registerForState={registerForState}
         registerState={registerState}
+        currency={currency}
       />
       <PaymentProcess
         paymentMode={paymentMode}
@@ -663,6 +666,7 @@ const PaymentOptions = ({
   userState,
   registerForState,
   registerState,
+  currency,
 }) => {
 
   if (
@@ -716,7 +720,12 @@ const PaymentOptions = ({
             margin: 0 5px 10px;
           `}
         >
-          <Amount usd={feeUSDWei} eth={feeWei} rate={1e18} />
+          <Amount
+            usd={feeUSDWei}
+            eth={feeWei}
+            rate={1e18}
+            currency={currency}
+          />
         </div>
         <div>
           para participar.

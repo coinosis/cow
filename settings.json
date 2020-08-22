@@ -14,7 +14,7 @@
     },
     "addEvent": {
       "prepopulate": {
-        "minutesFromNow": 2
+        "minutesFromNow": 1
       },
       "duration": 10,
       "before": 1,

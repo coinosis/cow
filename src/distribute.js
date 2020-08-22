@@ -9,7 +9,14 @@ import Amount from './amount';
 import { BackendContext, AccountContext } from './coinosis';
 import { ContractContext, userStates } from './event';
 
-const Distribute = ({ eventURL, end, state, updateState, reward }) => {
+const Distribute = ({
+  eventURL,
+  end,
+  state,
+  updateState,
+  reward,
+  currency,
+}) => {
 
   const { contract } = useContext(ContractContext);
   const backendURL = useContext(BackendContext);
@@ -70,6 +77,7 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
     const sendOptions = {
       from: account,
       gas: 900000,
+      gasPrice: '50000000000',
     }
     setMessage('usa Metamask para enviar la transacción.');
     contract.methods.distribute().send(sendOptions)
@@ -158,7 +166,7 @@ const Distribute = ({ eventURL, end, state, updateState, reward }) => {
           <div css="margin-right: 10px">
             recibiste
           </div>
-          <Amount eth={reward}/>
+          <Amount eth={reward} currency={currency} />
         </div>
       )}
     </div>
