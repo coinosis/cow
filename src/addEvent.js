@@ -218,7 +218,7 @@ const AddEvent = ({ setEvents }) => {
     const txOptions = {
       from: account,
       gas: 850000,
-      gasPrice: '50000000000',
+      gasPrice: '1000000000',
     };
     const instance = await deployment.send(txOptions)
           .on('error', error => {

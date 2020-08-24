@@ -306,7 +306,7 @@ const Attendance = ({
       from: account,
       value: feeWei,
       gas: 200000,
-      gasPrice: '50000000000',
+      gasPrice: '1000000000',
     };
     contract.methods.register().send(txOptions)
       .on('error', error => {

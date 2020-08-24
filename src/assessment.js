@@ -104,7 +104,7 @@ const Assessment = ({
 
   const sendToContract = useCallback(async (addresses, claps) => {
     const gas = 8500 * addresses.length + 40000;
-    const gasPrice = '50000000000';
+    const gasPrice = '1000000000';
     await contract.methods.clap(addresses, claps)
       .send({ from: account, gas, gasPrice })
       .on('transactionHash', transactionHash => {
