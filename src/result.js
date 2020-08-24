@@ -48,7 +48,7 @@ const Result = ({ url: eventURL, currency }) => {
     else if (version === 1 || version === 0) setContractV1And0(version);
   }, [ version, contractV2, setContractV1And0 ]);
 
-  if (contract === null) return <NoContract/>
+  if (contract === null) return <NoContract currency={currency} />
 
   return (
     <ContractContext.Provider value={{ contract, version }}>

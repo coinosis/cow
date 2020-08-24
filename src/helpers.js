@@ -7,6 +7,10 @@ import {
   AccountContext,
   BackendContext,
 } from './coinosis';
+import ethereumMetamask from './assets/ethereumMetamask.gif';
+import xDaiMetamask from './assets/xDaiMetamask.gif';
+import ethereumNifty from './assets/ethereumNifty.gif';
+import xDaiNifty from './assets/xDaiNifty.gif';
 
 export const environment = process.env.ENVIRONMENT || 'development';
 
@@ -191,25 +195,38 @@ export const usePost = () => {
 export const NoContract = ({ currency }) => {
 
   const web3 = useContext(Web3Context);
+  const [network, setNetwork] = useState();
   const [provider, setProvider] = useState();
-  const [mainnet, setMainnet] = useState();
+  const [rpcData, setRPCData] = useState();
+  const [gif, setGIF] = useState();
 
   useEffect(() => {
     if (web3 === undefined) return;
     const { currentProvider } = web3;
     if (currentProvider.isNiftyWallet) {
-      setProvider('Nifty Wallet');
-      setMainnet(currency === 'xDAI' ? 'xDai' : 'Ethereum');
+      setNetwork(currency === 'xDAI' ? 'xDai' : 'Ethereum');
+      setProvider('Nifty Wallet.');
+      setGIF(currency === 'xDAI' ? xDaiNifty : ethereumNifty);
     } else if (currentProvider.isMetaMask) {
-      setProvider('Metamask');
       if (currency === 'ETH') {
-        setMainnet('Main Ethereum Network');
+        setNetwork('Main Ethereum Network');
+        setProvider('Metamask.');
+        setGIF(ethereumMetamask);
       } else if (currency === 'xDAI') {
-        setMainnet('xDai mediante un custom RPC, o instala Nifty Wallet');
+        setNetwork('Custom RPC');
+        setProvider('Metamask e ingresa los siguientes datos:');
+        setRPCData({
+          'Network Name': 'xDai',
+          'New RPC URL': 'https://xdai.poanetwork.dev',
+          ChainID: 100,
+          Symbol: 'xDai',
+          'Block Explorer URL': 'https://blockscout.com/poa/xdai',
+        });
+        setGIF(xDaiMetamask);
       }
     } else {
-      setProvider('tu proveedor de Web3');
-      setMainnet(currency === 'xDAI' ? 'xDai' : 'Ethereum');
+      setNetwork(currency === 'xDAI' ? 'xDai' : 'Ethereum');
+      setProvider('tu proveedor de Web3.');
     }
   }, [ web3 ]);
 
@@ -222,11 +239,26 @@ export const NoContract = ({ currency }) => {
       `}
     >
       <SectionTitle>
-        ningún contrato ha sido desplegado en esta red
+        estás en la cadena equivocada
       </SectionTitle>
       <div>
-        por favor apunta {provider} a {mainnet}.
+        por favor selecciona &quot;{network}&quot; en {provider}
       </div>
+      { rpcData && (
+        <div
+          css={`
+            display: flex;
+            flex-direction: column;
+          `}
+        >
+          <ul>
+            { Object.keys(rpcData).map(key => (
+              <li key={key}>{key}: <b>{rpcData[key]}</b></li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <img src={gif} css="border: 1px solid black;" />
     </div>
   )
 }
