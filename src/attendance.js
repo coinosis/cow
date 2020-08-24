@@ -89,7 +89,10 @@ const Attendance = ({
       setPullPayments(prev => {
         if (prev && prev.length === transaction.pull.length) {
           const prevAccount = prev[0].referenceCode.split(':')[1];
-          if (prevAccount === account) {
+          const prevState = prev[prev.length - 1].state;
+          if (
+            prevAccount === account && prevState !== transactionStates.PENDING
+          ) {
             return prev;
           }
         }
@@ -175,7 +178,6 @@ const Attendance = ({
   useEffect(() => {
     if (account === undefined) return;
     setPaymentMode(pullPayments && pullPayments.length && paymentModes.PAYU);
-    setTxType();
     setRegisterForState();
     setRegisterState();
   }, [
