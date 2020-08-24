@@ -102,7 +102,9 @@ const Profile = () => {
 
   if (account === null) {
     return (
-      <div css="display: flex; justify-content: center"><Account/></div>
+      <div css="display: flex; justify-content: center">
+        <Account large={true} />
+      </div>
     );
   }
 

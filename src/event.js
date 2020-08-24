@@ -255,7 +255,7 @@ const Event = () => {
             justify-content: center;
           `}
         >
-          <Account />
+          <Account large={true} />
         </div>
       </div>
     );

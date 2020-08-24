@@ -1,8 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
 import { Loading, Link, usePost, sleep } from './helpers.js';
+import unlockNifty from './assets/unlockNifty.gif';
 
-const Account = () => {
+const Account = ({ large }) => {
 
   const web3 = useContext(Web3Context);
   const backendURL = useContext(BackendContext);
@@ -83,7 +84,7 @@ const Account = () => {
     );
   }
   if (account === undefined) return <Loading />
-  if (account === null) return <Login />
+  if (account === null) return <Login large={large} />
 
   if (name === null) {
     return (
@@ -138,12 +139,32 @@ const Account = () => {
 
 }
 
-const Login = () => {
+const Login = ({ large }) => {
 
   const web3 = useContext(Web3Context);
+  const { currentProvider } = web3;
   const login = useCallback(() => {
     web3.eth.requestAccounts();
   }, [web3]);
+
+  if (currentProvider.isNiftyWallet) {
+    return (
+      <div
+        css={`
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        `}
+      >
+        <div>
+          inicia sesión en Nifty Wallet
+        </div>
+        { large && (
+          <img src={unlockNifty} css="border: 1px solid black;" />
+        )}
+      </div>
+    );
+  }
 
   return (
     <button
