@@ -346,7 +346,7 @@ const Event = () => {
               />
             ) }
         </div>
-      <Footer hidden={event.version < 2} />
+      <Footer hidden={event.version < 2} currency={event.currency} />
     </ContractContext.Provider>
   );
 }

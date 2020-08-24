@@ -69,7 +69,7 @@ const shorten = address => {
   return `${prefix}...${postfix}`;
 }
 
-export const Hash = ({ type, value, toolTipPosition="top" }) => {
+export const Hash = ({ type, value, currency, toolTipPosition="top" }) => {
 
   const [short, setShort] = useState();
 
@@ -83,6 +83,7 @@ export const Hash = ({ type, value, toolTipPosition="top" }) => {
       <EtherscanLink
         type={type}
         value={value}
+        currency={currency}
         toolTipPosition={toolTipPosition}
       >
         {short}
@@ -112,6 +113,7 @@ export const EtherscanLink = ({
   value,
   internal=false,
   children,
+  currency,
   toolTipPosition="top",
   ...props
 }) => {
@@ -120,7 +122,10 @@ export const EtherscanLink = ({
   const [showToolTip, setShowToolTip] = useState(false);
 
   useEffect(() => {
-    let href = `https://blockscout.com/poa/dai/${type}/${value}`;
+    const blockExplorer = currency === 'xDAI'
+          ? 'https://blockscout.com/poa/dai'
+          : 'https://etherscan.io';
+    let href = `${blockExplorer}/${type}/${value}`;
     if (internal) {
       href += '#internal';
       if (type === 'address') {

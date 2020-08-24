@@ -3,7 +3,7 @@ import { Hash } from './helpers';
 import { ContractContext } from './event';
 import { Web3Context } from './coinosis';
 
-const Footer = ({ hidden }) => {
+const Footer = ({ hidden, currency }) => {
   return (
     <div
       css={`
@@ -14,12 +14,12 @@ const Footer = ({ hidden }) => {
         justify-content: center;
       `}
     >
-      <ContractInfo/>
+      <ContractInfo currency={currency} />
     </div>
   );
 }
 
-const ContractInfo = () => {
+const ContractInfo = ({ currency }) => {
 
   const web3 = useContext(Web3Context);
   const { contract, version } = useContext(ContractContext);
@@ -64,7 +64,12 @@ const ContractInfo = () => {
           margin: 0 5px;
         `}
       >
-        <Hash type="address" value={address} toolTipPosition="top" />
+        <Hash
+          type="address"
+          value={address}
+          toolTipPosition="top"
+          currency={currency}
+        />
       </div>
       <div
         css={`
