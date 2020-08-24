@@ -228,7 +228,6 @@ const Event = () => {
           setEventState(eventStates.CALL_ENDED);
           setUserState(userStates.UNREGISTERED); // TODO
           setContractState(contractStates.DISTRIBUTION_MADE);
-          setContract(true);
         }
         const eventWithDates = convertDates(event);
         setEvent(eventWithDates);
@@ -276,7 +275,7 @@ const Event = () => {
     );
   }
 
-  if (attendees === undefined || contract === undefined) return <Loading/>;
+  if (attendees === undefined) return <Loading/>;
 
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
