@@ -32,9 +32,9 @@ const eventStates = {
 export const userStates = {
   UNREGISTERED: 0,
   REGISTERED: 1,
-  ATTENDING: 2,
-  CLAPPED: 3,
-  REWARDED: 4,
+  ATTENDING: 1.5,
+  CLAPPED: 2,
+  REWARDED: 3,
 };
 
 const contractStates = {

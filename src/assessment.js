@@ -10,7 +10,7 @@ import {
   EtherscanLink,
   Loading,
   usePost,
-  ATTENDEE_REGISTERED,
+  ATTENDEE_ATTENDING,
   ATTENDEE_CLICKED_SEND,
   ATTENDEE_SENT_CLAPS,
   ATTENDEE_CLAPPED,
@@ -26,6 +26,7 @@ const Assessment = ({
   jitsters,
   ownClaps,
   currency,
+  signature,
 }) => {
 
   const web3 = useContext(Web3Context);
@@ -38,7 +39,7 @@ const Assessment = ({
   const [clapsError, setClapsError] = useState(false);
   const [proxy, setProxy] = useState();
   const [txHash, setTxHash] = useState();
-  const [txState, setTxState] = useState(ATTENDEE_REGISTERED);
+  const [txState, setTxState] = useState(ATTENDEE_ATTENDING);
   const post = usePost();
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const Assessment = ({
         setState(ATTENDEE_CLAPPED);
       }).catch(error => {
         if (error.toString().includes('404')) {
-          setState(ATTENDEE_REGISTERED);
+          setState(ATTENDEE_ATTENDING);
         } else {
           console.error(error);
         }
@@ -115,7 +116,7 @@ const Assessment = ({
       }).on('receipt', () => {
         updateState();
       }).on('error', () => {
-        setTxState(ATTENDEE_REGISTERED);
+        setTxState(ATTENDEE_ATTENDING);
       });
   }, [ contract, account ]);
 
@@ -123,7 +124,7 @@ const Assessment = ({
     const object = { event, sender: account, addresses, claps };
     post('assessments', object, async (error, data) => {
       if (error) {
-        setTxState(ATTENDEE_REGISTERED);
+        setTxState(ATTENDEE_ATTENDING);
         console.error(error);
         return;
       }
@@ -200,6 +201,7 @@ const Assessment = ({
         version={version}
         txState={txState}
         event={event}
+        signature={signature}
         ownClaps={ownClaps}
         currency={currency}
       />
@@ -214,7 +216,7 @@ const Assessment = ({
           >
             <button
               onClick={send}
-              disabled={txState > ATTENDEE_REGISTERED}
+              disabled={txState > ATTENDEE_ATTENDING}
             >
               {state >= ATTENDEE_CLAPPED
                ? 'enviado'
@@ -302,10 +304,12 @@ const Users = ({
   version,
   txState,
   event,
+  signature,
   ownClaps,
   currency,
 }) => {
 
+  const { account } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [clapsLeft, setClapsLeft] = useState();
 
@@ -319,7 +323,13 @@ const Users = ({
       fetch(`${backendURL}/clap`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ event, user: address, delta }),
+        body: JSON.stringify({
+          event,
+          clapper: account,
+          clapee: address,
+          delta,
+          signature,
+        }),
       });
     }
     setClapsLeft(clapsLeft);
