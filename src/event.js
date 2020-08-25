@@ -338,6 +338,7 @@ const Event = () => {
                 attendees={attendees}
                 jitsters={jitsters}
                 ownClaps={ownClaps}
+                currency={event.currency}
               />
               <Distribute
                 eventURL={event.url}

@@ -25,6 +25,7 @@ const Assessment = ({
   attendees,
   jitsters,
   ownClaps,
+  currency,
 }) => {
 
   const web3 = useContext(Web3Context);
@@ -187,6 +188,7 @@ const Assessment = ({
         state={state}
         txHash={txHash}
         txState={txState}
+        currency={currency}
       />
       <Users
         attendees={attendees}
@@ -199,6 +201,7 @@ const Assessment = ({
         txState={txState}
         event={event}
         ownClaps={ownClaps}
+        currency={currency}
       />
       <tfoot>
         <tr>
@@ -227,7 +230,7 @@ const Assessment = ({
   );
 }
 
-const Claps = ({ clapsLeft, clapsError, state, txHash, txState }) => {
+const Claps = ({ clapsLeft, clapsError, state, txHash, txState, currency }) => {
 
   if (txState >= ATTENDEE_CLICKED_SEND) {
     return (
@@ -249,6 +252,7 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState }) => {
                 <EtherscanLink
                   type="tx"
                   value={txHash}
+                  currency={currency}
                 >
                   confirmando transacción...
                 </EtherscanLink>
@@ -299,6 +303,7 @@ const Users = ({
   txState,
   event,
   ownClaps,
+  currency,
 }) => {
 
   const backendURL = useContext(BackendContext);
@@ -341,6 +346,7 @@ const Users = ({
              txState={txState}
              clapsLeft={clapsLeft}
              ownClaps={ownClaps}
+             currency={currency}
            />
          );
       })}
@@ -360,6 +366,7 @@ const User = ({
   txState,
   clapsLeft,
   ownClaps,
+  currency,
 }) => {
 
   const { account } = useContext(AccountContext);
@@ -386,6 +393,7 @@ const User = ({
               color: ${present ? 'black' : '#a0a0a0'};
             }
           `}
+          currency={currency}
         >
           {name}
         </EtherscanLink>
