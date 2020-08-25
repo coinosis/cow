@@ -95,11 +95,12 @@ const Assessment = ({
     const clapsLeft = computeClapsLeft(newAssessment);
     if (clapsLeft < 0) {
       setClapsError(true);
-      return;
+      return -1;
     }
     setClapsError(false);
     setAssessment(newAssessment);
-  }, [assessment]);
+    return clapsLeft;
+  }, [ assessment ]);
 
   const sendToContract = useCallback(async (addresses, claps) => {
     const gas = 8500 * addresses.length + 40000;
@@ -195,6 +196,7 @@ const Assessment = ({
         state={state}
         version={version}
         txState={txState}
+        event={event}
       />
       <tfoot>
         <tr>
@@ -293,17 +295,27 @@ const Users = ({
   state,
   version,
   txState,
+  event,
 }) => {
 
-  const setClaps = useCallback((address, value) => {
-    if (isNaN(value)) return;
-    const claps = Math.abs(Math.floor(Number(value)))
-    attemptAssessment(assessment => {
-      const newAssessment = {...assessment}
-      newAssessment[address] = +claps;
+  const backendURL = useContext(BackendContext);
+  const [clapsLeft, setClapsLeft] = useState();
+
+  const setClaps = useCallback((address, delta) => {
+    const clapsLeft = attemptAssessment(assessment => {
+      const newAssessment = { ...assessment };
+      newAssessment[address] += delta;
       return newAssessment;
     });
-  }, [assessment]);
+    if (clapsLeft >= 0) {
+      fetch(`${backendURL}/clap`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event, user: address, delta }),
+      });
+    }
+    setClapsLeft(clapsLeft);
+  }, [ assessment ]);
 
   return (
     <tbody>
@@ -320,10 +332,11 @@ const Users = ({
              present={Boolean(jitster)}
              speaker={speaker}
              claps={claps}
-             setClaps={value => setClaps(address, value)}
+             setClaps={delta => setClaps(address, delta)}
              state={state}
              version={version}
              txState={txState}
+             clapsLeft={clapsLeft}
            />
          );
       })}
@@ -341,6 +354,7 @@ const User = ({
   state,
   version,
   txState,
+  clapsLeft,
 }) => {
 
   const { account } = useContext(AccountContext);
@@ -373,8 +387,12 @@ const User = ({
       </td>
       <td>
         <button
-          disabled={txState >= ATTENDEE_CLICKED_SEND || ownAddress}
-          onClick={() => { setClaps(claps - 1); }}
+          disabled={
+            txState >= ATTENDEE_CLICKED_SEND
+              || ownAddress
+              || claps === 0
+          }
+          onClick={() => { setClaps(-1); }}
         >
           -
         </button>
@@ -396,8 +414,12 @@ const User = ({
       </td>
       <td>
         <button
-          disabled={txState >= ATTENDEE_CLICKED_SEND || ownAddress}
-          onClick={() => { setClaps(claps + 1); }}
+          disabled={
+            txState >= ATTENDEE_CLICKED_SEND
+              || ownAddress
+              || clapsLeft === 0
+          }
+          onClick={() => { setClaps(1); }}
         >
           +
         </button>
