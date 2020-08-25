@@ -24,6 +24,7 @@ const Assessment = ({
   url: event,
   attendees,
   jitsters,
+  ownClaps,
 }) => {
 
   const web3 = useContext(Web3Context);
@@ -197,6 +198,7 @@ const Assessment = ({
         version={version}
         txState={txState}
         event={event}
+        ownClaps={ownClaps}
       />
       <tfoot>
         <tr>
@@ -296,6 +298,7 @@ const Users = ({
   version,
   txState,
   event,
+  ownClaps,
 }) => {
 
   const backendURL = useContext(BackendContext);
@@ -337,6 +340,7 @@ const Users = ({
              version={version}
              txState={txState}
              clapsLeft={clapsLeft}
+             ownClaps={ownClaps}
            />
          );
       })}
@@ -355,6 +359,7 @@ const User = ({
   version,
   txState,
   clapsLeft,
+  ownClaps,
 }) => {
 
   const { account } = useContext(AccountContext);
@@ -405,7 +410,7 @@ const User = ({
         `}
       >
         {
-          ownAddress ? '' :
+          ownAddress ? ownClaps :
           version === 2
             && state >= ATTENDEE_CLAPPED
             ? '***'

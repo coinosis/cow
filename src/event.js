@@ -60,6 +60,7 @@ const Event = () => {
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
   const [inEvent, setInEvent] = useState();
+  const [ownClaps, setOwnClaps] = useState();
   const [reward, setReward] = useState();
   const [now, setNow] = useState(new Date());
   const getUser = useGetUser();
@@ -70,6 +71,20 @@ const Event = () => {
       clearInterval(time);
     }
   }, [ setNow ]);
+
+  const getClaps = useCallback(async () => {
+    if (!event) return;
+    const response = await fetch(`${backendURL}/claps/${event.url}/${account}`);
+    const claps = await response.json();
+    setOwnClaps(claps);
+  }, [ backendURL, event, account, setOwnClaps ]);
+
+  useEffect(() => {
+    const clapInterval = setInterval(getClaps, 3000);
+    return () => {
+      clearInterval(clapInterval);
+    }
+  }, [ getClaps ]);
 
   useEffect(() => {
     if (eventState === undefined || userState === undefined) return;
@@ -322,6 +337,7 @@ const Event = () => {
                 url={event.url}
                 attendees={attendees}
                 jitsters={jitsters}
+                ownClaps={ownClaps}
               />
               <Distribute
                 eventURL={event.url}
