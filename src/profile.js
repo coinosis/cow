@@ -147,6 +147,7 @@ const Profile = () => {
             type="address"
             value={account}
             toolTipPosition="top"
+            currency="xDAI"
           />
         </div>
         <div
