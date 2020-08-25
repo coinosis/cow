@@ -1,5 +1,4 @@
 import React, {
-  createRef,
   useCallback,
   useContext,
   useEffect,
@@ -200,7 +199,12 @@ const Assessment = ({
       <tfoot>
         <tr>
           <td/>
-          <td>
+          <td
+            colSpan={3}
+            css={`
+              text-align: center;
+            `}
+          >
             <button
               onClick={send}
               disabled={txState > ATTENDEE_REGISTERED}
@@ -226,7 +230,7 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState }) => {
       <thead>
         <tr>
           <td
-            colSpan={2}
+            colSpan={4}
             css={`
               text-align: center;
               font-weight: 700;
@@ -270,7 +274,9 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState }) => {
         <td
           css={`
             font-weight: ${clapsError ? 700 : 300};
+            text-align: center;
           `}
+          colSpan={3}
         >
           {clapsLeft}
         </td>
@@ -301,16 +307,14 @@ const Users = ({
 
   return (
     <tbody>
-      {attendees.map((attendee, i) => {
+      {attendees.map((attendee) => {
         const { address, name } = attendee;
         const jitster = jitsters && jitsters.find(j => j.displayName === name);
         const speaker = jitster && jitster.speaker;
-        const claps = assessment[address] || '';
-        const hasFocus = i === 0;
+        const claps = assessment[address] || 0;
          return (
            <User
              key={address}
-             hasFocus={hasFocus}
              name={name}
              address={address}
              present={Boolean(jitster)}
@@ -334,21 +338,13 @@ const User = ({
   speaker,
   claps,
   setClaps,
-  hasFocus,
   state,
   version,
   txState,
 }) => {
 
-  const clapInput = createRef();
   const { account } = useContext(AccountContext);
   const [ownAddress, setOwnAddress] = useState(false);
-
-  useEffect(() => {
-    if (hasFocus) {
-      clapInput.current.focus();
-    }
-  }, [hasFocus]);
 
   useEffect(() => {
     setOwnAddress(account === address);
@@ -376,22 +372,35 @@ const User = ({
         </EtherscanLink>
       </td>
       <td>
-        <input
-          ref={clapInput}
-          type="text"
-          value={
-            version === 2
-              && state >= ATTENDEE_CLAPPED
-              && !ownAddress
-              ? '***'
-              : claps
-          }
-          onChange={e => setClaps(e.target.value)}
+        <button
           disabled={txState >= ATTENDEE_CLICKED_SEND || ownAddress}
-          css={`
-            width: 60px;
-          `}
-        />
+          onClick={() => { setClaps(claps - 1); }}
+        >
+          -
+        </button>
+      </td>
+      <td
+        css={`
+          width: 25px;
+          display: flex;
+          justify-content: center;
+        `}
+      >
+        {
+          ownAddress ? '' :
+          version === 2
+            && state >= ATTENDEE_CLAPPED
+            ? '***'
+            : claps
+        }
+      </td>
+      <td>
+        <button
+          disabled={txState >= ATTENDEE_CLICKED_SEND || ownAddress}
+          onClick={() => { setClaps(claps + 1); }}
+        >
+          +
+        </button>
       </td>
     </tr>
   );
