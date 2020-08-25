@@ -32,8 +32,9 @@ const eventStates = {
 export const userStates = {
   UNREGISTERED: 0,
   REGISTERED: 1,
-  CLAPPED: 2,
-  REWARDED: 3,
+  ATTENDING: 2,
+  CLAPPED: 3,
+  REWARDED: 4,
 };
 
 const contractStates = {
@@ -53,12 +54,14 @@ const Event = () => {
   const backendURL = useContext(BackendContext);
   const [contract, setContract] = useState();
   const [event, setEvent] = useState();
+  const [signature, setSignature] = useState();
   const [attendeeAddresses, setAttendeeAddresses] = useState();
   const [attendees, setAttendees] = useState();
   const [jitsters, setJitsters] = useState();
   const [eventState, setEventState] = useState();
   const [userState, setUserState] = useState();
   const [contractState, setContractState] = useState();
+  const [attending, setAttending] = useState(false);
   const [inEvent, setInEvent] = useState();
   const [ownClaps, setOwnClaps] = useState();
   const [reward, setReward] = useState();
@@ -86,12 +89,21 @@ const Event = () => {
     }
   }, [ getClaps ]);
 
+  const attend = useCallback(async () => {
+    const object = { event: event.url, user: account, };
+    const payload = JSON.stringify(object);
+    const hex = web3.utils.utf8ToHex(payload);
+    const signature = await web3.eth.personal.sign(hex, account);
+    setSignature(signature);
+    setAttending(true);
+  }, [ event, web3, account, setSignature, setAttending, ]);
+
   useEffect(() => {
     if (eventState === undefined || userState === undefined) return;
     const eventOngoing = eventState >= eventStates.EVENT_STARTED
           && eventState < eventStates.EVENT_ENDED;
-    const userRegistered = userState >= userStates.REGISTERED;
-    setInEvent(userRegistered && eventOngoing);
+    const userAttending = userState >= userStates.ATTENDING;
+    setInEvent(userAttending && eventOngoing);
   }, [ eventState, userState ]);
 
   const updateEventState = useCallback(() => {
@@ -133,9 +145,13 @@ const Event = () => {
       setUserState(userStates.REWARDED);
       return;
     }
-    const userState = await contract.methods.states(account).call();
-    setUserState(Number(userState));
-  }, [ contract, account, setUserState, setReward ]);
+    const userState = Number(await contract.methods.states(account).call());
+    if (userState === userStates.REGISTERED && attending) {
+      setUserState(userStates.ATTENDING);
+    } else {
+      setUserState(userState);
+    }
+  }, [ contract, account, setUserState, setReward, attending ]);
 
   useEffect(() => {
     if (event === undefined || event.version !== 2) return;
@@ -319,8 +335,26 @@ const Event = () => {
       { contractState === contractStates.DISTRIBUTION_MADE && (
         <Result url={event.url} currency={event.currency} />
       ) }
+      { userState === userStates.REGISTERED
+        && eventState >= eventStates.CALL_STARTED
+        && contractState < contractStates.DISTRIBUTION_MADE
+        && (
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
+            <button
+              onClick={attend}
+            >
+              únete a la llamada
+            </button>
+          </div>
+        )}
         <div css="display: flex">
-          { userState >= userStates.REGISTERED
+          { userState >= userStates.ATTENDING
             && eventState >= eventStates.EVENT_STARTED
             && contractState < contractStates.DISTRIBUTION_MADE
             && (
@@ -339,6 +373,7 @@ const Event = () => {
                 jitsters={jitsters}
                 ownClaps={ownClaps}
                 currency={event.currency}
+                signature={signature}
               />
               <Distribute
                 eventURL={event.url}
@@ -350,7 +385,7 @@ const Event = () => {
               />
             </div>
           ) }
-          { userState >= userStates.REGISTERED
+          { userState >= userStates.ATTENDING
             && eventState >= eventStates.CALL_STARTED
             && (contractState < contractStates.DISTRIBUTION_MADE
                 || eventState < eventStates.CALL_ENDED)
