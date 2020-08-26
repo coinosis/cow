@@ -42,6 +42,35 @@ const Assessment = ({
   const [txState, setTxState] = useState(ATTENDEE_ATTENDING);
   const post = usePost();
 
+  const zeroAllClaps = useCallback(() => {
+    for(const address in assessment) {
+      const negativeClaps = assessment[address] * -1;
+      fetch(`${backendURL}/clap`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event,
+          clapper: account,
+          clapee: address,
+          delta: negativeClaps,
+          signature,
+        }),
+      });
+    }
+  }, [ assessment, backendURL, event, account, signature ]);
+
+  useEffect(() => {
+    const handleUnload = () => {
+      if (state < ATTENDEE_SENT_CLAPS) {
+        zeroAllClaps();
+      }
+    }
+    window.addEventListener('beforeunload', handleUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+    }
+  }, [ state, zeroAllClaps ]);
+
   useEffect(() => {
     setAssessment({});
     setTxState(state);
@@ -333,7 +362,7 @@ const Users = ({
       });
     }
     setClapsLeft(clapsLeft);
-  }, [ assessment ]);
+  }, [ assessment, event, account, signature ]);
 
   return (
     <tbody>
