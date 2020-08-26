@@ -328,7 +328,7 @@ const Event = () => {
             fee={event.fee}
             feeWei={event.feeWei}
             userState={userState}
-            contractAddress={contract._address}
+            contractAddress={event.address}
             currency={event.currency}
             />
         ) }
@@ -385,6 +385,20 @@ const Event = () => {
             </div>
           ) }
           { userState >= userStates.ATTENDING
+            && eventState >= eventStates.EVENT_STARTED
+            && contract < contractStates.DISTRIBUTION_MADE
+            && (
+              <div
+                css={`
+                  display: flex;
+                  justify-content: center;
+                  font-size: 20px;
+                `}
+              >
+                aplausos recibidos: {ownClaps}
+              </div>
+            ) }
+          { userState >= userStates.ATTENDING
             && eventState >= eventStates.CALL_STARTED
             && (contractState < contractStates.DISTRIBUTION_MADE
                 || eventState < eventStates.CALL_ENDED)
@@ -394,7 +408,6 @@ const Event = () => {
                 eventName={event.name}
                 userName={userName}
                 setJitsters={setJitsters}
-                ownClaps={ownClaps}
               />
             ) }
         </div>

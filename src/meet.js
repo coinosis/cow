@@ -8,7 +8,6 @@ const Meet = ({
   eventName,
   userName,
   setJitsters,
-  ownClaps,
 }) => {
 
   const handleAPI = useCallback(API => {
@@ -80,15 +79,6 @@ const Meet = ({
         height: 800px;
       `}
     >
-      <div
-        css={`
-          display: flex;
-          justify-content: center;
-          font-size: 20px;
-        `}
-      >
-        aplausos recibidos: {ownClaps}
-      </div>
       { settings[environment].jitsi.enabled && (
         <Jitsi
           domain="meet.jit.si"
