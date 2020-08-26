@@ -24,7 +24,6 @@ const Assessment = ({
   url: event,
   attendees,
   jitsters,
-  ownClaps,
   currency,
   signature,
 }) => {
@@ -231,7 +230,6 @@ const Assessment = ({
         txState={txState}
         event={event}
         signature={signature}
-        ownClaps={ownClaps}
         currency={currency}
       />
       <tfoot>
@@ -334,7 +332,6 @@ const Users = ({
   txState,
   event,
   signature,
-  ownClaps,
   currency,
 }) => {
 
@@ -368,6 +365,7 @@ const Users = ({
     <tbody>
       {attendees.map((attendee) => {
         const { address, name } = attendee;
+        if (address === account) return null;
         const jitster = jitsters && jitsters.find(j => j.displayName === name);
         const speaker = jitster && jitster.speaker;
         const claps = assessment[address] || 0;
@@ -384,7 +382,6 @@ const Users = ({
              version={version}
              txState={txState}
              clapsLeft={clapsLeft}
-             ownClaps={ownClaps}
              currency={currency}
            />
          );
@@ -404,16 +401,8 @@ const User = ({
   version,
   txState,
   clapsLeft,
-  ownClaps,
   currency,
 }) => {
-
-  const { account } = useContext(AccountContext);
-  const [ownAddress, setOwnAddress] = useState(false);
-
-  useEffect(() => {
-    setOwnAddress(account === address);
-  }, [account, address]);
 
   return (
     <tr>
@@ -439,11 +428,7 @@ const User = ({
       </td>
       <td>
         <button
-          disabled={
-            txState >= ATTENDEE_CLICKED_SEND
-              || ownAddress
-              || claps === 0
-          }
+          disabled={ txState >= ATTENDEE_CLICKED_SEND || claps === 0 }
           onClick={() => { setClaps(-1); }}
         >
           -
@@ -457,7 +442,6 @@ const User = ({
         `}
       >
         {
-          ownAddress ? ownClaps :
           version === 2
             && state >= ATTENDEE_CLAPPED
             ? '***'
@@ -466,11 +450,7 @@ const User = ({
       </td>
       <td>
         <button
-          disabled={
-            txState >= ATTENDEE_CLICKED_SEND
-              || ownAddress
-              || clapsLeft === 0
-          }
+          disabled={ txState >= ATTENDEE_CLICKED_SEND || clapsLeft === 0 }
           onClick={() => { setClaps(1); }}
         >
           +

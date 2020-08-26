@@ -8,6 +8,7 @@ const Meet = ({
   eventName,
   userName,
   setJitsters,
+  ownClaps,
 }) => {
 
   const handleAPI = useCallback(API => {
@@ -81,11 +82,12 @@ const Meet = ({
     >
       <div
         css={`
-          text-align: right;
+          display: flex;
+          justify-content: center;
+          font-size: 20px;
         `}
       >
-      ¿Tienes problemas con el audio y el video? Haz clic
-        <a css="margin: 5px" href="/webrtc.html" target="_blank">aquí</a>.
+        aplausos recibidos: {ownClaps}
       </div>
       { settings[environment].jitsi.enabled && (
         <Jitsi
@@ -99,7 +101,6 @@ const Meet = ({
           containerStyle={{
             width: '100%',
             height: '800px',
-            marginBottom: '20px',
           }}
           config={{
             prejoinPageEnabled: false,
@@ -133,6 +134,17 @@ const Meet = ({
           }}
         />
       )}
+      <div
+        css={`
+          text-align: right;
+          margin-bottom: 20px;
+        `}
+      >
+        ¿Tienes problemas con el audio y el video? Haz clic
+        <a css="margin: 5px" href="/webrtc.html" target="_blank">
+          aquí
+        </a>.
+      </div>
     </div>
   );
 }

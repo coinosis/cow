@@ -371,7 +371,6 @@ const Event = () => {
                 url={event.url}
                 attendees={attendees}
                 jitsters={jitsters}
-                ownClaps={ownClaps}
                 currency={event.currency}
                 signature={signature}
               />
@@ -395,6 +394,7 @@ const Event = () => {
                 eventName={event.name}
                 userName={userName}
                 setJitsters={setJitsters}
+                ownClaps={ownClaps}
               />
             ) }
         </div>
