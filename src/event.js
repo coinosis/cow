@@ -383,33 +383,42 @@ const Event = () => {
                 currency={event.currency}
               />
             </div>
-          ) }
-          { userState >= userStates.ATTENDING
-            && eventState >= eventStates.EVENT_STARTED
-            && contract < contractStates.DISTRIBUTION_MADE
-            && (
-              <div
-                css={`
-                  display: flex;
-                  justify-content: center;
-                  font-size: 20px;
-                `}
-              >
-                aplausos recibidos: {ownClaps}
-              </div>
             ) }
-          { userState >= userStates.ATTENDING
-            && eventState >= eventStates.CALL_STARTED
-            && (contractState < contractStates.DISTRIBUTION_MADE
-                || eventState < eventStates.CALL_ENDED)
-            && (
-              <Meet
-                id={event._id}
-                eventName={event.name}
-                userName={userName}
-                setJitsters={setJitsters}
-              />
-            ) }
+          <div
+            css={`
+              flex-grow: 1;
+              display: flex;
+              flex-direction: column;
+              align-items: stretch;
+            `}
+          >
+            { userState >= userStates.ATTENDING
+              && eventState >= eventStates.EVENT_STARTED
+              && contractState < contractStates.DISTRIBUTION_MADE
+              && (
+                <div
+                  css={`
+                    display: flex;
+                    justify-content: center;
+                    font-size: 20px;
+                  `}
+                >
+                  aplausos recibidos: {ownClaps}
+                </div>
+              ) }
+            { userState >= userStates.ATTENDING
+              && eventState >= eventStates.CALL_STARTED
+              && (contractState < contractStates.DISTRIBUTION_MADE
+                  || eventState < eventStates.CALL_ENDED)
+              && (
+                <Meet
+                  id={event._id}
+                  eventName={event.name}
+                  userName={userName}
+                  setJitsters={setJitsters}
+                />
+              ) }
+          </div>
         </div>
       <Footer hidden={event.version < 2} currency={event.currency} />
     </ContractContext.Provider>
