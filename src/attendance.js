@@ -74,7 +74,7 @@ const Attendance = ({
 
   const fetchTransaction = useCallback(async () => {
     if (!backendURL || !event || !account) return;
-    const response = await fetch(`${backendURL}/payu/${event}/${account}`);
+    const response = await fetch(`${backendURL}/tx/${event}/${account}`);
     if (!response.ok) {
       throw new Error(response.status);
     }
@@ -107,7 +107,11 @@ const Attendance = ({
     }
     if (transaction.register) {
       setRegisterForTxs(prev => {
-        if (prev && prev.length === transaction.register.length) return prev;
+        if (
+          prev
+            && prev.length === transaction.register.length
+            && prev[prev.length - 1].state !== transactionStates.PENDING
+        ) return prev;
         return transaction.register;
       });
     }
