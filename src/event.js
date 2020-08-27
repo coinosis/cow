@@ -359,11 +359,30 @@ const Event = () => {
             && contractState < contractStates.DISTRIBUTION_MADE
             && (
               <div
-              css={`
-                display: flex;
-                flex-direction: column;
+                css={`
+                  display: flex;
+                  flex-direction: column;
                 `}
               >
+                <div
+                  css={`
+                    display: flex;
+                    justify-content: center;
+                    font-size: 20px;
+                    margin-bottom: 30px;
+                    flex-direction: column;
+                    align-items: center;
+                  `}
+                >
+                  <div
+                    css={`
+                      font-size: 80px;
+                    `}
+                  >
+                    {ownClaps}
+                  </div>
+                  aplausos recibidos
+                </div>
               <Assessment
                 state={userState}
                 setState={setUserState}
@@ -384,41 +403,18 @@ const Event = () => {
               />
             </div>
             ) }
-          <div
-            css={`
-              flex-grow: 1;
-              display: flex;
-              flex-direction: column;
-              align-items: stretch;
-            `}
-          >
-            { userState >= userStates.ATTENDING
-              && eventState >= eventStates.EVENT_STARTED
-              && contractState < contractStates.DISTRIBUTION_MADE
-              && (
-                <div
-                  css={`
-                    display: flex;
-                    justify-content: center;
-                    font-size: 20px;
-                  `}
-                >
-                  aplausos recibidos: {ownClaps}
-                </div>
-              ) }
-            { userState >= userStates.ATTENDING
-              && eventState >= eventStates.CALL_STARTED
-              && (contractState < contractStates.DISTRIBUTION_MADE
-                  || eventState < eventStates.CALL_ENDED)
-              && (
-                <Meet
-                  id={event._id}
-                  eventName={event.name}
-                  userName={userName}
-                  setJitsters={setJitsters}
-                />
-              ) }
-          </div>
+          { userState >= userStates.ATTENDING
+            && eventState >= eventStates.CALL_STARTED
+            && (contractState < contractStates.DISTRIBUTION_MADE
+                || eventState < eventStates.CALL_ENDED)
+            && (
+              <Meet
+                id={event._id}
+                eventName={event.name}
+                userName={userName}
+                setJitsters={setJitsters}
+              />
+            ) }
         </div>
       <Footer hidden={event.version < 2} currency={event.currency} />
     </ContractContext.Provider>
