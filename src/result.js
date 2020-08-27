@@ -349,7 +349,7 @@ const Header = ({
             margin-left: 5px;
           `}
           >
-            <Hash type="tx" value={id} />
+            <Hash type="tx" value={id} currency={currency} />
           </div>
         </div>
         <div
@@ -494,6 +494,7 @@ const Participant = ({
           type="address"
           value={address}
           internal
+          currency={currency}
         >
           {name}
         </EtherscanLink>
@@ -537,13 +538,13 @@ const Participant = ({
           padding: 0 30px;
         `}
       >
-        <Status tx={tx} />
+        <Status tx={tx} currency={currency} />
       </td>
     </tr>
   );
 }
 
-const Status = ({tx}) => {
+const Status = ({tx, currency}) => {
 
   if (!tx) return <div/>
 
@@ -552,6 +553,7 @@ const Status = ({tx}) => {
       type="tx"
       value={tx}
       internal
+      currency={currency}
     >
       enviada
     </EtherscanLink>

@@ -128,9 +128,13 @@ export const EtherscanLink = ({
           : 'https://etherscan.io';
     let href = `${blockExplorer}/${type}/${value}`;
     if (internal) {
-      href += '#internal';
-      if (type === 'address') {
-        href += 'tx';
+      if (currency === 'xDAI') {
+        href += '/internal_transactions';
+      } else {
+        href += '#internal';
+        if (type === 'address') {
+          href += 'tx';
+        }
       }
     }
     setHref(href);
