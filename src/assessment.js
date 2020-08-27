@@ -44,17 +44,13 @@ const Assessment = ({
   const zeroAllClaps = useCallback(() => {
     for(const address in assessment) {
       const negativeClaps = assessment[address] * -1;
-      fetch(`${backendURL}/clap`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event,
-          clapper: account,
-          clapee: address,
-          delta: negativeClaps,
-          signature,
-        }),
-      });
+      navigator.sendBeacon(`${backendURL}/clap`, JSON.stringify({
+        event,
+        clapper: account,
+        clapee: address,
+        delta: negativeClaps,
+        signature,
+      }));
     }
   }, [ assessment, backendURL, event, account, signature ]);
 
@@ -346,17 +342,13 @@ const Users = ({
       return newAssessment;
     });
     if (clapsLeft >= 0) {
-      fetch(`${backendURL}/clap`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event,
-          clapper: account,
-          clapee: address,
-          delta,
-          signature,
-        }),
-      });
+      navigator.sendBeacon(`${backendURL}/clap`, JSON.stringify({
+        event,
+        clapper: account,
+        clapee: address,
+        delta,
+        signature,
+      }));
     }
     setClapsLeft(clapsLeft);
   }, [ assessment, event, account, signature ]);
