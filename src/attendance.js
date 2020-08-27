@@ -25,6 +25,7 @@ import coinosisIcon from './assets/coinosis.png';
 import contractIcon from './assets/contract.png';
 
 const transactionStates = {
+  SUBMITTED: 'SUBMITTED',
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED',
@@ -91,7 +92,9 @@ const Attendance = ({
           const prevAccount = prev[0].referenceCode.split(':')[1];
           const prevState = prev[prev.length - 1].state;
           if (
-            prevAccount === account && prevState !== transactionStates.PENDING
+            prevAccount === account
+              && prevState !== transactionStates.PENDING
+              && prevState !== transactionStates.SUBMITTED
           ) {
             return prev;
           }
@@ -619,6 +622,7 @@ const PaymentProcess = ({
 
 const TransactionIcon = ({ state, setTxType, id, selected }) => {
   const icon = state === transactionStates.PENDING
+        || state === transactionStates.SUBMITTED
         ? loadingIcon
         : state === transactionStates.APPROVED
         ? passIcon
