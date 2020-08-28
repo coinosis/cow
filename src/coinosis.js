@@ -28,6 +28,11 @@ const Coinosis = () => {
   const [currencyType, setCurrencyType] = useState(ETH);
 
   useEffect(() => {
+    window.ethereum.autoRefreshOnNetworkChange = false;
+    window.ethereum.on('chainChanged', () => window.location.reload());
+  }, []);
+
+  useEffect(() => {
     if (!Web3.givenProvider) {
       setWeb3(null);
       return;
