@@ -124,22 +124,27 @@ export const EtherscanLink = ({
   const [showToolTip, setShowToolTip] = useState(false);
 
   useEffect(() => {
-    const blockExplorer = currency === 'xDAI'
-          ? 'https://blockscout.com/poa/dai'
-          : 'https://etherscan.io';
-    let href = `${blockExplorer}/${type}/${value}`;
-    if (internal) {
-      if (currency === 'xDAI') {
-        href += '/internal_transactions';
-      } else {
-        href += '#internal';
-        if (type === 'address') {
-          href += 'tx';
+    let href;
+    if (type === '3box') {
+      href = `https://3box.io/${value}`;
+    } else {
+      const blockExplorer = currency === 'xDAI'
+            ? 'https://blockscout.com/poa/dai'
+            : 'https://etherscan.io';
+      href = `${blockExplorer}/${type}/${value}`;
+      if (internal) {
+        if (currency === 'xDAI') {
+          href += '/internal_transactions';
+        } else {
+          href += '#internal';
+          if (type === 'address') {
+            href += 'tx';
+          }
         }
       }
     }
     setHref(href);
-  }, [value]);
+  }, [ value, type, setHref, currency, ]);
 
   return (
     <div>

@@ -404,7 +404,7 @@ const User = ({
         `}
       >
         <EtherscanLink
-          type="address"
+          type="3box"
           value={address}
           css={`
             color: ${present ? 'black' : '#a0a0a0'};

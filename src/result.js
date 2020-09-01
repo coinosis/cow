@@ -491,7 +491,7 @@ const Participant = ({
         `}
       >
         <EtherscanLink
-          type="address"
+          type="3box"
           value={address}
           internal
           currency={currency}
