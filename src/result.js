@@ -13,7 +13,7 @@ import Amount from './amount';
 import {
   ToolTip,
   Hash,
-  EtherscanLink,
+  ExternalLink,
   NoContract,
   useDistributionPrice,
   useGetUser,
@@ -490,14 +490,14 @@ const Participant = ({
           text-align: center;
         `}
       >
-        <EtherscanLink
+        <ExternalLink
           type="3box"
           value={address}
           internal
           currency={currency}
         >
           {name}
-        </EtherscanLink>
+        </ExternalLink>
       </td>
       <td
         css={`
@@ -549,14 +549,14 @@ const Status = ({tx, currency}) => {
   if (!tx) return <div/>
 
   return (
-    <EtherscanLink
+    <ExternalLink
       type="tx"
       value={tx}
       internal
       currency={currency}
     >
       enviada
-    </EtherscanLink>
+    </ExternalLink>
   );
 }
 

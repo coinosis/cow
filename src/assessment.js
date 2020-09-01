@@ -7,7 +7,7 @@ import React, {
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
 import { ContractContext } from './event';
 import {
-  EtherscanLink,
+  ExternalLink,
   Loading,
   usePost,
   ATTENDEE_ATTENDING,
@@ -274,13 +274,13 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState, currency }) => {
               ? 'envía tus aplausos usando Metamask.'
               : txState == ATTENDEE_SENT_CLAPS
               ? (
-                <EtherscanLink
+                <ExternalLink
                   type="tx"
                   value={txHash}
                   currency={currency}
                 >
                   confirmando transacción...
-                </EtherscanLink>
+                </ExternalLink>
               )
               : ''
             }
@@ -403,7 +403,7 @@ const User = ({
           text-align: right;
         `}
       >
-        <EtherscanLink
+        <ExternalLink
           type="3box"
           value={address}
           css={`
@@ -416,7 +416,7 @@ const User = ({
           currency={currency}
         >
           {name}
-        </EtherscanLink>
+        </ExternalLink>
       </td>
       <td>
         <button

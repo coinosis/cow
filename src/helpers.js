@@ -82,14 +82,14 @@ export const Hash = ({ type, value, currency, toolTipPosition="top" }) => {
 
   return (
     <div>
-      <EtherscanLink
+      <ExternalLink
         type={type}
         value={value}
         currency={currency}
         toolTipPosition={toolTipPosition}
       >
         {short}
-      </EtherscanLink>
+      </ExternalLink>
     </div>
   );
 }
@@ -110,7 +110,7 @@ export const Link = props => {
   );
 }
 
-export const EtherscanLink = ({
+export const ExternalLink = ({
   type,
   value,
   internal=false,
