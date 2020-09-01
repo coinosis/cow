@@ -303,7 +303,7 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="descripción:"
+            label={`${t('description')}:`}
             element={
               <textarea
                 value={description}
@@ -316,7 +316,7 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="depósito por participante:"
+            label={`${t('deposit_per_participant')}:`}
             element={
               <div
                 css={`
@@ -345,7 +345,7 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="fecha y hora de inicio:"
+            label={`${t('start_time_and_date')}:`}
             element={
               <DatePicker
                 dateFormat="dd 'de' MMMM 'de' yyyy, h:mm aa"
@@ -362,7 +362,7 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="fecha y hora de finalización:"
+            label={`${t('end_time_and_date')}:`}
             element={
               <DatePicker
                 dateFormat="dd 'de' MMMM 'de' yyyy, h:mm aa"
@@ -379,7 +379,7 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="comenzar la videoconferencia"
+            label={t('start_call')}
             element={
               <input
                 value={minutesBefore}
@@ -390,10 +390,10 @@ const AddEvent = ({ setEvents }) => {
                 `}
               />
             }
-            unit="minutos antes"
+            unit={t('minutes_before')}
           />
           <Field
-            label="y finalizarla"
+            label={t('and_end_it')}
             element={
               <input
                 value={minutesAfter}
@@ -404,7 +404,7 @@ const AddEvent = ({ setEvents }) => {
                 `}
               />
             }
-            unit="minutos después"
+            unit={t('minutes_after')}
           />
           <tr>
             <td/>
@@ -418,7 +418,7 @@ const AddEvent = ({ setEvents }) => {
             </td>
           </tr>
           <Field
-            label={status ? 'estado:' : ''}
+            label={status ? `${t('status')}:` : ''}
             element={status}
           />
         </tbody>

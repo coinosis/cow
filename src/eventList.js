@@ -61,11 +61,11 @@ const EventList = () => {
       `}
     >
       <EventSection
-        title="eventos sucediendo en este momento"
+        title={t('events_happening_now')}
         events={live}
       />
       <EventSection
-        title="próximos eventos"
+        title={t('upcoming_events')}
         events={upcoming}
       />
       { name && (
@@ -83,7 +83,7 @@ const EventList = () => {
         </div>
       )}
       <EventSection
-        title="eventos pasados"
+        title={t('past_events')}
         events={past}
       />
     </div>

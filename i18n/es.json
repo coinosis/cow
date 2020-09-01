@@ -1,5 +1,24 @@
 {
   "create_new_event": "crea un nuevo evento",
   "event_name": "nombre del evento",
-  "url": "URL"
+  "url": "URL",
+  "description": "descripción",
+  "deposit_per_participant": "depósito por participante",
+  "start_time_and_date": "fecha y hora de inicio",
+  "end_time_and_date": "fecha y hora de finalización",
+  "start_call": "comenzar la videoconferencia",
+  "minutes_before": "minutos antes",
+  "and_end_it": "y finalizarla",
+  "minutes_after": "minutos después",
+  "status": "estado",
+  "events_happening_now": "eventos sucediendo en este momento",
+  "upcoming_events": "próximos eventos",
+  "past_events": "eventos pasados",
+  "join_call": "únete a la llamada",
+  "claps_received": "aplausos recibidos",
+  "ended": "terminó",
+  "will_start": "comenzará",
+  "started": "comenzó",
+  "will_end": "terminará",
+  "back": "atrás"
 }

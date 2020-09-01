@@ -18,6 +18,7 @@ import Result from './result';
 import Footer from './footer';
 import { differenceInDays, formatDistance } from 'date-fns'
 import { es } from 'date-fns/esm/locale';
+import { useT } from './i18n';
 
 const eventStates = {
   EVENT_CREATED: 0,
@@ -67,6 +68,7 @@ const Event = () => {
   const [reward, setReward] = useState();
   const [now, setNow] = useState(new Date());
   const getUser = useGetUser();
+  const t = useT();
 
   useEffect(() => {
     const time = setInterval(() => { setNow(new Date()); }, 3000);
@@ -349,7 +351,7 @@ const Event = () => {
             <button
               onClick={attend}
             >
-              únete a la llamada
+              { t('join_call') }
             </button>
           </div>
         )}
@@ -381,7 +383,7 @@ const Event = () => {
                   >
                     {ownClaps}
                   </div>
-                  aplausos recibidos
+                  { t('claps_received') }
                 </div>
               <Assessment
                 state={userState}
@@ -425,6 +427,7 @@ const Title = ({ text, now, start, end, eventState }) => {
 
   const [close, setClose] = useState();
   const [subtitle, setSubtitle] = useState();
+  const t = useT();
 
   useEffect(() => {
     if (now === undefined || start === undefined) return;
@@ -445,16 +448,16 @@ const Title = ({ text, now, start, end, eventState }) => {
       setSubtitle(start.toLocaleString());
     } else if (eventState >= eventStates.EVENT_ENDED) {
       const distance = formatDistance(end, now, dateOptions);
-      setSubtitle(`terminó ${distance}`);
+      setSubtitle(`${t('ended')} ${distance}`);
     } else if (eventState < eventStates.EVENT_STARTED) {
       const distance = formatDistance(start, now, dateOptions);
-      setSubtitle(`comenzará ${distance}`);
+      setSubtitle(`${t('will_start')} ${distance}`);
     } else if (eventState === eventStates.EVENT_STARTED) {
       const distance = formatDistance(start, now, dateOptions);
-      setSubtitle(`comenzó ${distance}`);
+      setSubtitle(`${t('started')} ${distance}`);
     } else if (eventState === eventStates.EVENT_HALFWAY_THROUGH) {
       const distance = formatDistance(end, now, dateOptions);
-      setSubtitle(`terminará ${distance}`);
+      setSubtitle(`${t('will_end')} ${distance}`);
     }
   }, [ close, now, start, end, setSubtitle, eventState ]);
 
@@ -467,7 +470,7 @@ const Title = ({ text, now, start, end, eventState }) => {
         `}
       >
       <div css="display: flex">
-        <Link to="/" css={'width: 60px'}>← atrás</Link>
+        <Link to="/" css={'width: 60px'}>← {t('back')}</Link>
         <div
           css={`
             display: flex;
