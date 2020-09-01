@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import Box from '3box';
 import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
-import { Loading, Link, usePost, sleep } from './helpers.js';
+import { Loading, Link, sleep } from './helpers.js';
 import unlockNifty from './assets/unlockNifty.gif';
 
 const Account = ({ large }) => {
@@ -12,13 +13,11 @@ const Account = ({ large }) => {
     setAccount,
     name,
     setName,
-    setData,
     awaitingReload,
     setAwaitingReload,
   } = useContext(AccountContext);
+  const [ box, setBox ] = useState();
   const [unsavedName, setUnsavedName] = useState('');
-  const [message, setMessage] = useState('');
-  const post = usePost();
 
   const updateAccounts = useCallback(() => {
     web3.eth.getAccounts().then(accounts => {
@@ -33,47 +32,51 @@ const Account = ({ large }) => {
 
   useEffect(() => {
     if (!web3) return;
-    const accountsInterval = setInterval(updateAccounts, 1000);
+    const accountsInterval = setInterval(updateAccounts, 3000);
     return () => {
       clearInterval(accountsInterval);
     }
   }, [web3]);
 
-  useEffect(() => {
-    if(!account || !backendURL) return;
-    fetch(`${backendURL}/user/${account}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        else {
-          return response.json();
-        }
-      }).then(data => {
-        setName(data.name);
-        setData(data);
-      }).catch(() => {
-        setName(null);
-        setData(null);
-      });
-  }, [account, backendURL]);
+  const getLegacyName = useCallback(async account => {
+    if(!backendURL) return null;
+    const response = await fetch(`${backendURL}/user/${account}`);
+    if (!response.ok) {
+      return null;
+    }
+    try {
+      const data = await response.json();
+      return data.name;
+    } catch (err) {
+      return null;
+    }
+  }, [ backendURL ]);
 
-  const signup = useCallback(() => {
-    const object = {
-      address: account,
-      name: unsavedName
-    };
-    post('users', object, (error, data) => {
-      if (error) {
-        if (error.toString().includes('400')) {
-          setMessage('ese nombre ya existe en nuestra base de datos');
+  useEffect(() => {
+    if (!account) return;
+    const login = async () => {
+      const box = await Box.openBox(account, web3.givenProvider);
+      const name = await box.public.get('name');
+      if (name) {
+        setName(name);
+      } else {
+        const legacyName = await getLegacyName(account);
+        if (legacyName) {
+          setName(legacyName);
+          await box.public.set('name', legacyName);
+        } else {
+          setName(null);
         }
-        return;
       }
-      setName(data.name);
-      setData(data);
-    });
-  }, [account, unsavedName]);
+      setBox(box);
+    }
+    login();
+  }, [ account, web3, setBox, setName, getLegacyName ]);
+
+  const signup = useCallback(async () => {
+    setName(unsavedName);
+    await box.public.set('name', unsavedName);
+  }, [ box, unsavedName ]);
 
   if (web3 === null) {
     return (
@@ -83,7 +86,7 @@ const Account = ({ large }) => {
       />
     );
   }
-  if (account === undefined) return <Loading />
+  if (account === undefined || name === undefined) return <Loading />
   if (account === null) return <Login large={large} />
 
   if (name === null) {
@@ -118,11 +121,6 @@ const Account = ({ large }) => {
             >
               regístrate
             </button>
-          </div>
-        </div>
-        <div>
-          <div>
-            {message}
           </div>
         </div>
       </div>
