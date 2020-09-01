@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AccountContext, BackendContext } from './coinosis';
 import { Link, formatDate, SectionTitle } from './helpers';
 import AddEvent from './addEvent';
+import { useT } from './i18n';
 
 const EventList = () => {
 
@@ -11,6 +12,7 @@ const EventList = () => {
   const [upcoming, setUpcoming] = useState([]);
   const [live, setLive] = useState([]);
   const [past, setPast] = useState([]);
+  const t = useT();
 
   useEffect(() => {
     if (!backendURL) return;
@@ -75,7 +77,7 @@ const EventList = () => {
         `}
         >
           <SectionTitle>
-            crea un nuevo evento
+            { t('create_new_event') }
           </SectionTitle>
           <AddEvent setEvents={setEvents} />
         </div>

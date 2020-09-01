@@ -16,6 +16,7 @@ import {
   dateFromTimestamp,
 } from './helpers';
 import settings from '../settings.json';
+import { useT } from './i18n';
 
 registerLocale('es', es);
 
@@ -41,6 +42,7 @@ const AddEvent = ({ setEvents }) => {
   const [formValid, setFormValid] = useState(false);
   const [creating, setCreating] = useState(false);
   const [status, setStatus] = useState();
+  const t = useT();
 
   useEffect(() => {
     if (!settings[environment].addEvent.prepopulate) return;
@@ -270,7 +272,7 @@ const AddEvent = ({ setEvents }) => {
       >
         <tbody>
           <Field
-            label="nombre del evento:"
+            label={`${t('event_name')}:`}
             element={
               <input
                 value={name}
@@ -282,7 +284,7 @@ const AddEvent = ({ setEvents }) => {
             }
           />
           <Field
-            label="URL:"
+            label={`${t('url')}:`}
             element={
               <div
                 css={`
