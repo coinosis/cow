@@ -6,8 +6,8 @@ import en from '../i18n/en.json';
 const strings = { es, en };
 
 export const useT = () => {
-  const { language } = useContext(AccountContext);
-  if (!language) return () => null;
+  const { language: accountLanguage } = useContext(AccountContext);
+  const language = accountLanguage || 'es';
   return string => {
     const translation = strings[language][string];
     return translation || strings.es[string];
