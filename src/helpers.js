@@ -349,7 +349,12 @@ export const useGetUser = () => {
 
   return useCallback(async address => {
     const profile = await Box.getProfile(address);
-    if (Object.keys(profile).length) return profile;
+    if (Object.keys(profile).length) {
+      return {
+        address,
+        ...profile,
+      }
+    }
     const response = await fetch(`${backendURL}/user/${address}`);
     if (!response.ok) return { address, name: shorten(address) };
     const data = await response.json();
