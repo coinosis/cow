@@ -23,6 +23,7 @@ import arrowIcon from './assets/arrow.png';
 import payuIcon from './assets/payu.png';
 import coinosisIcon from './assets/coinosis.png';
 import contractIcon from './assets/contract.png';
+import { useT } from './i18n';
 
 const transactionStates = {
   SUBMITTED: 'SUBMITTED',
@@ -419,6 +420,7 @@ const PaymentInfo = ({
   const [tx, setTx] = useState();
   const [from, setFrom] = useState();
   const [to, setTo] = useState();
+  const t = useT();
 
   useEffect(() => {
     if (!txType) {
@@ -426,23 +428,23 @@ const PaymentInfo = ({
     }
     else if (txType === txTypes.PULL) {
       setFrom(userName);
-      setTo('PayU');
+      setTo(t('payu'));
       if (pullPayments && pullPayments.length) {
         setTx(pullPayments[pullPayments.length - 1]);
       } else {
         setTx({});
       }
     } else if (txType === txTypes.PUSH) {
-      setFrom('PayU');
-      setTo('coinosis');
+      setFrom(t('payu'));
+      setTo(t('coinosis'));
       if (pushPayments && pushPayments.length) {
         setTx(pushPayments[pushPayments.length - 1]);
       } else {
         setTx({});
       }
     } else if (txType === txTypes.REGISTER_FOR) {
-      setFrom(`coinosis (a nombre de ${userName})`);
-      setTo(`contrato ${contractAddress}`);
+      setFrom(`${t('coinosis')} (${t('on_behalf_of')} ${userName})`);
+      setTo(`$t('contract')} ${contractAddress}`);
       if (registerForTxs && registerForTxs.length) {
         setTx(registerForTxs[registerForTxs.length - 1]);
       } else {
@@ -450,7 +452,7 @@ const PaymentInfo = ({
       }
     } else if (txType === txTypes.REGISTER) {
       setFrom(userName);
-      setTo(`contrato ${contractAddress}`);
+      setTo(`${t('contract')} ${contractAddress}`);
       if (registerTxs && registerTxs.length) {
         setTx(registerTxs[registerTxs.length - 1]);
       } else {
@@ -471,34 +473,34 @@ const PaymentInfo = ({
 
   return (
     <Table>
-      <Field name="Transacción">
+      <Field name={t('transaction')}>
         {tx.txHash || tx.referenceCode}
       </Field>
-      <Field name="Fecha">
+      <Field name={t('date')}>
         {tx.date}
       </Field>
-      <Field name="Origen">
+      <Field name={t('source')}>
         {from}
       </Field>
-      <Field name="Destino">
+      <Field name={t('destination')}>
         {to}
       </Field>
-      <Field name="Cantidad">
+      <Field name={t('amount')}>
         {tx.amount}
       </Field>
-      <Field name="Moneda">
+      <Field name={t('currency')}>
         {tx.currency}
       </Field>
-      <Field name="Medio de pago">
+      <Field name={t('payment_method')}>
         {tx.method}
       </Field>
-      <Field name="Estado">
+      <Field name={t('status')}>
         {tx.state}
       </Field>
-      <Field name="Mensaje">
+      <Field name={t('message')}>
         {tx.message}
       </Field>
-      <Field name="recibo">
+      <Field name={t('receipt')}>
         {tx.receipt}
       </Field>
     </Table>
@@ -679,6 +681,8 @@ const PaymentOptions = ({
   currency,
 }) => {
 
+  const t = useT();
+
   if (
     userState >= userStates.REGISTERED
       || registerForState === transactionStates.APPROVED
@@ -698,11 +702,12 @@ const PaymentOptions = ({
             font-size: 20px;
           `}
         >
-          Te inscribiste exitosamente
+          {t('signed_up_successfully')}
         </div>
         { userState < userStates.REGISTERED && (
           <div>
-            Esperando a que tu inscripción se refleje en el contrato...
+            {t('waiting_for_tx_in_contract')}
+
           </div>
         )}
       </div>
@@ -723,7 +728,7 @@ const PaymentOptions = ({
         `}
       >
         <div>
-          haz un depósito de
+          {t('make_deposit_of')}
         </div>
         <div
           css={`
@@ -738,7 +743,7 @@ const PaymentOptions = ({
           />
         </div>
         <div>
-          para participar.
+          {t('to_participate')}.
         </div>
       </div>
       <div
@@ -753,19 +758,18 @@ const PaymentOptions = ({
           onMouseOut={() => { setPaymentMode() }}
           onClick={sendEther}
         >
-          envía xDAI
+          {t('send_xdai')}
         </button>
         <button
           onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}
           onMouseOut={() => { setPaymentMode() }}
           onClick={attend}
         >
-          envía dinero tradicional
+          {t('send_fiat')}
         </button>
       </div>
       <div css="margin: 10px">
-        el dinero depositado se repartirá entre los asistentes según los
-        aplausos recibidos.
+        {t('deposit_explanation')}
       </div>
     </div>
   );
