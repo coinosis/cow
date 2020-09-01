@@ -49,8 +49,8 @@ export const ToolTip = ({ value, show, position="top" }) => {
           display: ${show ? 'block' : 'none'};
           position: absolute;
           ${ position !== 'top' ? 'top: 25px;' : 'bottom: 7px'};
-          ${ position === 'bottomRight' ? 'right: 0'
-             : position === 'bottomLeft' ? 'left: 0' : '' };
+          ${ position === 'bottomRight' ? 'left: 0'
+             : position === 'bottomLeft' ? 'right: 0' : '' };
           background: black;
           color: #f0f0f0;
           padding: 5px;

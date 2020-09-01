@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Box from '3box';
 import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
-import { Loading, Link, sleep } from './helpers.js';
+import { Loading, ExternalLink, sleep } from './helpers.js';
 import unlockNifty from './assets/unlockNifty.gif';
 
 const Account = ({ large }) => {
@@ -128,11 +128,13 @@ const Account = ({ large }) => {
   }
 
   return (
-    <Link
-      to={`/${account}`}
+    <ExternalLink
+      type="3box"
+      value={account}
+      toolTipPosition="bottomLeft"
     >
       {name}
-    </Link>
+    </ExternalLink>
   );
 
 }
