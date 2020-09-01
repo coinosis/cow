@@ -40,5 +40,12 @@
   "to_participate": "para participar",
   "send_xdai": "envía xDAI",
   "send_fiat": "envía dinero tradicional",
-  "deposit_explanation": "el dinero depositado se repartirá entre los asistentes según los aplausos recibidos."
+  "deposit_explanation": "el dinero depositado se repartirá entre los asistentes según los aplausos recibidos.",
+  "sent": "enviado",
+  "sending": "enviando...",
+  "send": "enviar",
+  "claps_sent": "gracias por tu tiempo!",
+  "send_claps": "envía tus aplausos usando Metamask.",
+  "waiting_for_confirmation": "confirmando transacción...",
+  "remaining_claps": "aplausos restantes:"
 }

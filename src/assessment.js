@@ -16,6 +16,7 @@ import {
   ATTENDEE_CLAPPED,
 } from './helpers';
 import Account from './account';
+import { useT } from './i18n';
 
 const Assessment = ({
   state,
@@ -40,6 +41,7 @@ const Assessment = ({
   const [txHash, setTxHash] = useState();
   const [txState, setTxState] = useState(ATTENDEE_ATTENDING);
   const post = usePost();
+  const t = useT();
 
   const zeroAllClaps = useCallback(() => {
     for(const address in assessment) {
@@ -242,9 +244,9 @@ const Assessment = ({
               disabled={txState > ATTENDEE_ATTENDING}
             >
               {state >= ATTENDEE_CLAPPED
-               ? 'enviado'
-               : txState >= ATTENDEE_SENT_CLAPS ? 'enviando...'
-               : 'enviar'
+               ? t('sent')
+               : txState >= ATTENDEE_SENT_CLAPS ? t('sending')
+               : t('send')
               }
             </button>
           </td>
@@ -256,6 +258,8 @@ const Assessment = ({
 }
 
 const Claps = ({ clapsLeft, clapsError, state, txHash, txState, currency }) => {
+
+  const t = useT();
 
   if (txState >= ATTENDEE_CLICKED_SEND) {
     return (
@@ -269,9 +273,9 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState, currency }) => {
             `}
           >
             { state == ATTENDEE_CLAPPED
-              ? 'gracias por tu tiempo!'
+              ? t('claps_sent')
               : txState == ATTENDEE_CLICKED_SEND
-              ? 'envía tus aplausos usando Metamask.'
+              ? t('send_claps')
               : txState == ATTENDEE_SENT_CLAPS
               ? (
                 <ExternalLink
@@ -279,7 +283,7 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState, currency }) => {
                   value={txHash}
                   currency={currency}
                 >
-                  confirmando transacción...
+                  { t('waiting_for_confirmation') }
                 </ExternalLink>
               )
               : ''
@@ -302,7 +306,7 @@ const Claps = ({ clapsLeft, clapsError, state, txHash, txState, currency }) => {
             text-align: right;
           `}
         >
-          aplausos restantes:
+          { t('remaining_claps') }
         </td>
         <td
           css={`
