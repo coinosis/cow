@@ -2,6 +2,7 @@ import "regenerator-runtime/runtime";
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import styled from 'styled-components';
+import Box from '3box';
 import {
   Web3Context,
   AccountContext,
@@ -342,6 +343,8 @@ export const useGetUser = () => {
   const backendURL = useContext(BackendContext);
 
   return useCallback(async address => {
+    const profile = await Box.getProfile(address);
+    if (Object.keys(profile).length) return profile;
     const response = await fetch(`${backendURL}/user/${address}`);
     if (!response.ok) return { address, name: shorten(address) };
     const data = await response.json();
