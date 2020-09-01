@@ -127,15 +127,35 @@ const Profile = () => {
           flex-direction: column;
           align-items: flex-start;
           width: 50%;
+          margin-top: 70px;
         `}
       >
-        <SectionTitle>
+        <a
+          target="_blank"
+          href={`https://3box.io/${account}`}
+          rel="noreferrer"
+          css={`
+            font-size: 13px;
+            color: black;
+            &:visited {
+              color: black;
+            };
+          `}
+        >
+          perfil de 3Box
+        </a>
+        <div
+          css={`
+            font-size: 30px;
+          `}
+        >
           {name}
-        </SectionTitle>
+        </div>
+
         <div
           css={`
             display: flex;
-            margin-bottom: 10px;
+            margin-top: 15px;
           `}
         >
           <IconBox>
@@ -148,33 +168,6 @@ const Profile = () => {
             value={account}
             toolTipPosition="top"
             currency="xDAI"
-          />
-        </div>
-        <div
-          css={`
-            display: flex;
-            flex-direction: column-reverse;
-          `}
-        >
-          <Field
-            icon={faTelegram}
-            value={telegram}
-            register={registerTelegram}
-            editing={editingTelegram}
-            setEditing={setEditingTelegram}
-            placeholder={firstName => `@${firstName}`}
-            validator={isTelegram}
-            tabIndex="2"
-          />
-          <Field
-            icon={faAt}
-            value={email}
-            register={registerEmail}
-            editing={editingEmail}
-            setEditing={setEditingEmail}
-            placeholder={firstName => `${firstName}@ejemplo.com`}
-            validator={isEmail}
-            tabIndex="1"
           />
         </div>
       </div>
