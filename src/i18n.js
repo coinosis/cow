@@ -9,6 +9,7 @@ export const useT = () => {
   const { language } = useContext(AccountContext);
   if (!language) return () => null;
   return string => {
-    return strings[language][string];
+    const translation = strings[language][string];
+    return translation || strings.es[string];
   };
 }
