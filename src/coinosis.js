@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useCallback, createContext, useEffect, useState } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Web3 from 'web3';
 import { createGlobalStyle } from 'styled-components';
@@ -26,6 +26,8 @@ const Coinosis = () => {
   const [awaitingReload, setAwaitingReload] = useState();
   const [backendURL, setBackendURL] = useState();
   const [currencyType, setCurrencyType] = useState(ETH);
+  const [ language, setLanguage ] = useState();
+  const [ box, setBox ] = useState();
 
   useEffect(() => {
     window.ethereum.autoRefreshOnNetworkChange = false;
@@ -50,6 +52,35 @@ const Coinosis = () => {
       });
   }, []);
 
+  useEffect(() => {
+    if (!box) return;
+    const restoreLanguage = async () => {
+      const savedLanguage = await box.public.get('language');
+      if (savedLanguage) {
+        setLanguage(savedLanguage);
+      } else {
+        setLanguage('es');
+        await box.public.set('language', 'es');
+      }
+    }
+    restoreLanguage();
+  }, [ box, setLanguage ]);
+
+  const setLanguageRaw = useCallback(event => {
+    setLanguage(event.target.value);
+  }, [ setLanguage ]);
+
+  useEffect(() => {
+    if (!box || !language) return;
+    const saveLanguage = async () => {
+      const savedLanguage = await box.public.get('language');
+      if (language !== savedLanguage) {
+        await box.public.set('language', language);
+      }
+    }
+    saveLanguage();
+  }, [ box, language ]);
+
   if (backendURL === undefined) return <Loading/>
 
   return (
@@ -61,6 +92,9 @@ const Coinosis = () => {
         setName,
         data,
         setData,
+        box,
+        setBox,
+        language,
         awaitingReload,
         setAwaitingReload,
       }}>
@@ -68,7 +102,7 @@ const Coinosis = () => {
           <CurrencyContext.Provider value={[currencyType, setCurrencyType]}>
             <GlobalStyle/>
             <BrowserRouter>
-              <Header/>
+              <Header setLanguage={setLanguageRaw} />
               <Switch>
                 <Route path="/:eventURL([a-z1-9-]{1}[a-z0-9-]{0,59})">
                   <Event/>

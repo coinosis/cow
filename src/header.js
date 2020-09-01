@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import logo from './assets/logo.png';
@@ -9,10 +9,12 @@ import {
   faTelegram,
   faGithub,
 } from '@fortawesome/free-brands-svg-icons';
-
+import { AccountContext } from './coinosis';
 import Account from './account';
 
-const Header = () => {
+const Header = ({ setLanguage }) => {
+
+  const { language } = useContext(AccountContext);
 
   return (
     <div
@@ -28,13 +30,34 @@ const Header = () => {
     >
       <HeaderItem
         css={`
-          justify-content: flex-start;
+          justify-content: space-between;
         `}
       >
-        <Icon icon={faTwitter} href="https://twitter.com/coinosis" />
-        <Icon icon={faMedium} href="https://medium.com/coinosis" />
-        <Icon icon={faTelegram} href="https://t.me/coinosisdapp" />
-        <Icon icon={faGithub} href="https://github.com/coinosis" />
+        <div
+          css={`
+            margin: 8px 0;
+            justify-content: flex-start;
+          `}
+        >
+          <Icon icon={faTwitter} href="https://twitter.com/coinosis" />
+          <Icon icon={faMedium} href="https://medium.com/coinosis" />
+          <Icon icon={faTelegram} href="https://t.me/coinosisdapp" />
+          <Icon icon={faGithub} href="https://github.com/coinosis" />
+        </div>
+        { language && (
+          <div
+            css={`
+              margin: 8px;
+              justify-content: flex-end;
+            `}
+          >
+
+            <select onChange={setLanguage} defaultValue={language} >
+              <option value="es">español</option>
+              <option value="en">english</option>
+            </select>
+          </div>
+        )}
       </HeaderItem>
       <HeaderItem
         css={`
@@ -69,7 +92,7 @@ const Icon = ({ icon, href }) => {
       target="_blank"
       rel="noreferrer"
       css={`
-        margin: 8px;
+        margin: 0 8px;
         color: initial;
         &:hover {
           color: #0e8f00;

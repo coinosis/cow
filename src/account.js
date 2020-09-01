@@ -13,10 +13,11 @@ const Account = ({ large }) => {
     setAccount,
     name,
     setName,
+    box,
+    setBox,
     awaitingReload,
     setAwaitingReload,
   } = useContext(AccountContext);
-  const [ box, setBox ] = useState();
   const [unsavedName, setUnsavedName] = useState('');
 
   const updateAccounts = useCallback(() => {
