@@ -44,20 +44,21 @@ const Header = ({ setLanguage }) => {
           <Icon icon={faTelegram} href="https://t.me/coinosisdapp" />
           <Icon icon={faGithub} href="https://github.com/coinosis" />
         </div>
-        { language && (
-          <div
-            css={`
-              margin: 8px;
-              justify-content: flex-end;
-            `}
+        <div
+          css={`
+            margin: 8px;
+            justify-content: flex-end;
+          `}
+        >
+          <select
+            value={language}
+            onChange={setLanguage}
+            disabled={!language}
           >
-
-            <select onChange={setLanguage} defaultValue={language} >
-              <option value="es">español</option>
-              <option value="en">english</option>
-            </select>
-          </div>
-        )}
+            <option value="es">español</option>
+            <option value="en">english</option>
+          </select>
+        </div>
       </HeaderItem>
       <HeaderItem
         css={`
