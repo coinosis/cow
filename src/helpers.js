@@ -29,7 +29,6 @@ export const ATTENDEE_ATTENDING = 1.5;
 export const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
 export const Loading = () => {
-  const t = useT();
   return (
     <div
       css={`
@@ -37,7 +36,7 @@ export const Loading = () => {
         justify-content: center;
       `}
     >
-      { t('loading') }
+      por favor espera...
     </div>
   );
 }
