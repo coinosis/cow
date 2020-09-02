@@ -4,6 +4,7 @@ import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
 import { Loading, ExternalLink, sleep } from './helpers.js';
 import unlockNifty from './assets/unlockNifty.gif';
 import { useT } from './i18n';
+import loadingIcon from './assets/loading.gif';
 
 const Account = ({ large }) => {
 
@@ -21,6 +22,10 @@ const Account = ({ large }) => {
   } = useContext(AccountContext);
   const [unsavedName, setUnsavedName] = useState('');
   const t = useT();
+  const [ hasBox, setHasBox ] = useState();
+  const [ hasLegacy, setHasLegacy ] = useState();
+  const [ signingUp, setSigningUp ] = useState();
+  const [ syncing, setSyncing ] = useState();
 
   const updateAccounts = useCallback(() => {
     web3.eth.getAccounts().then(accounts => {
@@ -55,31 +60,66 @@ const Account = ({ large }) => {
     }
   }, [ backendURL ]);
 
-  useEffect(() => {
-    if (!account) return;
-    const login = async () => {
-      const box = await Box.openBox(account, web3.givenProvider);
-      const name = await box.public.get('name');
-      if (name) {
-        setName(name);
-      } else {
-        const legacyName = await getLegacyName(account);
-        if (legacyName) {
-          setName(legacyName);
-          await box.public.set('name', legacyName);
-        } else {
-          setName(null);
-        }
-      }
-      setBox(box);
-    }
-    login();
-  }, [ account, web3, setBox, setName, getLegacyName ]);
+  const openBox = useCallback(async () => {
+    setSyncing(true);
+    if (!account) return null;
+    const box = await Box.openBox(account, web3.givenProvider);
+    setBox(box);
+    return box;
+  }, [ setSyncing, account, web3, setBox, ]);
 
   const signup = useCallback(async () => {
-    setName(unsavedName);
+    setSigningUp(true);
+    const box = await openBox();
     await box.public.set('name', unsavedName);
-  }, [ box, unsavedName ]);
+  }, [ openBox, setSigningUp, unsavedName, ]);
+
+  const getAccountStatus = useCallback(async () => {
+    if (!account) return;
+    if (box) {
+      setHasBox(true);
+      setName(await box.public.get('name'));
+      setSyncing(false);
+      setSigningUp(false);
+      return;
+    }
+    const profile = await Box.getProfile(account);
+    if (Object.keys(profile).length) {
+      setHasBox(true);
+      setSigningUp(false);
+      if (profile.name) {
+        setName(profile.name);
+      } else {
+        setName(null);
+      }
+    } else {
+      setHasBox(false);
+      const name = await getLegacyName();
+      if (name) {
+        setHasLegacy(true);
+        setName(name);
+      } else {
+        setHasLegacy(false);
+        setName(null);
+      }
+    }
+  }, [
+    account,
+    box,
+    setHasBox,
+    setSyncing,
+    setSigningUp,
+    setName,
+    getLegacyName,
+    setHasLegacy,
+  ]);
+
+  useEffect(() => {
+    const statusInterval = setInterval(getAccountStatus, 3000);
+    return () => {
+      clearInterval(statusInterval);
+    }
+  }, [ getAccountStatus, ]);
 
   if (web3 === null) {
     return (
@@ -89,10 +129,10 @@ const Account = ({ large }) => {
       />
     );
   }
-  if (account === undefined || name === undefined) return <Loading />
+  if (account === undefined || hasBox === undefined) return <Loading />
   if (account === null) return <Login large={large} />
 
-  if (name === null) {
+  if ((!hasBox && !hasLegacy) || name === null) {
     return (
       <div
         css={`
@@ -115,31 +155,64 @@ const Account = ({ large }) => {
               value={unsavedName}
               onChange={e => setUnsavedName(e.target.value)}
               placeholder={ t('whats_your_name') }
+              disabled={ signingUp }
             />
           </div>
-          <div>
-            <button
-              onClick={signup}
-              disabled={unsavedName === ''}
-            >
-              { t('sign_up') }
-            </button>
-          </div>
+          <button
+            onClick={signup}
+            disabled={ unsavedName === '' || signingUp }
+          >
+            { hasBox ? t('save') : t('create_3box_account') }
+          </button>
+          <LoadingIcon loading={ signingUp } />
         </div>
       </div>
     );
   }
 
   return (
-    <ExternalLink
-      type="3box"
-      value={account}
-      toolTipPosition="bottomLeft"
+    <div
+      css={`
+        display: flex;
+      `}
     >
-      {name}
-    </ExternalLink>
+      <ExternalLink
+        type="3box"
+        value={account}
+        toolTipPosition="bottomLeft"
+      >
+        {name}
+      </ExternalLink>
+      { !box && (
+        <div
+          css={`
+            margin: 0 10px;
+            display: flex;
+          `}
+        >
+          <button onClick={openBox} disabled={ syncing }>
+            { !hasBox ? t('create_3box_account') : t('sync_with_3box') }
+          </button>
+          <LoadingIcon loading={ syncing } />
+        </div>
+      ) }
+
+    </div>
   );
 
+}
+
+const LoadingIcon = ({ loading }) => {
+  if (!loading) return <div css="width: 25px" />
+  return (
+    <img
+      src={loadingIcon}
+      css={`
+        margin-left: 5px;
+        width: 20px;
+      `}
+    />
+  );
 }
 
 const Login = ({ large }) => {
