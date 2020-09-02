@@ -46,8 +46,8 @@ const Account = ({ large }) => {
     }
   }, [web3]);
 
-  const getLegacyName = useCallback(async account => {
-    if(!backendURL) return null;
+  const getLegacyName = useCallback(async () => {
+    if(!backendURL || !account) return null;
     const response = await fetch(`${backendURL}/user/${account}`);
     if (!response.ok) {
       return null;
@@ -58,7 +58,7 @@ const Account = ({ large }) => {
     } catch (err) {
       return null;
     }
-  }, [ backendURL ]);
+  }, [ account, backendURL, ]);
 
   const openBox = useCallback(async () => {
     setSyncing(true);
@@ -68,11 +68,11 @@ const Account = ({ large }) => {
     return box;
   }, [ setSyncing, account, web3, setBox, ]);
 
-  const signup = useCallback(async () => {
+  const signup = useCallback(async name => {
     setSigningUp(true);
     const box = await openBox();
-    await box.public.set('name', unsavedName);
-  }, [ openBox, setSigningUp, unsavedName, ]);
+    await box.public.set('name', name);
+  }, [ openBox, setSigningUp, ]);
 
   const getAccountStatus = useCallback(async () => {
     if (!account) return;
@@ -159,7 +159,7 @@ const Account = ({ large }) => {
             />
           </div>
           <button
-            onClick={signup}
+            onClick={ () => signup(unsavedName) }
             disabled={ unsavedName === '' || signingUp }
           >
             { hasBox ? t('save') : t('create_3box_account') }
@@ -190,7 +190,10 @@ const Account = ({ large }) => {
             display: flex;
           `}
         >
-          <button onClick={openBox} disabled={ syncing }>
+          <button
+            onClick={ !hasBox ? () => signup(name) : openBox }
+            disabled={ syncing }
+          >
             { !hasBox ? t('create_3box_account') : t('sync_with_3box') }
           </button>
           <LoadingIcon loading={ syncing } />
