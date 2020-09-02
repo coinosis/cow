@@ -8,6 +8,7 @@ import {
 import Amount from './amount';
 import { BackendContext, AccountContext } from './coinosis';
 import { ContractContext, userStates } from './event';
+import { useT } from './i18n';
 
 const Distribute = ({
   eventURL,
@@ -27,6 +28,7 @@ const Distribute = ({
   const [updater, setUpdater] = useState();
   const [distributed, setDistributed] = useState(false);
   const [txState, setTxState] = useState(state);
+  const t = useT();
 
   const updateTime = useCallback(() => {
     setTime(new Date());
@@ -49,7 +51,7 @@ const Distribute = ({
       );
       if (pastEvents.length > 0) {
         setDistributed(true);
-        setMessage('Distribución efectuada. Gracias por tu participación!');
+        setMessage(t('distribution_made'));
         clearInterval(updater);
       }
     }
@@ -60,34 +62,32 @@ const Distribute = ({
     if (time === undefined || end === undefined) return;
     if (txState >= ATTENDEE_CLICKED_DISTRIBUTE) return;
     if (time >= end) {
-      setMessage('antes de distribuir los fondos, asegúrate de que todo el '
-                 + 'mundo haya enviado sus aplausos.');
+      setMessage(t('distribute_warning'));
       setDisabled(false);
     } else {
       const dateOptions = { locale: es, addSuffix: true, includeSeconds: true };
       const distance = formatDistance(end, time, dateOptions);
-      setMessage(`la distribución de los fondos se habilitará ${distance}.`);
+      setMessage(`${ t('distribution_will_be_available') } ${distance}.`);
     }
   }, [ time, end, updater ]);
 
   const distribute = useCallback(() => {
     setTxState(ATTENDEE_CLICKED_DISTRIBUTE);
-    setMessage('preparando transacción...');
+    setMessage(t('preparing_transaction'));
     setDisabled(true);
     const sendOptions = {
       from: account,
       gas: 900000,
       gasPrice: '1000000000',
     }
-    setMessage('usa Metamask para enviar la transacción.');
+    setMessage(t('send_distribution'));
     contract.methods.distribute().send(sendOptions)
       .on('error', error => {
         setTxState(state);
         setMessage(error.message.substring(0, 60));
         setDisabled(false);
       }).on('transactionHash', () => {
-        setMessage('esperando a que la transacción sea incluida en la '
-                   + 'blockchain...');
+        setMessage(t('waiting_for_confirmation'));
       }).on('receipt', () => {
         setTxState(ATTENDEE_SENT_DISTRIBUTION);
         updateState();
@@ -135,7 +135,7 @@ const Distribute = ({
             onClick={distribute}
             css="margin: 10px 0"
           >
-            distribuir fondos para todo el mundo
+            { t('distribute_funds') }
           </button>
         </div>
       )}
@@ -147,11 +147,11 @@ const Distribute = ({
             align-items: center;
           `}
         >
-          esta acción:
+          { t('this action') }
           <ul>
-            <li>sólo la tiene que hacer una persona,</li>
-            <li>cualquier asistente puede hacerla,</li>
-            <li>tiene costo</li>
+            <li>{ t('one_person_only') } </li>
+            <li>{ t('anybody_can_do_it') } </li>
+            <li>{ t('has_cost') } </li>
           </ul>
         </div>
       )}
