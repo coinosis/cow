@@ -27,6 +27,8 @@ const Coinosis = () => {
   const [currencyType, setCurrencyType] = useState(ETH);
   const [ language, setLanguage ] = useState();
   const [ box, setBox ] = useState();
+  const [ profile, setProfile ] = useState();
+  const [ unsavedData, setUnsavedData ] = useState({});
 
   useEffect(() => {
     window.ethereum.autoRefreshOnNetworkChange = false;
@@ -52,33 +54,49 @@ const Coinosis = () => {
   }, []);
 
   useEffect(() => {
-    if (!box) return;
-    const restoreLanguage = async () => {
-      const savedLanguage = await box.public.get('language');
-      if (savedLanguage) {
-        setLanguage(savedLanguage);
-      } else {
-        setLanguage('es');
-        await box.public.set('language', 'es');
-      }
+    if (!profile || (unsavedData.language)) return;
+    const savedLanguage = profile.language;
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    } else {
+      setLanguage('es');
     }
-    restoreLanguage();
-  }, [ box, setLanguage ]);
+  }, [ profile, setLanguage, unsavedData, ]);
 
   const setLanguageRaw = useCallback(event => {
     setLanguage(event.target.value);
   }, [ setLanguage ]);
 
   useEffect(() => {
-    if (!box || !language) return;
+    if (!language || !profile) return;
+    if (!box) {
+      if (language !== profile.language) {
+        setUnsavedData(prev => {
+          const next = { ...prev };
+          next.language = true;
+          return next;
+        });
+      } else {
+        setUnsavedData(prev => {
+          const next = { ...prev };
+          next.language = false;
+          return next;
+        });
+      }
+      return;
+    }
     const saveLanguage = async () => {
       const savedLanguage = await box.public.get('language');
       if (language !== savedLanguage) {
         await box.public.set('language', language);
+        setUnsavedData(prev => {
+          prev.language = false;
+          return prev;
+        });
       }
     }
     saveLanguage();
-  }, [ box, language ]);
+  }, [ box, profile, language, setUnsavedData, ]);
 
   if (backendURL === undefined) return <Loading/>
 
@@ -91,7 +109,9 @@ const Coinosis = () => {
         setName,
         box,
         setBox,
+        setProfile,
         language,
+        unsavedData,
         awaitingReload,
         setAwaitingReload,
       }}>

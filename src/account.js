@@ -17,6 +17,8 @@ const Account = ({ large }) => {
     setName,
     box,
     setBox,
+    setProfile,
+    unsavedData,
     awaitingReload,
     setAwaitingReload,
   } = useContext(AccountContext);
@@ -92,6 +94,12 @@ const Account = ({ large }) => {
       } else {
         setName(null);
       }
+      setProfile(prev => {
+        if (!prev) return profile;
+        if (prev.language === profile.language && prev.name === profile.name)
+          return prev;
+        return profile;
+      });
     } else {
       setHasBox(false);
       const name = await getLegacyName();
@@ -110,6 +118,7 @@ const Account = ({ large }) => {
     setSyncing,
     setSigningUp,
     setName,
+    setProfile,
     getLegacyName,
     setHasLegacy,
   ]);
@@ -183,7 +192,9 @@ const Account = ({ large }) => {
       >
         {name}
       </ExternalLink>
-      { !box && (
+      { !box
+        && Object.keys(unsavedData).some(d => unsavedData[d])
+        && (
         <div
           css={`
             margin: 0 10px;
