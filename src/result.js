@@ -21,6 +21,7 @@ import {
 } from './helpers';
 import { ContractContext } from './event';
 import Footer from './footer';
+import { useT } from './i18n';
 
 const Result = ({ url: eventURL, currency }) => {
 
@@ -200,6 +201,7 @@ const Assessment = ({
 }) => {
 
   const [totalBalance, setTotalBalance] = useState();
+  const t = useT();
 
   useEffect(() => {
     const totalRewards = rewards.reduce((a, b) => BigInt(a) + BigInt(b))
@@ -240,17 +242,17 @@ const Assessment = ({
                 background: #d0d0d0;
               `}
             >
-              <th>participante</th>
-              <th>aplausos</th>
-              <th>porcentaje</th>
-              <th>recompensa</th>
-              <th>balance</th>
+              <th>{ t('participant') }</th>
+              <th>{ t('claps') }</th>
+              <th>{ t('percentage') }</th>
+              <th>{ t('reward') }</th>
+              <th>{ t('balance') }</th>
               <th
                 css={`
                   padding: 10px 20px;
                 `}
               >
-                estado
+                { t('status') }
               </th>
             </tr>
           </thead>
@@ -283,7 +285,7 @@ const Assessment = ({
                 css={`
                   padding: 10px 20px;
                 `}
-              >total</th>
+              >{ t('total') }</th>
               <th>
                 {totalClaps}
               </th>
@@ -327,6 +329,9 @@ const Header = ({
   totalFeesWei,
   currency,
 }) => {
+
+  const t = useT();
+
   return (
     <div>
       <div
@@ -342,7 +347,7 @@ const Header = ({
           `}
         >
           <div>
-            distribución
+            { t('distribution') }
           </div>
           <div
             css={`
@@ -371,7 +376,7 @@ const Header = ({
             margin-left: 5px;
           `}
         >
-          participantes)
+          { t('participants') })
         </div>
       </div>
       <div
@@ -379,7 +384,7 @@ const Header = ({
           display: flex;
         `}
       >
-        <div>aporte por persona:</div>
+        <div>{ t('deposit_per_participant') }:</div>
         <div
           css={`
             margin-left: 5px;
@@ -397,7 +402,7 @@ const Header = ({
             margin-left: 5px;
           `}
         >
-          aporte total:
+          { t('total_deposit') }:
         </div>
         <div
           css={`
@@ -546,6 +551,8 @@ const Participant = ({
 
 const Status = ({tx, currency}) => {
 
+  const t = useT();
+
   if (!tx) return <div/>
 
   return (
@@ -555,7 +562,7 @@ const Status = ({tx, currency}) => {
       internal
       currency={currency}
     >
-      enviada
+      { t('sent_feminine') }
     </ExternalLink>
   );
 }

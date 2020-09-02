@@ -244,7 +244,7 @@ const Assessment = ({
               disabled={txState > ATTENDEE_ATTENDING}
             >
               {state >= ATTENDEE_CLAPPED
-               ? t('sent')
+               ? t('sent_masculine')
                : txState >= ATTENDEE_SENT_CLAPS ? t('sending')
                : t('send')
               }

@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import Jitsi from 'react-jitsi';
 import { environment, Loading } from './helpers';
 import settings from '../settings.json';
+import { useT } from './i18n';
 
 const Meet = ({
   id,
@@ -10,6 +11,7 @@ const Meet = ({
   setJitsters,
 }) => {
 
+  const t = useT();
   const handleAPI = useCallback(API => {
 
     API.executeCommand('subject', eventName);
@@ -130,9 +132,9 @@ const Meet = ({
           margin-bottom: 20px;
         `}
       >
-        ¿Tienes problemas con el audio y el video? Haz clic
+        { t('jitsi_troubleshooting') }
         <a css="margin: 5px" href="/webrtc.html" target="_blank">
-          aquí
+          { t('here') }
         </a>.
       </div>
     </div>
