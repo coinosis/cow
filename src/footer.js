@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Hash } from './helpers';
 import { ContractContext } from './event';
 import { Web3Context } from './coinosis';
+import { useT } from './i18n';
 
 const Footer = ({ hidden, currency }) => {
   return (
@@ -26,6 +27,7 @@ const ContractInfo = ({ currency }) => {
   const [address, setAddress] = useState('');
   const [versionString, setVersionString] = useState('');
   const [color, setColor] = useState('black');
+  const t = useT();
 
   useEffect(() => {
     if (contract === undefined) return;
@@ -38,10 +40,10 @@ const ContractInfo = ({ currency }) => {
       .call()
       .then(versionHex => {
         const versionNumber = web3.utils.hexToUtf8(versionHex);
-        setVersionString(`versión ${versionNumber}`);
+        setVersionString(`${t('version')} ${versionNumber}`);
       })
       .catch(() => {
-        setVersionString('(fuera de servicio)');
+        setVersionString(t('out_of_order'));
         setColor('#a04040');
       });
     }

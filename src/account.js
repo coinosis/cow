@@ -3,6 +3,7 @@ import Box from '3box';
 import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
 import { Loading, ExternalLink, sleep } from './helpers.js';
 import unlockNifty from './assets/unlockNifty.gif';
+import { useT } from './i18n';
 
 const Account = ({ large }) => {
 
@@ -19,6 +20,7 @@ const Account = ({ large }) => {
     setAwaitingReload,
   } = useContext(AccountContext);
   const [unsavedName, setUnsavedName] = useState('');
+  const t = useT();
 
   const updateAccounts = useCallback(() => {
     web3.eth.getAccounts().then(accounts => {
@@ -112,7 +114,7 @@ const Account = ({ large }) => {
             <input
               value={unsavedName}
               onChange={e => setUnsavedName(e.target.value)}
-              placeholder="¿cómo te llamas?"
+              placeholder={ t('whats_your_name') }
             />
           </div>
           <div>
@@ -120,7 +122,7 @@ const Account = ({ large }) => {
               onClick={signup}
               disabled={unsavedName === ''}
             >
-              regístrate
+              { t('sign_up') }
             </button>
           </div>
         </div>
@@ -147,6 +149,7 @@ const Login = ({ large }) => {
   const login = useCallback(() => {
     web3.eth.requestAccounts();
   }, [web3]);
+  const t = useT();
 
   if (currentProvider.isNiftyWallet) {
     return (
@@ -158,7 +161,7 @@ const Login = ({ large }) => {
         `}
       >
         <div>
-          inicia sesión en Nifty Wallet
+          { t('log_in_with_nifty') }
         </div>
         { large && (
           <img src={unlockNifty} css="border: 1px solid black;" />
@@ -171,7 +174,7 @@ const Login = ({ large }) => {
     <button
       onClick={login}
     >
-      inicia sesión
+      { t('log_in') }
     </button>
   );
 
@@ -180,12 +183,13 @@ const Login = ({ large }) => {
 const Install = ({ awaitingReload, setAwaitingReload }) => {
 
   const [message, setMessage] = useState();
+  const t = useT();
 
   useEffect(() => {
     if (awaitingReload) {
-      setMessage('ya instalé Metamask');
+      setMessage(t('wallet_installed'));
     } else {
-      setMessage('instala tu billetera');
+      setMessage(t('install_wallet'));
     }
   }, [ awaitingReload, setMessage ])
 

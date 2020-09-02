@@ -12,6 +12,7 @@ import ethereumMetamask from './assets/ethereumMetamask.gif';
 import xDaiMetamask from './assets/xDaiMetamask.gif';
 import ethereumNifty from './assets/ethereumNifty.gif';
 import xDaiNifty from './assets/xDaiNifty.gif';
+import { useT } from './i18n';
 
 export const environment = process.env.ENVIRONMENT || 'development';
 
@@ -28,6 +29,7 @@ export const ATTENDEE_ATTENDING = 1.5;
 export const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
 export const Loading = () => {
+  const t = useT();
   return (
     <div
       css={`
@@ -35,7 +37,7 @@ export const Loading = () => {
         justify-content: center;
       `}
     >
-      por favor espera...
+      { t('loading') }
     </div>
   );
 }
@@ -215,6 +217,7 @@ export const NoContract = ({ currency }) => {
   const [provider, setProvider] = useState();
   const [rpcData, setRPCData] = useState();
   const [gif, setGIF] = useState();
+  const t = useT();
 
   useEffect(() => {
     if (web3 === undefined) return;
@@ -230,7 +233,7 @@ export const NoContract = ({ currency }) => {
         setGIF(ethereumMetamask);
       } else if (currency === 'xDAI') {
         setNetwork('Custom RPC');
-        setProvider('Metamask e ingresa los siguientes datos:');
+        setProvider(`Metamask ${ t('and_fill_in_the_following_data') }`);
         setRPCData({
           'Network Name': 'xDai',
           'New RPC URL': 'https://xdai.poanetwork.dev',
@@ -242,7 +245,7 @@ export const NoContract = ({ currency }) => {
       }
     } else {
       setNetwork(currency === 'xDAI' ? 'xDai' : 'Ethereum');
-      setProvider('tu proveedor de Web3.');
+      setProvider(t('your_web3_provider'));
     }
   }, [ web3 ]);
 
@@ -255,10 +258,10 @@ export const NoContract = ({ currency }) => {
       `}
     >
       <SectionTitle>
-        estás en la cadena equivocada
+        { t('wrong_chain') }
       </SectionTitle>
       <div>
-        por favor selecciona &quot;{network}&quot; en {provider}
+        { t('please_select') }  &quot;{network}&quot; { t('in') } {provider}
       </div>
       { rpcData && (
         <div
