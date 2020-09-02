@@ -22,7 +22,6 @@ const Coinosis = () => {
   const [web3, setWeb3] = useState();
   const [account, setAccount] = useState();
   const [name, setName] = useState();
-  const [data, setData] = useState();
   const [awaitingReload, setAwaitingReload] = useState();
   const [backendURL, setBackendURL] = useState();
   const [currencyType, setCurrencyType] = useState(ETH);
@@ -90,8 +89,6 @@ const Coinosis = () => {
         setAccount,
         name,
         setName,
-        data,
-        setData,
         box,
         setBox,
         language,
