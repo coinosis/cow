@@ -20,8 +20,13 @@ module.exports = {
       favicon: 'src/assets/favicon.png',
     }),
     new HtmlWebpackPlugin({
-      template: 'src/assets/webrtc.html',
-      filename: 'webrtc.html',
+      template: 'src/assets/webrtc-es.html',
+      filename: 'webrtc-es.html',
+      chunks: ['webrtc'],
+    }),
+    new HtmlWebpackPlugin({
+      template: 'src/assets/webrtc-en.html',
+      filename: 'webrtc-en.html',
       chunks: ['webrtc'],
     }),
   ],

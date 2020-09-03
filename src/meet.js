@@ -1,8 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext, } from 'react';
 import Jitsi from 'react-jitsi';
 import { environment, Loading } from './helpers';
 import settings from '../settings.json';
 import { useT } from './i18n';
+import { AccountContext } from './coinosis';
 
 const Meet = ({
   id,
@@ -12,6 +13,7 @@ const Meet = ({
 }) => {
 
   const t = useT();
+  const { language } = useContext(AccountContext);
   const handleAPI = useCallback(API => {
 
     API.executeCommand('subject', eventName);
@@ -133,7 +135,12 @@ const Meet = ({
         `}
       >
         { t('jitsi_troubleshooting') }
-        <a css="margin: 5px" href="/webrtc.html" target="_blank">
+        <a
+          css="margin: 5px"
+          href={`/webrtc-${ language }.html`}
+          target="_blank"
+          rel="noreferrer"
+        >
           { t('here') }
         </a>.
       </div>

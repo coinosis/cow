@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <body style="font-family: arial">
+    <img src="<%= require('./logo.png').default %>" width="100px" />
+    <h1>My camera and microphone don't work</h1>
+    <h2>Symptoms</h2>
+    <img src="<%= require('./unmute.png').default %>" border="1px solid black" />
+    <ul>
+      <li>You are using Brave or Firefox,</li>
+      <li>You can't activate the camera nor the microphone,</li>
+      <li>You don't see nor hear other participants in the video call,</li>
+      <li>But you can read the chat messages and write to it.</li>
+    </ul>
+    <h2>Diagnosis</h2>
+    It is possible that your browser has disabled
+    <a href="https://en.wikipedia.org/wiki/WebRTC" target="_blank" rel="noreferrer">WebRTC</a>
+    to avoid leaking your IP address.
+    <h2>Explanation</h2>
+    Your IP address is like your license plate. The web is like a city full of cameras. Through these cameras, a computer can detect the license plate of your car and know the places you visited and thus monitor you or show you personalized advertising. To avoid this, you can use a <a href="https://en.wikipedia.org/wiki/Virtual_private_network" target="_blank">VPN</a>, which is like a fake badge and protects your privacy. Some websites use WebRTC, an audio and video sharing technology. In some circumstances, WebRTC will reveal your true IP address. For more information, click <a href="https://restoreprivacy.com/webrtc-leaks/" target="_blank" rel="noreferrer">here</a>.
+    <h2>Is it safe to enable WebRTC?</h2>
+    <ul>
+      <li>Enabling WebRTC has no impact on your security, but does impact your privacy.</li>
+      <li>If you are behind a VPN, enabling WebRTC can reveal your true IP address. To check if that's your case, <a href="https://www.expressvpn.com/webrtc-leak-test" target="_blank" rel="noreferrer">do this test</a>.</li>
+      <li>If you are not using a VPN, enabling WebRTC will not change your privacy at all. However, just in case, <a href="https://www.expressvpn.com/webrtc-leak-test" target="_blank" rel="noreferrer">do the test</a> as well.</li>
+    </ul>
+    <h2>Solution</h2>
+    <h3>Brave</h3>
+    <ol>
+      <li>In the address bar, type <code style="background: lightgrey">brave://settings/help</code> to update Brave to the latest version.</li>
+      <li>Switch to the tab where <b>coinosis</b> is open.</li>
+      <li>In the Brave bar, click <i>Brave shields</i>.</li>
+      <li>Select <i>Advanced View</i>.</li>
+      <li>Look for the lock option <i>fingerprinting</i>.</li>
+      <li>Select <i>All fingerprinting attempts allowed</i>.</li>
+      <li>Refresh the page.</li>
+    </ol>
+    <img src="<%= require('./brave.png').default %>" border="1px solid black"/>
+    <h3>Firefox</h3>
+    <i>Note: This procedure enables WebRTC on all websites.</i>
+    <ol>
+      <li>In the address bar, type <code style="background: lightgrey">about:config</code>.</li>
+      <li>In the configuration options search field, type <code style="background: lightgrey">media.peerconnection.enabled</code>.</li>
+      <li>Change the value to <code style="background: lightgrey">true</code> by clicking the button on the right.</li>
+      <li>Close the configuration options tab.</li>
+      <li>Refresh the page.</li>
+    </ol>
+    <img src="<%= require('./firefox.png').default %>" border="1px solid black"/>
+    <br/><br/><br/>
+    <img src="<%= require('./logo.png').default %>" width="100px" />
+  </body>
+</html>
