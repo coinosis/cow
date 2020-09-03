@@ -29,24 +29,38 @@ const Account = ({ large }) => {
   const [ signingUp, setSigningUp ] = useState();
   const [ syncing, setSyncing ] = useState();
 
-  const updateAccounts = useCallback(() => {
-    web3.eth.getAccounts().then(accounts => {
-      if (!accounts.length) {
-        setAccount(null);
-        setName(null);
-      } else if (accounts[0] !== account) {
-        setAccount(accounts[0]);
-      }
-    });
-  }, [web3, account]);
+  const updateBox = useCallback(async account => {
+    if (!box) return;
+    const isLinked = box._3idEthAddress === account.toLowerCase();
+    if (!isLinked) {
+      await box.logout();
+      setBox(null);
+      setUnsavedName('');
+      console.log('logged out');
+    }
+  }, [ box, setBox, ]);
+
+  const updateAccounts = useCallback(async _accounts => {
+    const accounts = _accounts || await web3.eth.getAccounts();
+    if (accounts.length) {
+      setAccount(prev => {
+        if (!prev) return accounts[0];
+        if (accounts[0] === prev) return prev;
+        return accounts[0];
+      });
+      await getAccountStatus(accounts[0]);
+      await updateBox(accounts[0]);
+    } else {
+      setAccount(null);
+      setName(null);
+      setHasBox(false);
+    }
+  }, [ web3, setAccount, setName, getAccountStatus, updateBox, ]);
 
   useEffect(() => {
-    if (!web3) return;
-    const accountsInterval = setInterval(updateAccounts, 3000);
-    return () => {
-      clearInterval(accountsInterval);
-    }
-  }, [web3]);
+    updateAccounts();
+    window.ethereum.on('accountsChanged', updateAccounts);
+  }, [ updateAccounts, ]);
 
   const getLegacyName = useCallback(async () => {
     if(!backendURL || !account) return null;
@@ -62,21 +76,22 @@ const Account = ({ large }) => {
     }
   }, [ account, backendURL, ]);
 
-  const openBox = useCallback(async () => {
+  const openBox = useCallback(async name => {
     setSyncing(true);
     if (!account) return null;
     const box = await Box.openBox(account, web3.givenProvider);
+    if (name) await box.public.set('name', name);
     setBox(box);
     return box;
   }, [ setSyncing, account, web3, setBox, ]);
 
   const signup = useCallback(async name => {
     setSigningUp(true);
-    const box = await openBox();
-    await box.public.set('name', name);
-  }, [ openBox, setSigningUp, ]);
+    openBox(name);
+    setProfile(await Box.getProfile(account));
+  }, [ openBox, setSigningUp, account, ]);
 
-  const getAccountStatus = useCallback(async () => {
+  const getAccountStatus = useCallback(async account => {
     if (!account) return;
     if (box) {
       setHasBox(true);
@@ -101,6 +116,7 @@ const Account = ({ large }) => {
         return profile;
       });
     } else {
+      setProfile({});
       setHasBox(false);
       const name = await getLegacyName();
       if (name) {
@@ -112,7 +128,6 @@ const Account = ({ large }) => {
       }
     }
   }, [
-    account,
     box,
     setHasBox,
     setSyncing,
@@ -122,13 +137,6 @@ const Account = ({ large }) => {
     getLegacyName,
     setHasLegacy,
   ]);
-
-  useEffect(() => {
-    const statusInterval = setInterval(getAccountStatus, 3000);
-    return () => {
-      clearInterval(statusInterval);
-    }
-  }, [ getAccountStatus, ]);
 
   if (web3 === null) {
     return (
@@ -202,7 +210,7 @@ const Account = ({ large }) => {
           `}
         >
           <button
-            onClick={ !hasBox ? () => signup(name) : openBox }
+            onClick={ !hasBox ? () => signup(name) : () => openBox() }
             disabled={ syncing }
           >
             { !hasBox ? t('create_3box_account') : t('sync_with_3box') }

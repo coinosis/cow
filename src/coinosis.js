@@ -68,6 +68,10 @@ const Coinosis = () => {
   }, [ setLanguage ]);
 
   useEffect(() => {
+    setUnsavedData({});
+  }, [ account, setUnsavedData, ]);
+
+  useEffect(() => {
     if (!language || !profile) return;
     if (!box) {
       if (language !== profile.language) {
