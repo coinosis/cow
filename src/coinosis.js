@@ -54,7 +54,11 @@ const Coinosis = () => {
   }, []);
 
   useEffect(() => {
-    if (!profile || (unsavedData.language)) return;
+    if (unsavedData.language) return;
+    if (!profile) {
+      setLanguage('es');
+      return;
+    }
     const savedLanguage = profile.language;
     if (savedLanguage) {
       setLanguage(savedLanguage);
