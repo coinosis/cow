@@ -225,13 +225,14 @@ const Account = ({ large }) => {
 }
 
 const LoadingIcon = ({ loading }) => {
-  if (!loading) return <div css="width: 25px" />
+  if (!loading) return <div css="width: 23px" />
   return (
     <img
       src={loadingIcon}
       css={`
         margin-left: 5px;
-        width: 20px;
+        width: 18px;
+        height: 18px
       `}
     />
   );
