@@ -93,17 +93,11 @@ const Account = ({ large }) => {
 
   const getAccountStatus = useCallback(async account => {
     if (!account) return;
-    if (box) {
-      setHasBox(true);
-      setName(await box.public.get('name'));
-      setSyncing(false);
-      setSigningUp(false);
-      return;
-    }
     const profile = await Box.getProfile(account);
     if (Object.keys(profile).length) {
       setHasBox(true);
       setSigningUp(false);
+      setSyncing(false);
       if (profile.name) {
         setName(profile.name);
       } else {
@@ -128,7 +122,6 @@ const Account = ({ large }) => {
       }
     }
   }, [
-    box,
     setHasBox,
     setSyncing,
     setSigningUp,
