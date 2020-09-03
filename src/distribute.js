@@ -147,7 +147,7 @@ const Distribute = ({
             align-items: center;
           `}
         >
-          { t('this action') }
+          { t('this_action') }
           <ul>
             <li>{ t('one_person_only') } </li>
             <li>{ t('anybody_can_do_it') } </li>

@@ -17,8 +17,7 @@ import Assessment from './assessment';
 import Result from './result';
 import Footer from './footer';
 import { differenceInDays, formatDistance } from 'date-fns'
-import { es } from 'date-fns/esm/locale';
-import { useT } from './i18n';
+import { useT, useLocale, } from './i18n';
 
 const eventStates = {
   EVENT_CREATED: 0,
@@ -428,6 +427,7 @@ const Title = ({ text, now, start, end, eventState }) => {
   const [close, setClose] = useState();
   const [subtitle, setSubtitle] = useState();
   const t = useT();
+  const locale = useLocale();
 
   useEffect(() => {
     if (now === undefined || start === undefined) return;
@@ -443,7 +443,7 @@ const Title = ({ text, now, start, end, eventState }) => {
       || close === undefined
       || eventState === undefined
     ) return;
-    const dateOptions = { locale: es, addSuffix: true, includeSeconds: true };
+    const dateOptions = { locale, addSuffix: true, includeSeconds: true, };
     if (close === false) {
       setSubtitle(start.toLocaleString());
     } else if (eventState >= eventStates.EVENT_ENDED) {

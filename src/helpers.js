@@ -281,10 +281,6 @@ export const NoContract = ({ currency }) => {
   )
 }
 
-export const formatDate = date => (
-  date.toLocaleString('es-CO', {dateStyle: 'full', timeStyle: 'long'})
-);
-
 export const SectionTitle = styled.div`
   font-size: 30px;
   margin-top: 70px;

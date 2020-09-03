@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AccountContext, BackendContext } from './coinosis';
-import { Link, formatDate, SectionTitle } from './helpers';
+import { Link, SectionTitle } from './helpers';
 import AddEvent from './addEvent';
-import { useT } from './i18n';
+import { useT, useFormatDate, } from './i18n';
 
 const EventList = () => {
 
@@ -91,6 +91,9 @@ const EventList = () => {
 }
 
 const EventSection = ({ title, events }) => {
+
+  const formatDate = useFormatDate();
+
   return (
     <div
       css={`

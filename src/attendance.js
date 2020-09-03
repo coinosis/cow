@@ -58,7 +58,7 @@ const Attendance = ({
 
   const { contract } = useContext(ContractContext);
   const web3 = useContext(Web3Context);
-  const { account, name: user } = useContext(AccountContext);
+  const { account, name: user, language, } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [feeUSDWei, setFeeUSDWei] = useState();
   const { toUSD } = useConversions();
@@ -250,6 +250,7 @@ const Attendance = ({
       confirmationUrl: `${callback}/payu`,
       responseUrl: `${callback}/close`,
       test,
+      lng: language,
     };
     fetch(
       `${backendURL}/payu/hash`,

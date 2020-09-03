@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useCallback, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { es } from 'date-fns/esm/locale';
 import {
   addMinutes,
   subMinutes
@@ -16,9 +15,7 @@ import {
   dateFromTimestamp,
 } from './helpers';
 import settings from '../settings.json';
-import { useT } from './i18n';
-
-registerLocale('es', es);
+import { useT, useLocale, useDateFormat, } from './i18n';
 
 const AddEvent = ({ setEvents }) => {
 
@@ -43,6 +40,11 @@ const AddEvent = ({ setEvents }) => {
   const [creating, setCreating] = useState(false);
   const [status, setStatus] = useState();
   const t = useT();
+  const locale = useLocale();
+
+  useEffect(() => {
+    registerLocale('es', locale);
+  }, [ locale ]);
 
   useEffect(() => {
     if (!settings[environment].addEvent.prepopulate) return;
@@ -191,7 +193,7 @@ const AddEvent = ({ setEvents }) => {
       setEnd('');
       setMinutesBefore(30);
       setMinutesAfter(30);
-      setStatus('evento creado.');
+      setStatus(t('event_created'));
       setCreating(false);
     });
   }, [
@@ -348,11 +350,11 @@ const AddEvent = ({ setEvents }) => {
             label={`${t('start_time_and_date')}:`}
             element={
               <DatePicker
-                dateFormat="dd 'de' MMMM 'de' yyyy, h:mm aa"
+                dateFormat={ useDateFormat() }
                 selected={start}
                 onChange={preSetStart}
                 showTimeSelect
-                timeCaption="hora"
+                timeCaption={ t('time') }
                 timeFormat="h:mm aa"
                 timeIntervals={30}
                 minDate={now}
@@ -365,7 +367,7 @@ const AddEvent = ({ setEvents }) => {
             label={`${t('end_time_and_date')}:`}
             element={
               <DatePicker
-                dateFormat="dd 'de' MMMM 'de' yyyy, h:mm aa"
+                dateFormat={ useDateFormat() }
                 selected={end}
                 onChange={setEnd}
                 showTimeSelect
@@ -413,7 +415,7 @@ const AddEvent = ({ setEvents }) => {
                 disabled={!formValid || creating}
                 onClick={add}
               >
-                crear
+                { t('create') }
               </button>
             </td>
           </tr>

@@ -1,9 +1,11 @@
 import { useContext } from 'react';
 import { AccountContext } from './coinosis';
-import es from '../i18n/es.json';
-import en from '../i18n/en.json';
+import esStrings from '../i18n/es.json';
+import enStrings from '../i18n/en.json';
+import { es as esLocale } from 'date-fns/esm/locale';
+import { default as enLocale } from 'date-fns/esm/locale/en-US';
 
-const strings = { es, en };
+const strings = { es: esStrings, en: enStrings };
 
 export const useT = () => {
   const { language: accountLanguage } = useContext(AccountContext);
@@ -12,4 +14,23 @@ export const useT = () => {
     const translation = strings[language][string];
     return translation || strings.es[string];
   };
+}
+
+export const useFormatDate = () => {
+  const { language } = useContext(AccountContext);
+  return date => (
+    date.toLocaleString(language, {dateStyle: 'full', timeStyle: 'long'})
+  );
+}
+
+export const useLocale = () => {
+  const { language } = useContext(AccountContext);
+  if (language === 'en') return enLocale;
+  return esLocale;
+}
+
+export const useDateFormat = () => {
+  const { language } = useContext(AccountContext);
+  if (language === 'en') return "MMMM d, yyyy, h:mm aa";
+  return "dd 'de' MMMM 'de' yyyy, h:mm aa";
 }
