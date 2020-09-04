@@ -64,12 +64,6 @@ const Meet = ({
       });
     });
 
-    API.on('subjectChange', ({ subject }) => {
-      if (subject !== eventName) {
-        API.executeCommand('subject', eventName);
-      }
-    });
-
     API.on('videoConferenceLeft', () => {
       API.dispose();
     });
