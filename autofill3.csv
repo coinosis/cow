@@ -1,0 +1,69 @@
+### AUTOFILL PROFILES ###,,,,,,
+Profile ID,Name,Site,Hotkey,,,
+c1,PayU,,,,,
+### AUTOFILL RULES ###,,,,,,
+Rule ID,Type,Name,Value,Site,Mode,Profile
+r1,0,"^buyerEmail$","aoeu@aoeu.com","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r2,0,"^fullName$","APPROVED","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r3,0,"^dniNumber$","123123123","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r4,0,"^addCreditCardNumber$","4035 7911 4654 1870","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r5,0,"^securityCode$","777","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r6,0,"^securityCodeAux_$","777","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r7,0,"^contactPhone$","312 312 3123","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r8,3,"^tandc$","1","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r9,2,"^expirationMonth$","""1""","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r10,2,"^expirationYear$","""21""","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r12,0,"^attendeesField$","0x8Cfd0dE4eac46AbF1211D2077EEE59fc3FbE1BD8
+0xDcdAE484F8B68894103e68fA4c6F90b2a0E71E6c
+0x3903B26456Db4e102Dfd41509D93517048c5bd17
+0x3823a4aD42Bcd3eaf1FDE0Aa3024e822Bc7bb96C
+0xF33F150405871e3Ced876fA02D0112A5e4419a9f
+0xb89a79134634783f0Ac26B5a0dfeCC309f9AB52F
+0x71eb5905C904DF2d929997AaFD2D683ee3Edd6e1
+0x2daac801BA8d43EfE3d87f2D57eC200C3CbBBd11
+0x1b0dfFF2d5Fe3a2CfA4E2E45FC8563EEaCDEA4B8
+0xd416D452F37e4b857428C34CE8DE78C6927aA066
+0x7ffE8C2F7BAD60c4ce1655776E57A143E2835A79
+0xe1fF19182deb2058016Ae0627c1E4660A895196a
+0x65ce6578ceA65E5779f0769901D2d4158bf37F53
+0x1b888AeB1F7BBb66743D29dB2f3eAb127682F91D
+0x454897AA40bE7F96d12242AECE0881A7fbd8983b
+0x3Ef31DF478ff3662f5F24D5211dD746c83441F70
+0x43Db4728D5607F710DfC062b3c7dD8eE942eF858
+0x9d4Aef8EC71E181932c67148e7459084034cA1F5
+0x4c28293e79CfBD8C36A84FA23DEb7Bb2515C09c3
+0xaC7C029428d39ee6a8D072cd7250E680589bea46
+0x96C5C02BEe5fAC14BA6930436511959683F5D3D9
+0x2Cf587E9E3E991deCB26dc022FAb9d7ffFEfA5D8
+0x613e7398e4a14903d340a8BcB629E3EFdb2aF8b0
+0x42635E76953a938095AaD51B126c3332808F2FA1
+0x91D3d89319F125bc4a6C7090f68FaeF1E4e839dA
+0x445ED35D0d38d3d701aD51AE2151240e8A3FC58a
+0xfE0046d0E2811B76B1dDB2bd4edfB0Dd30b6f59e
+0x3B409709FE02C475ab59B5D995c3ad6A4d730d4b
+0x7b0d4575bEae041d56c5639f30a4C2b5b4FD43A7
+0x0f70ca8c35e816E75A6214052eA24f2d736C2951
+0xC6179817F301237B974401cC8a4B12c84aFCb6cA
+0x540F86A8Fa961e39Ac5D9be6511F981432a777Aa
+0x3B3147103955E9c1B870F5c642ab271cC252b149","coinosis-honeybadger.netlify.app",0,c1
+r13,2,"^banksPse$","""1552""","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r14,2,"^typeCustomer$","""N""","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+r15,3,"^deviceRegister$","1","sandbox.checkout.payulatam.com/ppp-web-gateway-payu/app/v3",0,c1
+### AUTOFILL OPTIONS ###,,,,,,
+advanced,"[]",,,,,
+exceptions,"[]",,,,,
+textclips,"[]",,,,,
+variables,"[]",,,,,
+backup,0,30,,,,
+manual,0,,,,,
+delay,0,1,,,,
+labelmatch,0,,,,,
+overwrite,0,,,,,
+vars,1,,,,,
+sound,0,,,,,
+voice,0,1,,,,
+debug,0,,,,,
+mask,0,,,,,
+scale,1,,,,,
+menu,1,,,,,
+autoimport,0,,,,,
