@@ -445,7 +445,7 @@ const PaymentInfo = ({
       }
     } else if (txType === txTypes.REGISTER_FOR) {
       setFrom(`${t('coinosis')} (${t('on_behalf_of')} ${userName})`);
-      setTo(`$t('contract')} ${contractAddress}`);
+      setTo(`${t('contract')} ${contractAddress}`);
       if (registerForTxs && registerForTxs.length) {
         setTx(registerForTxs[registerForTxs.length - 1]);
       } else {

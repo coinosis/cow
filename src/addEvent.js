@@ -208,7 +208,7 @@ const AddEvent = ({ setEvents }) => {
 
   const deployContract = useCallback(async () => {
     setCreating(true);
-    setStatus('iniciando proceso de creación...');
+    setStatus(t('event_creation_started'));
     const contract = new web3.eth.Contract(abi);
     const feeWei = web3.utils.toWei(String(feeETH));
     const endTimestamp = timestampInSeconds(end);
@@ -217,8 +217,7 @@ const AddEvent = ({ setEvents }) => {
       arguments: [feeWei, endTimestamp],
     };
     const deployment = await contract.deploy(deployData);
-    setStatus('usa Metamask para desplegar el contrato. '
-              + 'Esta acción tiene costo.');
+    setStatus(t('deploy_with_metamask'));
     const txOptions = {
       from: account,
       gas: 850000,
@@ -229,11 +228,9 @@ const AddEvent = ({ setEvents }) => {
             setStatus(error.message.substring(0, 60));
             setCreating(false);
           }).on('transactionHash', () => {
-            setStatus(
-              'esperando a que la transacción sea incluida en la blockchain...'
-            );
+            setStatus(t('waiting_for_confirmation'));
           }).on('receipt', () => {
-            setStatus('usa Metamask para firmar el contrato.');
+            setStatus(t('sign_with_metamask'));
           });
     const actualFeeWei = await instance.methods.fee().call();
     const actualEnd = await instance.methods.end().call();

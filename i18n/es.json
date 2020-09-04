@@ -15,6 +15,7 @@
   "create_new_event": "crea un nuevo evento",
   "currency": "Moneda",
   "date": "Fecha",
+  "deploy_with_metamask": "usa Metamask para desplegar el contrato. Esta acción tiene costo.",
   "deposit_explanation": "el dinero depositado se repartirá entre los asistentes según los aplausos recibidos.",
   "deposit_per_participant": "depósito por participante",
   "description": "descripción",
@@ -27,6 +28,7 @@
   "end_time_and_date": "fecha y hora de finalización",
   "ended": "terminó",
   "event_created": "evento creado.",
+  "event_creation_started": "iniciando proceso de creación...",
   "event_name": "nombre del evento",
   "events_happening_now": "eventos sucediendo en este momento",
   "has_cost": "tiene costo",
@@ -64,6 +66,7 @@
   "sending": "enviando...",
   "sent_masculine": "enviado",
   "sent_feminine": "enviada",
+  "sign_with_metamask": "usa Metamask para firmar el contrato.",
   "signed_up_successfully": "Te inscribiste exitosamente",
   "source": "Origen",
   "start_call": "comenzar la videoconferencia",
@@ -87,5 +90,6 @@
   "will_end": "terminará",
   "will_start": "comenzará",
   "wrong_chain": "estás en la cadena equivocada",
+  "you_got": "recibiste",
   "your_web3_provider": "tu proveedor de Web3."
 }

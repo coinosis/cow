@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { formatDistance } from 'date-fns';
-import { es } from 'date-fns/esm/locale';
 import {
   ATTENDEE_CLICKED_DISTRIBUTE,
   ATTENDEE_SENT_DISTRIBUTION,
@@ -8,7 +7,7 @@ import {
 import Amount from './amount';
 import { BackendContext, AccountContext } from './coinosis';
 import { ContractContext, userStates } from './event';
-import { useT } from './i18n';
+import { useT, useLocale } from './i18n';
 
 const Distribute = ({
   eventURL,
@@ -29,6 +28,7 @@ const Distribute = ({
   const [distributed, setDistributed] = useState(false);
   const [txState, setTxState] = useState(state);
   const t = useT();
+  const locale = useLocale();
 
   const updateTime = useCallback(() => {
     setTime(new Date());
@@ -65,7 +65,7 @@ const Distribute = ({
       setMessage(t('distribute_warning'));
       setDisabled(false);
     } else {
-      const dateOptions = { locale: es, addSuffix: true, includeSeconds: true };
+      const dateOptions = { locale, addSuffix: true, includeSeconds: true, };
       const distance = formatDistance(end, time, dateOptions);
       setMessage(`${ t('distribution_will_be_available') } ${distance}.`);
     }
@@ -164,7 +164,7 @@ const Distribute = ({
           `}
         >
           <div css="margin-right: 10px">
-            recibiste
+            { t('you_got') }
           </div>
           <Amount eth={reward} currency={currency} />
         </div>
