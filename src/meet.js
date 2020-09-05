@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, } from 'react';
+import React, { useCallback, useContext, useState, } from 'react';
 import Jitsi from 'react-jitsi';
 import { environment, Loading } from './helpers';
 import settings from '../settings.json';
@@ -14,25 +14,29 @@ const Meet = ({
 
   const t = useT();
   const { language } = useContext(AccountContext);
-  const handleAPI = useCallback(API => {
+  const [ api, setAPI ] = useState();
 
-    API.executeCommand('subject', eventName);
+  const handleAPI = useCallback(api => {
 
-    API.on('videoConferenceJoined', me  => {
+    setAPI(api);
+
+    api.executeCommand('subject', eventName);
+
+    api.on('videoConferenceJoined', me  => {
       setJitsters(prevJitsters => {
         if (!prevJitsters) return [ me ];
         return [ ...prevJitsters, me ];
       });
     });
 
-    API.on('participantJoined', jitster => {
+    api.on('participantJoined', jitster => {
       setJitsters(prevJitsters => {
         if (!prevJitsters) return [ jitster ];
         return [ ...prevJitsters, jitster ];
       });
     });
 
-    API.on('dominantSpeakerChanged', ({ id }) => {
+    api.on('dominantSpeakerChanged', ({ id }) => {
       setJitsters(prevJitsters => {
         if (!prevJitsters) return prevJitsters;
         const nextJitsters = [ ...prevJitsters ];
@@ -50,7 +54,7 @@ const Meet = ({
       });
     });
 
-    API.on('participantLeft', ({ id }) => {
+    api.on('participantLeft', ({ id }) => {
       setJitsters(prevJitsters => {
         if (!prevJitsters) return prevJitsters;
         const nextJitsters = [ ...prevJitsters ];
@@ -64,11 +68,11 @@ const Meet = ({
       });
     });
 
-    API.on('videoConferenceLeft', () => {
-      API.dispose();
+    api.on('videoConferenceLeft', () => {
+      api.dispose();
     });
 
-  }, [ eventName ]);
+  }, [ setAPI, eventName, setJitsters, ]);
 
   return (
     <div
