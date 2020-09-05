@@ -19,7 +19,7 @@ import Footer from './footer';
 import { differenceInDays, formatDistance } from 'date-fns'
 import { useT, useLocale, } from './i18n';
 
-const eventStates = {
+export const eventStates = {
   EVENT_CREATED: 0,
   CALL_STARTED: 1,
   EVENT_STARTED: 2,
@@ -414,6 +414,7 @@ const Event = () => {
                 eventName={event.name}
                 userName={userName}
                 setJitsters={setJitsters}
+                eventState={ eventState }
               />
             ) }
         </div>

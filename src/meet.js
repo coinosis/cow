@@ -1,25 +1,37 @@
-import React, { useCallback, useContext, useState, } from 'react';
+import React, { useCallback, useContext, useEffect, useState, } from 'react';
 import Jitsi from 'react-jitsi';
 import { environment, Loading } from './helpers';
 import settings from '../settings.json';
 import { useT } from './i18n';
 import { AccountContext } from './coinosis';
+import { eventStates, } from './event';
 
 const Meet = ({
   id,
   eventName,
   userName,
   setJitsters,
+  eventState,
 }) => {
 
   const t = useT();
   const { language } = useContext(AccountContext);
   const [ api, setAPI ] = useState();
 
+  useEffect(() => {
+    if (eventState === eventStates.EVENT_STARTED) {
+      api.executeCommand('startRecording', {
+        mode: 'stream',
+        youtubeStreamKey: 'dj0e-qya8-rgq6-gsbk-cxr6',
+      });
+    } else if (eventState === eventStates.EVENT_ENDED) {
+      api.executeCommand('stopRecording', 'stream');
+    }
+  }, [ eventState, api, ]);
+
   const handleAPI = useCallback(api => {
 
     setAPI(api);
-
     api.executeCommand('subject', eventName);
 
     api.on('videoConferenceJoined', me  => {
