@@ -413,6 +413,7 @@ const Event = () => {
                 id={event._id}
                 eventName={event.name}
                 userName={userName}
+                jitsters={jitsters}
                 setJitsters={setJitsters}
                 eventState={ eventState }
               />
