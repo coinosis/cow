@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import logo from './assets/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  faYoutube,
   faTwitter,
   faMedium,
   faTelegram,
@@ -39,6 +40,10 @@ const Header = ({ setLanguage }) => {
             justify-content: flex-start;
           `}
         >
+          <Icon
+            icon={faYoutube}
+            href="https://www.youtube.com/channel/UCUQF6Q6QpWwm4QoUYplekOg"
+          />
           <Icon icon={faTwitter} href="https://twitter.com/coinosis" />
           <Icon icon={faMedium} href="https://medium.com/coinosis" />
           <Icon icon={faTelegram} href="https://t.me/coinosisdapp" />
