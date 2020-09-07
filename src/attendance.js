@@ -58,7 +58,7 @@ const Attendance = ({
 
   const { contract } = useContext(ContractContext);
   const web3 = useContext(Web3Context);
-  const { account, name: user, language, } = useContext(AccountContext);
+  const { account, name: user, language, box, } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [feeUSDWei, setFeeUSDWei] = useState();
   const { toUSD } = useConversions();
@@ -73,6 +73,16 @@ const Attendance = ({
   const [registerTxs, setRegisterTxs] = useState();
   const [registerState, setRegisterState] = useState();
   const [txType, setTxType] = useState();
+  const [ email, setEmail, ] = useState();
+
+  useEffect(() => {
+    if (!box) return;
+    box.verified.email().then(data => {
+      if (data) {
+        setEmail(data.email_address);
+      }
+    });
+  }, [ box, setEmail, ]);
 
   const fetchTransaction = useCallback(async () => {
     if (!backendURL || !event || !account) return;
@@ -245,7 +255,7 @@ const Attendance = ({
       accountId: settings[environment].payU.accountId,
       currency: 'USD',
       buyerFullName: user,
-      buyerEmail: '',
+      buyerEmail: email ? email : '',
       algorithmSignature: 'SHA256',
       confirmationUrl: `${callback}/payu`,
       responseUrl: `${callback}/close`,
@@ -283,6 +293,7 @@ const Attendance = ({
     feeWei,
     account,
     user,
+    email,
     backendURL,
     toUSD,
     awaitClosable,
