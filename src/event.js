@@ -334,7 +334,28 @@ const Event = () => {
             currency={event.currency}
           />
         ) }
-      { !attending && (
+      { contractState === contractStates.DISTRIBUTION_MADE && (
+        <Result url={event.url} currency={event.currency} />
+      ) }
+      { userState === userStates.REGISTERED
+        && eventState >= eventStates.CALL_STARTED
+        && contractState < contractStates.DISTRIBUTION_MADE
+        && (
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
+            <button
+              onClick={attend}
+            >
+              { t('join_call') }
+            </button>
+          </div>
+        ) }
+      { event.broadcastID && !attending && (
         <div
           css={`
             margin-top: 15px;
@@ -365,27 +386,6 @@ const Event = () => {
             && t('at_no_cost') }
         </div>
       ) }
-      { contractState === contractStates.DISTRIBUTION_MADE && (
-        <Result url={event.url} currency={event.currency} />
-      ) }
-      { userState === userStates.REGISTERED
-        && eventState >= eventStates.CALL_STARTED
-        && contractState < contractStates.DISTRIBUTION_MADE
-        && (
-          <div
-            css={`
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            `}
-          >
-            <button
-              onClick={attend}
-            >
-              { t('join_call') }
-            </button>
-          </div>
-        )}
       <div css="display: flex">
         { userState >= userStates.ATTENDING
           && eventState >= eventStates.EVENT_STARTED
