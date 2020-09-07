@@ -13,6 +13,7 @@ const Meet = ({
   jitsters,
   setJitsters,
   eventState,
+  streamName,
 }) => {
 
   const t = useT();
@@ -25,7 +26,7 @@ const Meet = ({
       if (jitsters[0].displayName === userName) {
         api.executeCommand('startRecording', {
           mode: 'stream',
-          youtubeStreamKey: 'dj0e-qya8-rgq6-gsbk-cxr6',
+          youtubeStreamKey: streamName,
         });
         jitsters[0].streamer = true;
       }

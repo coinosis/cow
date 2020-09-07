@@ -322,19 +322,49 @@ const Event = () => {
       ) }
       { (eventState < eventStates.CALL_STARTED
          || (userState === userStates.UNREGISTERED
-             && eventState < eventStates.EVENT_ABOUT_TO_END)) && (
-               <>
-                 <Attendance
-                   eventName={event.name}
-                   event={event.url}
-                   fee={event.fee}
-                   feeWei={event.feeWei}
-                   userState={userState}
-                   contractAddress={event.address}
-                   currency={event.currency}
-                 />
-               </>
-             ) }
+             && eventState < eventStates.EVENT_ABOUT_TO_END))
+        && (
+          <Attendance
+            eventName={event.name}
+            event={event.url}
+            fee={event.fee}
+            feeWei={event.feeWei}
+            userState={userState}
+            contractAddress={event.address}
+            currency={event.currency}
+          />
+        ) }
+      { !attending && (
+        <div
+          css={`
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+
+          `}
+        >
+          { userState === userStates.UNREGISTERED
+            && eventState < eventStates.EVENT_ABOUT_TO_END
+            && t('dont_want_to_participate') }
+          <a
+            css={`
+              margin: 0 5px;
+              color: black;
+              &:visited {
+                color: black;
+              }
+            `}
+            href={`https://youtu.be/${ event.broadcastID }`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            { t('watch_on_youtube') }
+          </a>
+          { userState === userStates.UNREGISTERED
+            && eventState < eventStates.EVENT_ABOUT_TO_END
+            && t('at_no_cost') }
+        </div>
+      ) }
       { contractState === contractStates.DISTRIBUTION_MADE && (
         <Result url={event.url} currency={event.currency} />
       ) }
