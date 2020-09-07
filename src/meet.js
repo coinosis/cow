@@ -119,32 +119,29 @@ const Meet = ({
           config={{
             prejoinPageEnabled: false,
             startAudioOnly: !settings[environment].jitsi.video,
-            startWithAudioMuted: true,
+            startWithAudioMuted: false,
             fileRecordingsEnabled: false,
             remoteVideoMenu: {
               disableKick: true,
             },
+            defaultLanguage: language,
           }}
           interfaceConfig={{
             DEFAULT_BACKGROUND: '#476047',
             TOOLBAR_BUTTONS: [
               'microphone',
               'camera',
-              'desktop',
               'chat',
-              'livestreaming',
               'raisehand',
               'videoquality',
-              'stats',
-              'shortcuts',
               'tileview',
-              'mute-everyone',
               'settings',
               'fullscreen',
             ],
-            SETTINGS_SECTIONS: ['language'],
+            SETTINGS_SECTIONS: [ 'language', ],
             SHOW_CHROME_EXTENSION_BANNER: false,
-            ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 15000,
+            ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 5000,
+            LANG_DETECTION: false,
           }}
         />
       )}
@@ -156,7 +153,13 @@ const Meet = ({
       >
         { t('jitsi_troubleshooting') }
         <a
-          css="margin: 5px"
+          css={`
+            margin: 5px;
+            color: black;
+            &:visited {
+              color: black;
+            }
+          `}
           href={`/webrtc-${ language }.html`}
           target="_blank"
           rel="noreferrer"
