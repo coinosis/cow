@@ -318,21 +318,23 @@ const Event = () => {
           start={event.start}
           end={event.end}
           eventState={eventState}
-          />
+        />
       ) }
       { (eventState < eventStates.CALL_STARTED
-        || (userState === userStates.UNREGISTERED
-        && eventState < eventStates.EVENT_ABOUT_TO_END)) && (
-          <Attendance
-            eventName={event.name}
-            event={event.url}
-            fee={event.fee}
-            feeWei={event.feeWei}
-            userState={userState}
-            contractAddress={event.address}
-            currency={event.currency}
-            />
-        ) }
+         || (userState === userStates.UNREGISTERED
+             && eventState < eventStates.EVENT_ABOUT_TO_END)) && (
+               <>
+                 <Attendance
+                   eventName={event.name}
+                   event={event.url}
+                   fee={event.fee}
+                   feeWei={event.feeWei}
+                   userState={userState}
+                   contractAddress={event.address}
+                   currency={event.currency}
+                 />
+               </>
+             ) }
       { contractState === contractStates.DISTRIBUTION_MADE && (
         <Result url={event.url} currency={event.currency} />
       ) }
@@ -354,36 +356,36 @@ const Event = () => {
             </button>
           </div>
         )}
-        <div css="display: flex">
-          { userState >= userStates.ATTENDING
-            && eventState >= eventStates.EVENT_STARTED
-            && contractState < contractStates.DISTRIBUTION_MADE
-            && (
+      <div css="display: flex">
+        { userState >= userStates.ATTENDING
+          && eventState >= eventStates.EVENT_STARTED
+          && contractState < contractStates.DISTRIBUTION_MADE
+          && (
+            <div
+              css={`
+                display: flex;
+                flex-direction: column;
+              `}
+            >
               <div
                 css={`
                   display: flex;
+                  justify-content: center;
+                  font-size: 20px;
+                  margin-bottom: 30px;
                   flex-direction: column;
+                  align-items: center;
                 `}
               >
                 <div
                   css={`
-                    display: flex;
-                    justify-content: center;
-                    font-size: 20px;
-                    margin-bottom: 30px;
-                    flex-direction: column;
-                    align-items: center;
-                  `}
-                >
-                  <div
-                    css={`
                       font-size: 80px;
                     `}
-                  >
-                    {ownClaps}
-                  </div>
-                  { t('claps_received') }
+                >
+                  {ownClaps}
                 </div>
+                { t('claps_received') }
+              </div>
               <Assessment
                 state={userState}
                 setState={setUserState}
@@ -403,22 +405,23 @@ const Event = () => {
                 currency={event.currency}
               />
             </div>
-            ) }
-          { userState >= userStates.ATTENDING
-            && eventState >= eventStates.CALL_STARTED
-            && (contractState < contractStates.DISTRIBUTION_MADE
-                || eventState < eventStates.CALL_ENDED)
-            && (
-              <Meet
-                id={event._id}
-                eventName={event.name}
-                userName={userName}
-                jitsters={jitsters}
-                setJitsters={setJitsters}
-                eventState={ eventState }
-              />
-            ) }
-        </div>
+          ) }
+        { userState >= userStates.ATTENDING
+          && eventState >= eventStates.CALL_STARTED
+          && (contractState < contractStates.DISTRIBUTION_MADE
+              || eventState < eventStates.CALL_ENDED)
+          && (
+            <Meet
+              id={event._id}
+              eventName={event.name}
+              userName={userName}
+              jitsters={jitsters}
+              setJitsters={setJitsters}
+              eventState={ eventState }
+              streamName={ event.streamName }
+            />
+          ) }
+      </div>
       <Footer hidden={event.version < 2} currency={event.currency} />
     </ContractContext.Provider>
   );
@@ -440,10 +443,10 @@ const Title = ({ text, now, start, end, eventState }) => {
   useEffect(() => {
     if (
       now === undefined
-      || start === undefined
-      || end == undefined
-      || close === undefined
-      || eventState === undefined
+        || start === undefined
+        || end == undefined
+        || close === undefined
+        || eventState === undefined
     ) return;
     const dateOptions = { locale, addSuffix: true, includeSeconds: true, };
     if (close === false) {
@@ -469,8 +472,8 @@ const Title = ({ text, now, start, end, eventState }) => {
         display: flex;
         flex-direction: column;
         margin: 40px 10px;
-        `}
-      >
+      `}
+    >
       <div css="display: flex">
         <Link to="/" css={'width: 60px'}>← {t('back')}</Link>
         <div
@@ -480,8 +483,8 @@ const Title = ({ text, now, start, end, eventState }) => {
             font-size: 32px;
             flex-grow: 1;
             text-align: center;
-            `}
-          >
+          `}
+        >
           {text}
         </div>
         <div css={'width: 60px'}/>
@@ -489,8 +492,8 @@ const Title = ({ text, now, start, end, eventState }) => {
       <div
         css={`
           align-self: center;
-          `}
-        >
+        `}
+      >
         {subtitle}
       </div>
     </div>
