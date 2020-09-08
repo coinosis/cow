@@ -334,9 +334,6 @@ const Event = () => {
             currency={event.currency}
           />
         ) }
-      { contractState === contractStates.DISTRIBUTION_MADE && (
-        <Result url={event.url} currency={event.currency} />
-      ) }
       { userState === userStates.REGISTERED
         && eventState >= eventStates.CALL_STARTED
         && contractState < contractStates.DISTRIBUTION_MADE
@@ -469,6 +466,9 @@ const Event = () => {
             />
           ) }
       </div>
+      { contractState === contractStates.DISTRIBUTION_MADE && (
+        <Result url={event.url} currency={event.currency} />
+      ) }
       <Footer hidden={event.version < 2} currency={event.currency} />
     </ContractContext.Provider>
   );
