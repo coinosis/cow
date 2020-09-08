@@ -34,6 +34,7 @@ const Meet = ({
   }, [ jitsters, eventState, userName, api, ]);
 
   useEffect(() => {
+    if (!api) return;
     if (eventState === eventStates.EVENT_ENDED) {
       api.executeCommand('stopRecording', 'stream');
     }
