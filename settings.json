@@ -16,9 +16,9 @@
       "prepopulate": {
         "minutesFromNow": 1
       },
-      "duration": 10,
+      "duration": 1,
       "before": 1,
-      "after": 0
+      "after": 1
     }
   },
   "testing": {
