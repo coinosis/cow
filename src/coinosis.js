@@ -31,6 +31,7 @@ const Coinosis = () => {
   const [ unsavedData, setUnsavedData ] = useState({});
 
   useEffect(() => {
+    if (!window.ethereum) return;
     window.ethereum.autoRefreshOnNetworkChange = false;
     window.ethereum.on('chainChanged', () => window.location.reload());
   }, []);

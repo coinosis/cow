@@ -58,6 +58,7 @@ const Account = ({ large }) => {
   }, [ web3, setAccount, setName, getAccountStatus, updateBox, ]);
 
   useEffect(() => {
+    if (!window.ethereum) return;
     updateAccounts();
     window.ethereum.on('accountsChanged', updateAccounts);
   }, [ updateAccounts, ]);
