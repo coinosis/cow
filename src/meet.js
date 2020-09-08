@@ -131,6 +131,7 @@ const Meet = ({
             TOOLBAR_BUTTONS: [
               'microphone',
               'camera',
+              'desktop',
               'chat',
               'raisehand',
               'videoquality',
