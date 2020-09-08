@@ -32,8 +32,8 @@ const ContractInfo = ({ currency }) => {
   useEffect(() => {
     if (contract === undefined) return;
     setAddress(contract._address);
-    if (version == 0) setVersionString('versión 0.2.0');
-    else if (version == 1) setVersionString('versión 1.3.1');
+    if (version == 0) setVersionString(`${ t('version') } 0.2.0`);
+    else if (version == 1) setVersionString(`${ t('version') } 1.3.1`);
     else {
       contract.methods
       .version()
@@ -59,7 +59,7 @@ const ContractInfo = ({ currency }) => {
       `}
     >
       <div>
-        contrato
+        { t('contract') }
       </div>
       <div
         css={`
