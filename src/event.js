@@ -32,7 +32,6 @@ export const eventStates = {
 export const userStates = {
   UNREGISTERED: 0,
   REGISTERED: 1,
-  ATTENDING: 1.5,
   CLAPPED: 2,
   REWARDED: 3,
 };
@@ -100,12 +99,20 @@ const Event = () => {
   }, [ event, web3, account, setSignature, setAttending, ]);
 
   useEffect(() => {
-    if (eventState === undefined || userState === undefined) return;
+    if (
+      contractState === contractStates.DISTRIBUTION_MADE
+        && eventState === eventStates.CALL_ENDED
+    ) {
+      setAttending(false);
+    }
+  }, [ contractState, eventState, setAttending, ]);
+
+  useEffect(() => {
+    if (eventState === undefined || attending === undefined) return;
     const eventOngoing = eventState >= eventStates.EVENT_STARTED
           && eventState < eventStates.EVENT_ENDED;
-    const userAttending = userState >= userStates.ATTENDING;
-    setInEvent(userAttending && eventOngoing);
-  }, [ eventState, userState ]);
+    setInEvent(attending && eventOngoing);
+  }, [ eventState, attending, ]);
 
   const updateEventState = useCallback(() => {
     if (event === undefined) return;
@@ -147,12 +154,8 @@ const Event = () => {
       return;
     }
     const userState = Number(await contract.methods.states(account).call());
-    if (userState === userStates.REGISTERED && attending) {
-      setUserState(userStates.ATTENDING);
-    } else {
-      setUserState(userState);
-    }
-  }, [ contract, account, setUserState, setReward, attending ]);
+    setUserState(userState);
+  }, [ contract, account, setUserState, setReward, attending, ]);
 
   useEffect(() => {
     if (event === undefined || event.version !== 2) return;
@@ -334,7 +337,7 @@ const Event = () => {
             currency={event.currency}
           />
         ) }
-      { userState === userStates.REGISTERED
+      { userState >= userStates.REGISTERED && !attending
         && eventState >= eventStates.CALL_STARTED
         && contractState < contractStates.DISTRIBUTION_MADE
         && (
@@ -400,8 +403,11 @@ const Event = () => {
           </iframe>
         </div>
       ) }
+      { contractState === contractStates.DISTRIBUTION_MADE && (
+        <Result url={event.url} currency={event.currency} />
+      ) }
       <div css="display: flex">
-        { userState >= userStates.ATTENDING
+        { userState >= userStates.REGISTERED && attending
           && eventState >= eventStates.EVENT_STARTED
           && contractState < contractStates.DISTRIBUTION_MADE
           && (
@@ -450,7 +456,7 @@ const Event = () => {
               />
             </div>
           ) }
-        { userState >= userStates.ATTENDING
+        { userState >= userStates.REGISTERED && attending
           && eventState >= eventStates.CALL_STARTED
           && (contractState < contractStates.DISTRIBUTION_MADE
               || eventState < eventStates.CALL_ENDED)
@@ -466,9 +472,6 @@ const Event = () => {
             />
           ) }
       </div>
-      { contractState === contractStates.DISTRIBUTION_MADE && (
-        <Result url={event.url} currency={event.currency} />
-      ) }
       <Footer hidden={event.version < 2} currency={event.currency} />
     </ContractContext.Provider>
   );

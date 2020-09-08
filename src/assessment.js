@@ -10,7 +10,7 @@ import {
   ExternalLink,
   Loading,
   usePost,
-  ATTENDEE_ATTENDING,
+  ATTENDEE_REGISTERED,
   ATTENDEE_CLICKED_SEND,
   ATTENDEE_SENT_CLAPS,
   ATTENDEE_CLAPPED,
@@ -39,7 +39,7 @@ const Assessment = ({
   const [clapsError, setClapsError] = useState(false);
   const [proxy, setProxy] = useState();
   const [txHash, setTxHash] = useState();
-  const [txState, setTxState] = useState(ATTENDEE_ATTENDING);
+  const [txState, setTxState] = useState(ATTENDEE_REGISTERED);
   const post = usePost();
   const t = useT();
 
@@ -97,7 +97,7 @@ const Assessment = ({
         setState(ATTENDEE_CLAPPED);
       }).catch(error => {
         if (error.toString().includes('404')) {
-          setState(ATTENDEE_ATTENDING);
+          setState(ATTENDEE_REGISTERED);
         } else {
           console.error(error);
         }
@@ -142,7 +142,7 @@ const Assessment = ({
       }).on('receipt', () => {
         updateState();
       }).on('error', () => {
-        setTxState(ATTENDEE_ATTENDING);
+        setTxState(ATTENDEE_REGISTERED);
       });
   }, [ contract, account ]);
 
@@ -150,7 +150,7 @@ const Assessment = ({
     const object = { event, sender: account, addresses, claps };
     post('assessments', object, async (error, data) => {
       if (error) {
-        setTxState(ATTENDEE_ATTENDING);
+        setTxState(ATTENDEE_REGISTERED);
         console.error(error);
         return;
       }
@@ -241,7 +241,7 @@ const Assessment = ({
           >
             <button
               onClick={send}
-              disabled={txState > ATTENDEE_ATTENDING}
+              disabled={txState > ATTENDEE_REGISTERED}
             >
               {state >= ATTENDEE_CLAPPED
                ? t('sent_masculine')
