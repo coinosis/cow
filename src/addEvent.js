@@ -16,6 +16,7 @@ import {
 } from './helpers';
 import settings from '../settings.json';
 import { useT, useLocale, useDateFormat, } from './i18n';
+import testDescription from './assets/testDescription.txt';
 
 const AddEvent = ({ setEvents }) => {
 
@@ -50,7 +51,7 @@ const AddEvent = ({ setEvents }) => {
     if (!settings[environment].addEvent.prepopulate) return;
     const seed = Math.random();
     preSetName({ target: { value: `test ${seed}` } });
-    setDescription('test event');
+    setDescription(testDescription);
     setFeeETH(`${(seed * 10).toFixed(3)}`);
     setFee(`${(seed * 10).toFixed(2)}`);
     const { minutesFromNow } = settings[environment].addEvent.prepopulate;
