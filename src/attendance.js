@@ -381,6 +381,7 @@ const Attendance = ({
         display: flex;
         flex-direction: column;
         align-items: center;
+        min-height: 260px;
       `}
     >
       <PaymentOptions

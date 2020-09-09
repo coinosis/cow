@@ -346,9 +346,15 @@ const Event = () => {
               display: flex;
               flex-direction: column;
               align-items: center;
+              justify-content: center;
+              height: 260px;
             `}
           >
             <button
+              css={`
+                padding: 10px;
+                font-size: 20px;
+              `}
               onClick={attend}
             >
               { t('join_call') }
@@ -365,7 +371,7 @@ const Event = () => {
         >
           <div
             css={`
-              margin-top: 15px;
+              margin-top: 50px;
               display: flex;
               justify-content: center;
             `}
