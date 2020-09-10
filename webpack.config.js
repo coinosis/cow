@@ -29,6 +29,11 @@ module.exports = {
       filename: 'webrtc-en.html',
       chunks: ['webrtc'],
     }),
+    new HtmlWebpackPlugin({
+      template: 'src/assets/legal.html',
+      filename: 'legal.html',
+      chunks: ['legal'],
+    }),
   ],
   devServer: {
     contentBase: path.join(__dirname, 'dist'),

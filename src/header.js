@@ -12,10 +12,12 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 import { AccountContext } from './coinosis';
 import Account from './account';
+import { useT } from './i18n';
 
 const Header = ({ setLanguage }) => {
 
   const { language } = useContext(AccountContext);
+  const t = useT();
 
   return (
     <div
@@ -77,10 +79,26 @@ const Header = ({ setLanguage }) => {
       </HeaderItem>
       <HeaderItem
         css={`
-          justify-content: flex-end;
+          flex-direction: column;
+          align-items: flex-end;
         `}
       >
         <Account/>
+        <a
+          href="/legal.html"
+          target="_blank"
+          rel="noreferrer"
+          css={`
+            margin-top: 5px;
+            font-size: 10px;
+            color: black;
+            &:visited {
+              color: black;
+            };
+          `}
+        >
+          { t('legal') }
+        </a>
       </HeaderItem>
     </div>
   );
