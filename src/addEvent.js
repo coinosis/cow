@@ -176,6 +176,7 @@ const AddEvent = ({ setEvents }) => {
       afterEnd,
       organizer,
     };
+    setStatus(t('sign_with_metamask'));
     post('events', object, (err, data) => {
       if (err) {
         setStatus(err.message.substring(0, 60));
@@ -196,7 +197,7 @@ const AddEvent = ({ setEvents }) => {
       setMinutesAfter(30);
       setStatus(t('event_created'));
       setCreating(false);
-    });
+    }, 'post', () => setStatus(t('storing_event_metadata')));
   }, [
     name,
     description,
@@ -205,6 +206,7 @@ const AddEvent = ({ setEvents }) => {
     minutesBefore,
     minutesAfter,
     account,
+    t,
   ]);
 
   const deployContract = useCallback(async () => {
@@ -230,8 +232,6 @@ const AddEvent = ({ setEvents }) => {
             setCreating(false);
           }).on('transactionHash', () => {
             setStatus(t('waiting_for_confirmation'));
-          }).on('receipt', () => {
-            setStatus(t('sign_with_metamask'));
           });
     const actualFeeWei = await instance.methods.fee().call();
     const actualEnd = await instance.methods.end().call();
@@ -249,6 +249,7 @@ const AddEvent = ({ setEvents }) => {
     account,
     end,
     minutesAfter,
+    t,
   ]);
 
   const add = useCallback(async () => {

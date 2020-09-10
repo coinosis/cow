@@ -181,10 +181,11 @@ export const usePost = () => {
   const backendURL = useContext(BackendContext);
   const web3 = useContext(Web3Context);
 
-  return useCallback((endpoint, object, callback, method='POST') => {
+  return useCallback((endpoint, object, callback, method='POST', onSign) => {
     const payload = JSON.stringify(object);
     const hex = web3.utils.utf8ToHex(payload);
     web3.eth.personal.sign(hex, account).then(signature => {
+      onSign();
       object.signature = signature;
       const body = JSON.stringify(object);
       fetch(`${backendURL}/${endpoint}`, {

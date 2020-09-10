@@ -76,6 +76,7 @@
   "start_time_and_date": "fecha y hora de inicio",
   "started": "comenzó",
   "status": "estado",
+  "storing_event_metadata": "almacenando los metadatos del evento...",
   "sync_with_3box": "guardar cambios en 3Box",
   "this_action": "esta acción:",
   "time": "hora",

@@ -281,7 +281,7 @@ const Install = ({ awaitingReload, setAwaitingReload }) => {
     } else {
       setMessage(t('install_wallet'));
     }
-  }, [ awaitingReload, setMessage ])
+  }, [ awaitingReload, setMessage, t, ])
 
   const onClick = useCallback(async () => {
     if (awaitingReload) {
