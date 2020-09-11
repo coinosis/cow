@@ -413,15 +413,18 @@ const Event = () => {
                 jitsters={jitsters}
                 currency={event.currency}
                 signature={signature}
+                showSend={ event.feeWei > 0 }
               />
-              <Distribute
-                eventURL={event.url}
-                end={event.end}
-                state={userState}
-                updateState={updateUserState}
-                reward={reward}
-                currency={event.currency}
-              />
+              { event.fee > 0 && (
+                <Distribute
+                  eventURL={event.url}
+                  end={event.end}
+                  state={userState}
+                  updateState={updateUserState}
+                  reward={reward}
+                  currency={event.currency}
+                />
+              ) }
             </div>
           ) }
         { userState >= userStates.REGISTERED && attending

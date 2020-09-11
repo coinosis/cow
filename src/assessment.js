@@ -27,6 +27,7 @@ const Assessment = ({
   jitsters,
   currency,
   signature,
+  showSend,
 }) => {
 
   const web3 = useContext(Web3Context);
@@ -239,16 +240,18 @@ const Assessment = ({
               text-align: center;
             `}
           >
-            <button
-              onClick={send}
-              disabled={txState > ATTENDEE_REGISTERED}
-            >
-              {state >= ATTENDEE_CLAPPED
-               ? t('sent_masculine')
-               : txState >= ATTENDEE_SENT_CLAPS ? t('sending')
-               : t('send')
-              }
-            </button>
+            { showSend && (
+              <button
+                onClick={send}
+                disabled={txState > ATTENDEE_REGISTERED}
+              >
+                {state >= ATTENDEE_CLAPPED
+                 ? t('sent_masculine')
+                 : txState >= ATTENDEE_SENT_CLAPS ? t('sending')
+                 : t('send')
+                }
+              </button>
+            ) }
           </td>
         </tr>
       </tfoot>
