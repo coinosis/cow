@@ -28,6 +28,7 @@ const AddEvent = ({ setEvents }) => {
   const [description, setDescription] = useState('');
   const [feeETH, setFeeETH] = useState('');
   const [fee, setFee] = useState('');
+  const [ noDeposit, setNoDeposit, ] = useState('');
   const [now] = useState(new Date());
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
@@ -42,6 +43,14 @@ const AddEvent = ({ setEvents }) => {
   const [status, setStatus] = useState();
   const t = useT();
   const locale = useLocale();
+
+  const setNoDepositRaw = useCallback(({ target: { checked } }) => {
+    setNoDeposit(checked);
+    if (checked) {
+      setFee('');
+      setFeeETH('');
+    }
+  }, [ setNoDeposit, setFee, setFeeETH, ]);
 
   useEffect(() => {
     registerLocale('es', locale);
@@ -63,14 +72,13 @@ const AddEvent = ({ setEvents }) => {
           name !== ''
           && url !== ''
           && description !== ''
-          && Number(feeETH) != 0
-          && Number(fee) != 0
+          && ((Number(feeETH) != 0 && Number(fee) != 0) || noDeposit)
           && start !== ''
           && end !== ''
           && userName !== null;
     setFormValid(valid);
     setStatus();
-  }, [name, url, description, feeETH, fee, start, end, userName]);
+  }, [ name, url, description, feeETH, fee, noDeposit, start, end, userName, ]);
 
   const preSetName = useCallback(e => {
     const value = e.target.value;
@@ -329,6 +337,7 @@ const AddEvent = ({ setEvents }) => {
                   onChange={setFeeETHRaw}
                   type="text"
                   css="width: 60px"
+                  disabled={ noDeposit }
                 />
                 <div css="margin-left: 5px">xDAI</div>
                 <div css="margin-left: 20px">(</div>
@@ -340,8 +349,17 @@ const AddEvent = ({ setEvents }) => {
                     margin-left: 5px;
                     width: 60px;
                   `}
+                  disabled={ noDeposit }
                 />
                 <div css="margin-left: 5px">USD )</div>
+                <div css="margin-left: 15px">
+                  <input
+                    type="checkbox"
+                    checked={ noDeposit }
+                    onChange={ setNoDepositRaw }
+                  />
+                  { t('no_deposit') }
+                </div>
               </div>
             }
           />
