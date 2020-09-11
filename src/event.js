@@ -443,7 +443,10 @@ const Event = () => {
             />
           ) }
       </div>
-      <Footer hidden={event.version < 2} currency={event.currency} />
+      <Footer
+        hidden={event.version < 2 || !event.feeWei}
+        currency={event.currency}
+      />
     </ContractContext.Provider>
   );
 }
