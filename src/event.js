@@ -142,6 +142,13 @@ const Event = () => {
   }, [ event, setEventState, now ]);
 
   useEffect(() => {
+    if (!event || event.fee > 0) return;
+    if (eventState === eventStates.CALL_ENDED) {
+      setContractState(contractStates.DISTRIBUTION_MADE);
+    }
+  }, [ event, eventState, setContractState, ]);
+
+  useEffect(() => {
     updateEventState();
     const eventStateUpdater = setInterval(updateEventState, 3000);
     return () => {
@@ -265,7 +272,12 @@ const Event = () => {
         return response.json();
       }).then(event => {
         if (event.version === 2) {
-          setContractRaw(event.address);
+          if (event.feeWei == 0) {
+            setUserState(userStates.REGISTERED);
+            setContractState(contractStates.CONTRACT_CREATED);
+          } else {
+            setContractRaw(event.address);
+          }
         } else if (event.version === 1 || event.version === 0) {
           setAttendees(event.attendees);
           setEventState(eventStates.CALL_ENDED);
@@ -277,7 +289,7 @@ const Event = () => {
       }).catch(err => {
         console.error(err);
       });
-  }, [ backendURL, eventURL, setContractRaw ]);
+  }, [ backendURL, eventURL, setContractRaw, ]);
 
   if (event === undefined) return <Loading/>;
 
