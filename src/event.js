@@ -284,7 +284,6 @@ const Event = () => {
           end={event.end}
           eventState={eventState}
         />
-        <Info event={event} />
         <div
           css={`
             display: flex;
@@ -293,6 +292,7 @@ const Event = () => {
         >
           <Account large={true} />
         </div>
+        <Info event={event} />
       </div>
     );
   }
