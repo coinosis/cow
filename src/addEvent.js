@@ -245,8 +245,8 @@ const AddEvent = ({ setEvents }) => {
     const actualEnd = await instance.methods.end().call();
     return {
       address: instance._address,
-      feeWei: actualFeeWei,
-      end: actualEnd,
+      actualFeeWei,
+      actualEnd,
     };
   }, [
     web3,
@@ -261,9 +261,14 @@ const AddEvent = ({ setEvents }) => {
   ]);
 
   const add = useCallback(async () => {
-    const { address, feeWei, end } = await deployContract();
-    addToBackend(address, feeWei, end);
-  }, [ addToBackend, deployContract ]);
+    if (noDeposit) {
+      const endTimestamp = timestampInSeconds(end);
+      addToBackend('', 0, endTimestamp);
+      return;
+    }
+    const { address, actualFeeWei, actualEnd, } = await deployContract();
+    addToBackend(address, actualFeeWei, actualEnd);
+  }, [ noDeposit, end, addToBackend, deployContract ]);
 
   return (
     <div
