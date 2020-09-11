@@ -95,9 +95,16 @@ const Event = () => {
     const payload = JSON.stringify(object);
     const hex = web3.utils.utf8ToHex(payload);
     const signature = await web3.eth.personal.sign(hex, account);
+    if (event.feeWei == 0) {
+      fetch(`${backendURL}/attend`, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...object, signature, }),
+      });
+    }
     setSignature(signature);
     setAttending(true);
-  }, [ event, web3, account, setSignature, setAttending, ]);
+  }, [ event, web3, account, setSignature, setAttending, backendURL, ]);
 
   useEffect(() => {
     if (
