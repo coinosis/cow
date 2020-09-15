@@ -10,7 +10,6 @@ const Meet = ({
   id,
   eventName,
   userName,
-  jitsters,
   setJitsters,
   eventState,
   streamName,
@@ -21,17 +20,14 @@ const Meet = ({
   const [ api, setAPI ] = useState();
 
   useEffect(() => {
-    if (!jitsters || !jitsters[0]) return;
+    if (!api) return;
     if (eventState === eventStates.EVENT_STARTED) {
-      if (jitsters[0].displayName === userName) {
-        api.executeCommand('startRecording', {
-          mode: 'stream',
-          youtubeStreamKey: streamName,
-        });
-        jitsters[0].streamer = true;
-      }
+      api.executeCommand('startRecording', {
+        mode: 'stream',
+        youtubeStreamKey: streamName,
+      });
     }
-  }, [ jitsters, eventState, userName, api, ]);
+  }, [ eventState, userName, api, ]);
 
   useEffect(() => {
     if (!api) return;
