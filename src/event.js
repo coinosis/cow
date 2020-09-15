@@ -224,21 +224,21 @@ const Event = () => {
   }, [ contract, setAttendeeAddresses ]);
 
   useEffect(() => {
+    if (!event || event.feeWei == 0) return () => {};
     getAttendeeAddresses();
     const updateAttendees = setInterval(getAttendeeAddresses, 3000);
     return () => {
       clearInterval(updateAttendees);
     }
-  }, [ getAttendeeAddresses ]);
+  }, [ event, getAttendeeAddresses, ]);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      if (
-        !attendeeAddresses
-          || !attendeeAddresses.length
-          || (attendees && attendees.length === attendeeAddresses.length)
-      ) {
+      if (!attendeeAddresses || !attendeeAddresses.length) {
         setAttendees([]);
+        return;
+      }
+      if (attendees && attendees.length === attendeeAddresses.length) {
         return;
       }
       const nextAttendees = attendees ? [ ...attendees ] : [];
@@ -250,7 +250,22 @@ const Event = () => {
       setAttendees(nextAttendees);
     };
     fetchUsers();
-  }, [ attendeeAddresses, setAttendees ]);
+  }, [ attendeeAddresses, setAttendees, ]);
+
+  useEffect(() => {
+    if (!event || event.feeWei > 0) return () => {};
+    const endpoint = `${ backendURL }/event/${ event.url }/attendees`;
+    const getAttendees = async () => {
+      const response = await fetch(endpoint);
+      const attendees = await response.json();
+      setAttendeeAddresses(attendees);
+    }
+    getAttendees();
+    const attendeeInterval = setInterval(getAttendees, 3000);
+    return () => {
+      clearInterval(attendeeInterval);
+    }
+  }, [ event, backendURL, setAttendeeAddresses, ]);
 
   const setContractRaw = useCallback(async address => {
     if (web3 === undefined || web3 === null) return;
