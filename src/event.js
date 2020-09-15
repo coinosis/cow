@@ -398,13 +398,6 @@ const Event = () => {
             </button>
           </div>
         ) }
-      { !attending && (
-        <Info
-          event={event}
-          userState={userState}
-          eventState={eventState}
-        />
-      ) }
       { contractState === contractStates.DISTRIBUTION_MADE && (
         <Result
           url={event.url}
@@ -412,6 +405,13 @@ const Event = () => {
           feeWei={event.feeWei}
           end={event.end}
           attendees={attendees}
+        />
+      ) }
+      { !attending && (
+        <Info
+          event={event}
+          userState={userState}
+          eventState={eventState}
         />
       ) }
       <div css="display: flex">
