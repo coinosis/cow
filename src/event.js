@@ -345,7 +345,7 @@ const Event = () => {
           eventState={eventState}
         />
       ) }
-      { (eventState < eventStates.CALL_STARTED
+      { event.feeWei > 0 && (eventState < eventStates.CALL_STARTED
          || (userState === userStates.UNREGISTERED
              && eventState < eventStates.EVENT_ABOUT_TO_END))
         && (
