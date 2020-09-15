@@ -44,9 +44,9 @@ const AddEvent = ({ setEvents }) => {
   const t = useT();
   const locale = useLocale();
 
-  const setNoDepositRaw = useCallback(({ target: { checked } }) => {
-    setNoDeposit(checked);
-    if (checked) {
+  const setNoDepositRaw = useCallback(next => {
+    setNoDeposit(next);
+    if (next) {
       setFee('');
       setFeeETH('');
     }
@@ -357,11 +357,18 @@ const AddEvent = ({ setEvents }) => {
                   disabled={ noDeposit }
                 />
                 <div css="margin-left: 5px">USD )</div>
-                <div css="margin-left: 15px">
+                <div
+                  css={`
+                    margin-left: 15px;
+                    cursor: pointer;
+                  `}
+                  onClick={ () => { setNoDepositRaw(!noDeposit) } }
+                >
                   <input
                     type="checkbox"
                     checked={ noDeposit }
-                    onChange={ setNoDepositRaw }
+                    onChange={ () => { setNoDepositRaw(!noDeposit) } }
+                    css="cursor: pointer;"
                   />
                   { t('no_deposit') }
                 </div>
