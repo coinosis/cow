@@ -449,7 +449,7 @@ const Event = () => {
                 signature={signature}
                 showSend={ event.feeWei > 0 }
               />
-              { event.fee > 0 && (
+              { event.feeWei > 0 && (
                 <Distribute
                   eventURL={event.url}
                   end={event.end}
