@@ -8,7 +8,7 @@ import React, {
 import abiV1 from '../contracts/Coinosis.abi.json';
 import abiV0 from '../contracts/CoinosisV0.abi.json';
 import deployments from '../deployments.json';
-import { Web3Context } from './coinosis';
+import { BackendContext, Web3Context, } from './coinosis';
 import Amount from './amount';
 import {
   ToolTip,
@@ -23,7 +23,7 @@ import { ContractContext } from './event';
 import Footer from './footer';
 import { useT } from './i18n';
 
-const Result = ({ url: eventURL, currency }) => {
+const Result = ({ url: eventURL, currency, feeWei, end, attendees, }) => {
 
   const web3 = useContext(Web3Context);
   const { version, contract: contractV2 } = useContext(ContractContext);
@@ -53,13 +53,19 @@ const Result = ({ url: eventURL, currency }) => {
 
   return (
     <ContractContext.Provider value={{ contract, version }}>
-      <Assessments eventURL={eventURL} currency={currency} />
+      <Assessments
+        eventURL={eventURL}
+        currency={currency}
+        feeWei={feeWei}
+        end={end}
+        attendees={attendees}
+      />
       <Footer hidden={version >= 2} />
     </ContractContext.Provider>
   );
 }
 
-const Assessments = ({ eventURL, currency }) => {
+const Assessments = ({ eventURL, currency, feeWei, end, attendees, }) => {
 
   const isMounted = useRef(true);
   const web3 = useContext(Web3Context);
@@ -68,6 +74,7 @@ const Assessments = ({ eventURL, currency }) => {
   const getETHPrice = useETHPrice();
   const getUser = useGetUser();
   const distributionPrice = useDistributionPrice(eventURL);
+  const backendURL = useContext(BackendContext);
 
   const setAssessmentsV2 = useCallback(async (event, distributionPrice) => {
     const blockNumber = event.blockNumber;
@@ -158,11 +165,46 @@ const Assessments = ({ eventURL, currency }) => {
       });
   }, [ contract, setAssessmentsV2, distributionPrice ]);
 
+  const setAssessmentsNoDeposit = useCallback(async () => {
+    if (!attendees || !attendees.length) return;
+    const names = attendees.map(attendee => attendee.name);
+    const claps = await Promise.all(attendees.map(attendee =>
+      fetch(`${ backendURL }/claps/${ eventURL }/${ attendee.address }`)
+        .then(response => response.json())
+    ));
+    const totalClaps = claps.reduce((a, b) => a + b, 0);
+    const assessment = {
+      id: 0,
+      blockNumber: 0,
+      timestamp: end,
+      ETHPriceUSDWei: web3.utils.toWei('1'),
+      names,
+      addresses: attendees.map(attendee => attendee.address),
+      claps,
+      registrationFeeWei: '0',
+      totalFeesWei: '0',
+      totalClaps,
+      rewards: attendees.map(() => '0'),
+    };
+    setAssessments([ assessment ]);
+  }, [ end, attendees, getUser, backendURL, eventURL, setAssessments, web3, ]);
+
   useEffect(() => {
     if (version === undefined) return;
-    if (version === 2) awaitDistribution();
+    if (version === 2) {
+      if (feeWei == 0) {
+        setAssessmentsNoDeposit();
+      } else {
+        awaitDistribution();
+      }
+    }
     else if (version === 1 || version === 0) setAssessmentsV1And0(version);
-  }, [ version, awaitDistribution, setAssessmentsV1And0 ]);
+  }, [
+    version,
+    setAssessmentsNoDeposit,
+    awaitDistribution,
+    setAssessmentsV1And0,
+  ]);
 
   if (!assessments.length) {
     return <div/>;
@@ -450,6 +492,7 @@ const Participant = ({
   }, []);
 
   const setTransfersV2 = useCallback(async () => {
+    if (reward == 0) return;
     const transfers = await contract.getPastEvents(
       'Transfer',
       { fromBlock: 0 }
@@ -460,7 +503,7 @@ const Participant = ({
     if (transfer !== undefined) {
       setTx(transfer.transactionHash);
     }
-  }, [ contract ]);
+  }, [ reward, contract, ]);
 
   const setTransfersV1 = useCallback(() => {
     contract.events.Transfer(

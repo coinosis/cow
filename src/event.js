@@ -143,7 +143,7 @@ const Event = () => {
 
   useEffect(() => {
     if (!event || event.fee > 0) return;
-    if (eventState === eventStates.CALL_ENDED) {
+    if (eventState >= eventStates.EVENT_ENDED) {
       setContractState(contractStates.DISTRIBUTION_MADE);
     }
   }, [ event, eventState, setContractState, ]);
@@ -406,7 +406,13 @@ const Event = () => {
         />
       ) }
       { contractState === contractStates.DISTRIBUTION_MADE && (
-        <Result url={event.url} currency={event.currency} />
+        <Result
+          url={event.url}
+          currency={event.currency}
+          feeWei={event.feeWei}
+          end={event.end}
+          attendees={attendees}
+        />
       ) }
       <div css="display: flex">
         { userState >= userStates.REGISTERED && attending
