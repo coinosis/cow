@@ -360,6 +360,8 @@ const Users = ({
     setClapsLeft(clapsLeft);
   }, [ assessment, event, account, signature ]);
 
+  if (!account) return <Loading />
+
   return (
     <tbody>
       {attendees.map((attendee) => {
