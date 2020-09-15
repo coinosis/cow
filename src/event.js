@@ -257,6 +257,7 @@ const Event = () => {
     const endpoint = `${ backendURL }/event/${ event.url }/attendees`;
     const getAttendees = async () => {
       const response = await fetch(endpoint);
+      if (!response.ok) return;
       const attendees = await response.json();
       setAttendeeAddresses(attendees);
     }
