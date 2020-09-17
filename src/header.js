@@ -60,10 +60,9 @@ const Header = ({ setLanguage }) => {
           <select
             value={language}
             onChange={setLanguage}
-            disabled={!language}
           >
-            <option value="es">español</option>
-            <option value="en">english</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
           </select>
         </div>
       </HeaderItem>

@@ -25,7 +25,7 @@ const Coinosis = () => {
   const [awaitingReload, setAwaitingReload] = useState();
   const [backendURL, setBackendURL] = useState();
   const [currencyType, setCurrencyType] = useState(ETH);
-  const [ language, setLanguage ] = useState();
+  const [ language, setLanguage ] = useState('en');
 
   useEffect(() => {
     if (!window.ethereum) return;

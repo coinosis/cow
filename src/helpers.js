@@ -34,7 +34,7 @@ export const Loading = () => {
         justify-content: center;
       `}
     >
-      por favor espera...
+      loading...
     </div>
   );
 }
