@@ -81,10 +81,12 @@ const EventList = () => {
       <EventSection
         title={t('events_happening_now')}
         events={live}
+        courses={ courses }
       />
       <EventSection
         title={t('upcoming_events')}
         events={upcoming}
+        courses={ courses }
       />
       { name && (
         <div
@@ -132,12 +134,13 @@ const EventList = () => {
       <EventSection
         title={t('past_events')}
         events={past}
+        courses={ courses }
       />
     </div>
   );
 }
 
-const EventSection = ({ title, events }) => {
+const EventSection = ({ title, events, courses, }) => {
 
   const formatDate = useFormatDate();
 
@@ -163,9 +166,20 @@ const EventSection = ({ title, events }) => {
         <table>
           <tbody>
             {events.map(event => {
+              const course = courses.find(course =>
+                course.events.includes(event.url)
+              );
               return (
                 <tr key={event._id}>
                   <td>
+                    { course && (
+                      <>
+                        <Link to={course.url}>
+                          {course.name}
+                        </Link>
+                        {':'}
+                      </>
+                    ) }
                     <Link to={event.url}>
                       {event.name}
                     </Link>
