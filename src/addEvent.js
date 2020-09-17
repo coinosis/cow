@@ -17,8 +17,9 @@ import {
 import settings from '../settings.json';
 import { useT, useLocale, useDateFormat, } from './i18n';
 import testDescription from './assets/testDescription.txt';
+import { eventTypes } from './eventList';
 
-const AddEvent = ({ setEvents }) => {
+const AddEvent = ({ setEvents, eventType, events, }) => {
 
   const post = usePost();
   const web3 = useContext(Web3Context);
@@ -42,6 +43,7 @@ const AddEvent = ({ setEvents }) => {
   const [formValid, setFormValid] = useState(false);
   const [creating, setCreating] = useState(false);
   const [status, setStatus] = useState();
+  const [ selectedEvents, setSelectedEvents, ] = useState([]);
   const t = useT();
   const locale = useLocale();
 
@@ -60,26 +62,46 @@ const AddEvent = ({ setEvents }) => {
   useEffect(() => {
     if (!settings[environment].addEvent.prepopulate) return;
     const seed = Math.random();
-    preSetName({ target: { value: `test ${seed}` } });
+    const eventName = eventType === eventTypes.EVENT ? 'event' : 'course';
+    preSetName({ target: { value: `${eventName} ${seed}` } });
     setDescription(testDescription);
     setFeeETH(`${(seed * 10).toFixed(3)}`);
     setFee(`${(seed * 10).toFixed(2)}`);
     const { minutesFromNow } = settings[environment].addEvent.prepopulate;
     preSetStart(addMinutes(new Date(), minutesFromNow));
-  }, [settings, environment]);
+  }, [ settings, environment, eventType, ]);
 
   useEffect(() => {
-    const valid =
+    const commonValid =
           name !== ''
           && url !== ''
           && description !== ''
-          && ((Number(feeETH) != 0 && Number(fee) != 0) || noDeposit)
-          && start !== ''
-          && end !== ''
           && userName !== null;
-    setFormValid(valid);
+    if (eventType === eventTypes.EVENT) {
+      const valid =
+            commonValid
+            && ( (Number(feeETH) != 0 && Number(fee) != 0) || noDeposit )
+            && start !== ''
+            && end !== '';
+      setFormValid(valid);
+    } else if (eventType === eventTypes.COURSE) {
+      const valid = commonValid && selectedEvents.length;
+      setFormValid(valid);
+    }
     setStatus();
-  }, [ name, url, description, feeETH, fee, noDeposit, start, end, userName, ]);
+  }, [
+    eventType,
+    name,
+    url,
+    description,
+    feeETH,
+    fee,
+    noDeposit,
+    start,
+    end,
+    userName,
+    selectedEvents,
+  ]);
 
   const preSetName = useCallback(e => {
     const value = e.target.value;
@@ -264,7 +286,15 @@ const AddEvent = ({ setEvents }) => {
     t,
   ]);
 
+  const addCourse = useCallback(async () => {
+    console.log('addCourse()');
+  }, []);
+
   const add = useCallback(async () => {
+    if (eventType === eventTypes.COURSE) {
+      addCourse();
+      return;
+    }
     if (noDeposit) {
       const endTimestamp = timestampInSeconds(end);
       addToBackend('', 0, endTimestamp);
@@ -272,7 +302,7 @@ const AddEvent = ({ setEvents }) => {
     }
     const { address, actualFeeWei, actualEnd, } = await deployContract();
     addToBackend(address, actualFeeWei, actualEnd);
-  }, [ noDeposit, end, addToBackend, deployContract ]);
+  }, [ eventType, noDeposit, end, addToBackend, deployContract, ]);
 
   return (
     <div
@@ -333,125 +363,29 @@ const AddEvent = ({ setEvents }) => {
               />
             }
           />
-          <Field
-            label={`${ t('presentation_link') }:`}
-            element={
-              <input
-                value={ presentation }
-                onChange={ elem => setPresentation(elem.target.value) }
-                css="width: 500px;"
-                placeholder={ t('optional') }
-              />
-            }
-          />
-          <Field
-            label={`${t('deposit_per_participant')}:`}
-            element={
-              <div
-                css={`
-                  display: flex;
-                `}
-              >
-                <input
-                  value={feeETH}
-                  onChange={setFeeETHRaw}
-                  type="text"
-                  css="width: 60px"
-                  disabled={ noDeposit }
-                />
-                <div css="margin-left: 5px">xDAI</div>
-                <div css="margin-left: 20px">(</div>
-                <input
-                  value={fee}
-                  onChange={setFeeRaw}
-                  type="text"
-                  css={`
-                    margin-left: 5px;
-                    width: 60px;
-                  `}
-                  disabled={ noDeposit }
-                />
-                <div css="margin-left: 5px">USD )</div>
-                <div
-                  css={`
-                    margin-left: 15px;
-                    cursor: pointer;
-                  `}
-                  onClick={ () => { setNoDepositRaw(!noDeposit) } }
-                >
-                  <input
-                    type="checkbox"
-                    checked={ noDeposit }
-                    onChange={ () => { setNoDepositRaw(!noDeposit) } }
-                    css="cursor: pointer;"
-                  />
-                  { t('no_deposit') }
-                </div>
-              </div>
-            }
-          />
-          <Field
-            label={`${t('start_time_and_date')}:`}
-            element={
-              <DatePicker
-                dateFormat={ useDateFormat() }
-                selected={start}
-                onChange={preSetStart}
-                showTimeSelect
-                timeCaption={ t('time') }
-                timeFormat="h:mm aa"
-                timeIntervals={30}
-                minDate={now}
-                locale="es"
-                css="width: 250px;"
-              />
-            }
-          />
-          <Field
-            label={`${t('end_time_and_date')}:`}
-            element={
-              <DatePicker
-                dateFormat={ useDateFormat() }
-                selected={end}
-                onChange={setEnd}
-                showTimeSelect
-                timeCaption="hora"
-                timeFormat="h:mm aa"
-                timeIntervals={30}
-                minDate={start || now}
-                locale="es"
-                css="width: 250px;"
-              />
-            }
-          />
-          <Field
-            label={t('start_call')}
-            element={
-              <input
-                value={minutesBefore}
-                onChange={preSetMinutesBefore}
-                type="text"
-                css={`
-                  width: 60px;
-                `}
-              />
-            }
-            unit={t('minutes_before')}
-          />
-          <Field
-            label={t('and_end_it')}
-            element={
-              <input
-                value={minutesAfter}
-                onChange={preSetMinutesAfter}
-                type="text"
-                css={`
-                  width: 60px;
-                `}
-              />
-            }
-            unit={t('minutes_after')}
-          />
+          { eventType === eventTypes.EVENT ? (
+            <EventFields
+              presentation={presentation}
+              setPresentation={setPresentation}
+              feeETH={feeETH}
+              setFeeETHRaw={setFeeETHRaw}
+              noDeposit={noDeposit}
+              fee={fee}
+              setFeeRaw={setFeeRaw}
+              setNoDepositRaw={setNoDepositRaw}
+              start={start}
+              preSetStart={preSetStart}
+              now={now}
+              end={end}
+              setEnd={setEnd}
+              minutesBefore={minutesBefore}
+              preSetMinutesBefore={preSetMinutesBefore}
+              minutesAfter={minutesAfter}
+              preSetMinutesAfter={preSetMinutesAfter}
+            />
+          ) : (
+            <CourseFields events={ events } setSelected={ setSelectedEvents } />
+          ) }
           <tr>
             <td/>
             <td>
@@ -473,12 +407,224 @@ const AddEvent = ({ setEvents }) => {
   );
 }
 
+const EventFields = ({
+  presentation,
+  setPresentation,
+  feeETH,
+  setFeeETHRaw,
+  noDeposit,
+  fee,
+  setFeeRaw,
+  setNoDepositRaw,
+  start,
+  preSetStart,
+  now,
+  end,
+  setEnd,
+  minutesBefore,
+  preSetMinutesBefore,
+  minutesAfter,
+  preSetMinutesAfter,
+}) => {
+
+  const t = useT();
+
+  return (
+    <>
+      <Field
+        label={`${ t('presentation_link') }:`}
+        element={
+          <input
+            value={ presentation }
+            onChange={ elem => setPresentation(elem.target.value) }
+            css="width: 500px;"
+            placeholder={ t('optional') }
+          />
+        }
+      />
+      <Field
+        label={`${t('deposit_per_participant')}:`}
+        element={
+          <div
+            css={`
+              display: flex;
+            `}
+          >
+            <input
+              value={feeETH}
+              onChange={setFeeETHRaw}
+              type="text"
+              css="width: 60px"
+              disabled={ noDeposit }
+            />
+            <div css="margin-left: 5px">xDAI</div>
+            <div css="margin-left: 20px">(</div>
+            <input
+              value={fee}
+              onChange={setFeeRaw}
+              type="text"
+              css={`
+                margin-left: 5px;
+                width: 60px;
+              `}
+              disabled={ noDeposit }
+            />
+            <div css="margin-left: 5px">USD )</div>
+            <div
+              css={`
+                margin-left: 15px;
+                cursor: pointer;
+              `}
+              onClick={ () => { setNoDepositRaw(!noDeposit) } }
+            >
+              <input
+                type="checkbox"
+                checked={ noDeposit }
+                onChange={ () => { setNoDepositRaw(!noDeposit) } }
+                css="cursor: pointer;"
+              />
+              { t('no_deposit') }
+            </div>
+          </div>
+        }
+      />
+      <Field
+        label={`${t('start_time_and_date')}:`}
+        element={
+          <DatePicker
+            dateFormat={ useDateFormat() }
+            selected={start}
+            onChange={preSetStart}
+            showTimeSelect
+            timeCaption={ t('time') }
+            timeFormat="h:mm aa"
+            timeIntervals={30}
+            minDate={now}
+            locale="es"
+            css="width: 250px;"
+          />
+        }
+      />
+      <Field
+        label={`${t('end_time_and_date')}:`}
+        element={
+          <DatePicker
+            dateFormat={ useDateFormat() }
+            selected={end}
+            onChange={setEnd}
+            showTimeSelect
+            timeCaption="hora"
+            timeFormat="h:mm aa"
+            timeIntervals={30}
+            minDate={start || now}
+            locale="es"
+            css="width: 250px;"
+          />
+        }
+      />
+      <Field
+        label={t('start_call')}
+        element={
+          <input
+            value={minutesBefore}
+            onChange={preSetMinutesBefore}
+            type="text"
+            css={`
+                  width: 60px;
+                `}
+          />
+        }
+        unit={t('minutes_before')}
+      />
+      <Field
+        label={t('and_end_it')}
+        element={
+          <input
+            value={minutesAfter}
+            onChange={preSetMinutesAfter}
+            type="text"
+            css={`
+              width: 60px;
+            `}
+          />
+        }
+        unit={t('minutes_after')}
+      />
+    </>
+  );
+}
+
+const CourseFields = ({ events, setSelected, }) => {
+
+  const t = useT();
+  const { account } = useContext(AccountContext);
+  const ownFutureEvents = events.filter(event =>
+    event.organizer === account && new Date() < new Date(event.end)
+  );
+
+  const select = elem => {
+    if (elem.checked) {
+      setSelected(prev => {
+        if (prev.includes(elem.id)) {
+          return prev;
+        } else {
+          return [ ...prev, elem.id, ];
+        }
+      });
+    } else {
+      setSelected(prev => {
+        if (prev.includes(elem.id)) {
+          const next = [ ...prev, ];
+          return next.filter(url => url !== elem.id);
+        } else return prev;
+      });
+    }
+  }
+
+  return (
+    <>
+      <Field
+        label={ t('select_events') + ':' }
+        element={
+          <div>
+            { ownFutureEvents.map(event => (
+              <div
+                key={ event.url }
+                css={`
+                  cursor: pointer;
+                `}
+              >
+                <input
+                  type="checkbox"
+                  id={ event.url }
+                  onChange={ e => select(e.target) }
+                  css="cursor: pointer;"
+                />
+                <span
+                  onClick={ e => {
+                    const input = e.target.previousSibling;
+                    input.checked = !input.checked;
+                    select(input)
+                  }}
+                >
+                  { event.name }
+                </span>
+              </div>
+            )) }
+          </div>
+        }
+      />
+    </>
+  );
+}
+
 const Field = ({ label, element, unit }) => {
   return (
     <tr>
       <td
         css={`
           width: 50%;
+          max-width: 200px;
           text-align: end;
           vertical-align: top;
         `}

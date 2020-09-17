@@ -4,7 +4,7 @@ import { Link, SectionTitle } from './helpers';
 import AddEvent from './addEvent';
 import { useT, useFormatDate, } from './i18n';
 
-const eventTypes = {
+export const eventTypes = {
   EVENT: Symbol('EVENT'),
   COURSE: Symbol('COURSE'),
 };
@@ -101,9 +101,13 @@ const EventList = () => {
             </button>
           </div>
         { eventType === eventTypes.EVENT ? (
-          <AddEvent setEvents={setEvents} />
+          <AddEvent setEvents={setEvents} eventType={ eventTypes.EVENT } />
         ) : eventType === eventTypes.COURSE ? (
-          <div>{ t('new_course') }</div>
+          <AddEvent
+            setEvents={ setEvents }
+            eventType={ eventTypes.COURSE }
+            events={ events }
+          />
         ) : (
           <div/>
         ) }
