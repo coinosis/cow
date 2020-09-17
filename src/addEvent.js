@@ -287,8 +287,21 @@ const AddEvent = ({ setEvents, eventType, events, }) => {
   ]);
 
   const addCourse = useCallback(async () => {
-    console.log('addCourse()');
-  }, []);
+    const object = {
+      name,
+      url,
+      description,
+      events: selectedEvents,
+      organizer: account,
+    };
+    post('courses', object, (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log(data);
+    });
+  }, [ name, url, description, selectedEvents, account, ]);
 
   const add = useCallback(async () => {
     if (eventType === eventTypes.COURSE) {
