@@ -26,6 +26,7 @@ const AddEvent = ({ setEvents }) => {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [ presentation, setPresentation ] = useState('');
   const [feeETH, setFeeETH] = useState('');
   const [fee, setFee] = useState('');
   const [ noDeposit, setNoDeposit, ] = useState('');
@@ -176,6 +177,7 @@ const AddEvent = ({ setEvents }) => {
       name,
       url,
       description,
+      presentation,
       feeWei,
       currency,
       start,
@@ -197,6 +199,7 @@ const AddEvent = ({ setEvents }) => {
       setName('');
       setUrl('');
       setDescription('');
+      setPresentation('');
       setFeeETH('');
       setFee('');
       setStart('');
@@ -209,6 +212,7 @@ const AddEvent = ({ setEvents }) => {
   }, [
     name,
     description,
+    presentation,
     start,
     end,
     minutesBefore,
@@ -326,6 +330,17 @@ const AddEvent = ({ setEvents }) => {
                   width: 502px;
                   height: 200px;
                 `}
+              />
+            }
+          />
+          <Field
+            label={`${ t('presentation_link') }:`}
+            element={
+              <input
+                value={ presentation }
+                onChange={ elem => setPresentation(elem.target.value) }
+                css="width: 500px;"
+                placeholder={ t('optional') }
               />
             }
           />
