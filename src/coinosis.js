@@ -26,9 +26,6 @@ const Coinosis = () => {
   const [backendURL, setBackendURL] = useState();
   const [currencyType, setCurrencyType] = useState(ETH);
   const [ language, setLanguage ] = useState();
-  const [ box, setBox ] = useState();
-  const [ profile, setProfile ] = useState();
-  const [ unsavedData, setUnsavedData ] = useState({});
 
   useEffect(() => {
     if (!window.ethereum) return;
@@ -54,58 +51,9 @@ const Coinosis = () => {
       });
   }, []);
 
-  useEffect(() => {
-    if (unsavedData.language) return;
-    if (!profile) {
-      setLanguage('es');
-      return;
-    }
-    const savedLanguage = profile.language;
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
-    } else {
-      setLanguage('es');
-    }
-  }, [ profile, setLanguage, unsavedData, ]);
-
   const setLanguageRaw = useCallback(event => {
     setLanguage(event.target.value);
   }, [ setLanguage ]);
-
-  useEffect(() => {
-    setUnsavedData({});
-  }, [ account, setUnsavedData, ]);
-
-  useEffect(() => {
-    if (!language || !profile) return;
-    if (!box) {
-      if (language !== profile.language) {
-        setUnsavedData(prev => {
-          const next = { ...prev };
-          next.language = true;
-          return next;
-        });
-      } else {
-        setUnsavedData(prev => {
-          const next = { ...prev };
-          next.language = false;
-          return next;
-        });
-      }
-      return;
-    }
-    const saveLanguage = async () => {
-      const savedLanguage = await box.public.get('language');
-      if (language !== savedLanguage) {
-        await box.public.set('language', language);
-        setUnsavedData(prev => {
-          prev.language = false;
-          return prev;
-        });
-      }
-    }
-    saveLanguage();
-  }, [ box, profile, language, setUnsavedData, ]);
 
   if (backendURL === undefined) return <Loading/>
 
@@ -116,11 +64,7 @@ const Coinosis = () => {
         setAccount,
         name,
         setName,
-        box,
-        setBox,
-        setProfile,
         language,
-        unsavedData,
         awaitingReload,
         setAwaitingReload,
       }}>

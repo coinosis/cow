@@ -1,7 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import Box from '3box';
 import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
-import { Loading, ExternalLink, sleep } from './helpers.js';
+import { Loading, ExternalLink, sleep, usePost, } from './helpers.js';
 import unlockNifty from './assets/unlockNifty.gif';
 import { useT } from './i18n';
 import loadingIcon from './assets/loading.gif';
@@ -15,30 +14,14 @@ const Account = ({ large }) => {
     setAccount,
     name,
     setName,
-    box,
-    setBox,
-    setProfile,
-    unsavedData,
     awaitingReload,
     setAwaitingReload,
   } = useContext(AccountContext);
   const [unsavedName, setUnsavedName] = useState('');
   const t = useT();
-  const [ hasBox, setHasBox ] = useState();
-  const [ hasLegacy, setHasLegacy ] = useState();
   const [ signingUp, setSigningUp ] = useState();
-  const [ syncing, setSyncing ] = useState();
-
-  const updateBox = useCallback(async account => {
-    if (!box) return;
-    const isLinked = box._3idEthAddress === account.toLowerCase();
-    if (!isLinked) {
-      await box.logout();
-      setBox(null);
-      setUnsavedName('');
-      console.log('logged out');
-    }
-  }, [ box, setBox, ]);
+  const [ message, setMessage, ] = useState();
+  const post = usePost();
 
   const updateAccounts = useCallback(async _accounts => {
     const accounts = _accounts || await web3.eth.getAccounts();
@@ -48,14 +31,11 @@ const Account = ({ large }) => {
         if (accounts[0] === prev) return prev;
         return accounts[0];
       });
-      await getAccountStatus(accounts[0]);
-      await updateBox(accounts[0]);
     } else {
       setAccount(null);
       setName(null);
-      setHasBox(false);
     }
-  }, [ web3, setAccount, setName, getAccountStatus, updateBox, ]);
+  }, [ web3, setAccount, setName, ]);
 
   useEffect(() => {
     if (!window.ethereum) return;
@@ -63,74 +43,49 @@ const Account = ({ large }) => {
     window.ethereum.on('accountsChanged', updateAccounts);
   }, [ updateAccounts, ]);
 
-  const getLegacyName = useCallback(async () => {
-    if(!backendURL || !account) return null;
-    const response = await fetch(`${backendURL}/user/${account}`);
-    if (!response.ok) {
-      return null;
+  useEffect(() => {
+    if(!backendURL || !account) return;
+    const getAccount = async () => {
+      const response = await fetch(`${backendURL}/user/${account}`);
+      if (!response.ok) {
+        setName(null);
+        return;
+      }
+      try {
+        const data = await response.json();
+        setName(data.name);
+      } catch (err) {
+        setName(null);
+        return;
+      }
     }
-    try {
-      const data = await response.json();
-      return data.name;
-    } catch (err) {
-      return null;
-    }
+    getAccount();
   }, [ account, backendURL, ]);
 
-  const openBox = useCallback(async name => {
-    setSyncing(true);
-    if (!account) return null;
-    const box = await Box.openBox(account, web3.givenProvider);
-    if (name) await box.public.set('name', name);
-    setBox(box);
-    return box;
-  }, [ setSyncing, account, web3, setBox, ]);
-
-  const signup = useCallback(async name => {
+  const signup = useCallback(async () => {
     setSigningUp(true);
-    openBox(name);
-    setProfile(await Box.getProfile(account));
-  }, [ openBox, setSigningUp, account, ]);
-
-  const getAccountStatus = useCallback(async account => {
-    if (!account) return;
-    const profile = await Box.getProfile(account);
-    if (Object.keys(profile).length) {
-      setHasBox(true);
+    const object = {
+      address: account,
+      name: unsavedName,
+    };
+    post('users', object, (err, data) => {
+      if (err) {
+        if (err.toString().includes('400')) {
+          setMessage(t('name_exists'));
+        }
+      } else {
+        setName(data.name);
+      }
       setSigningUp(false);
-      setSyncing(false);
-      if (profile.name) {
-        setName(profile.name);
-      } else {
-        setName(null);
-      }
-      setProfile(prev => {
-        if (!prev) return profile;
-        if (prev.language === profile.language && prev.name === profile.name)
-          return prev;
-        return profile;
-      });
-    } else {
-      setProfile({});
-      setHasBox(false);
-      const name = await getLegacyName();
-      if (name) {
-        setHasLegacy(true);
-        setName(name);
-      } else {
-        setHasLegacy(false);
-        setName(null);
-      }
+    });
+  }, [ setSigningUp, account, unsavedName, post, setMessage, t, setName, ]);
+
+  const setUnsavedNameRaw = async name => {
+    setUnsavedName(name);
+    if (message) {
+      setMessage('');
     }
-  }, [
-    setHasBox,
-    setSyncing,
-    setSigningUp,
-    setName,
-    setProfile,
-    getLegacyName,
-    setHasLegacy,
-  ]);
+  }
 
   if (web3 === null) {
     return (
@@ -140,10 +95,10 @@ const Account = ({ large }) => {
       />
     );
   }
-  if (account === undefined || hasBox === undefined) return <Loading />
+  if (account === undefined) return <Loading />
   if (account === null) return <Login large={large} />
 
-  if ((!hasBox && !hasLegacy) || name === null) {
+  if (name === null) {
     return (
       <div
         css={`
@@ -164,18 +119,26 @@ const Account = ({ large }) => {
           >
             <input
               value={unsavedName}
-              onChange={e => setUnsavedName(e.target.value)}
+              onChange={e => setUnsavedNameRaw(e.target.value)}
               placeholder={ t('whats_your_name') }
               disabled={ signingUp }
             />
           </div>
           <button
-            onClick={ () => signup(unsavedName) }
+            onClick={ signup }
             disabled={ unsavedName === '' || signingUp }
           >
-            { hasBox ? t('save') : t('create_3box_account') }
+            { t('save') }
           </button>
           <LoadingIcon loading={ signingUp } />
+        </div>
+        <div
+          css={`
+            font-size: 10px;
+            color: red;
+          `}
+        >
+          { message }
         </div>
       </div>
     );
@@ -194,25 +157,6 @@ const Account = ({ large }) => {
       >
         {name}
       </ExternalLink>
-      { !box
-        && Object.keys(unsavedData).some(d => unsavedData[d])
-        && (
-        <div
-          css={`
-            margin: 0 10px;
-            display: flex;
-          `}
-        >
-          <button
-            onClick={ !hasBox ? () => signup(name) : () => openBox() }
-            disabled={ syncing }
-          >
-            { !hasBox ? t('create_3box_account') : t('sync_with_3box') }
-          </button>
-          <LoadingIcon loading={ syncing } />
-        </div>
-      ) }
-
     </div>
   );
 
