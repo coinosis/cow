@@ -19,7 +19,7 @@ import { useT, useLocale, useDateFormat, } from './i18n';
 import testDescription from './assets/testDescription.txt';
 import { eventTypes } from './eventList';
 
-const AddEvent = ({ setEvents, eventType, events, }) => {
+const AddEvent = ({ eventType, setEvents, setCourses, events, courses, }) => {
 
   const post = usePost();
   const web3 = useContext(Web3Context);
@@ -88,7 +88,6 @@ const AddEvent = ({ setEvents, eventType, events, }) => {
       const valid = commonValid && selectedEvents.length;
       setFormValid(valid);
     }
-    setStatus();
   }, [
     eventType,
     name,
@@ -294,13 +293,19 @@ const AddEvent = ({ setEvents, eventType, events, }) => {
       events: selectedEvents,
       organizer: account,
     };
+    setStatus(t('sign_with_metamask'));
     post('courses', object, (err, data) => {
       if (err) {
         console.log(err);
         return;
       }
-      console.log(data);
-    });
+      setCourses(prev => [ ...prev, data, ]);
+      setName('');
+      setUrl('');
+      setDescription('');
+      setSelectedEvents([]);
+      setStatus(t('course_created'));
+    }, 'post', () => setStatus(t('storing_course_metadata')));
   }, [ name, url, description, selectedEvents, account, ]);
 
   const add = useCallback(async () => {
@@ -397,7 +402,11 @@ const AddEvent = ({ setEvents, eventType, events, }) => {
               preSetMinutesAfter={preSetMinutesAfter}
             />
           ) : (
-            <CourseFields events={ events } setSelected={ setSelectedEvents } />
+            <CourseFields
+              events={ events }
+              courses={ courses }
+              setSelected={ setSelectedEvents }
+            />
           ) }
           <tr>
             <td/>
@@ -567,12 +576,14 @@ const EventFields = ({
   );
 }
 
-const CourseFields = ({ events, setSelected, }) => {
+const CourseFields = ({ events, courses, setSelected, }) => {
 
   const t = useT();
   const { account } = useContext(AccountContext);
   const ownFutureEvents = events.filter(event =>
-    event.organizer === account && new Date() < new Date(event.end)
+    event.organizer === account
+      && new Date() < new Date(event.end)
+      && !courses.some(course => course.events.includes(event.url))
   );
 
   const select = elem => {

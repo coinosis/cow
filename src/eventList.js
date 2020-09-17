@@ -14,11 +14,23 @@ const EventList = () => {
   const { name } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [events, setEvents] = useState([]);
+  const [ courses, setCourses, ] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
   const [live, setLive] = useState([]);
   const [past, setPast] = useState([]);
   const [ eventType, setEventType, ] = useState();
   const t = useT();
+
+  useEffect(() => {
+    if (!backendURL) return;
+    const getCourses = async () => {
+      const response = await fetch(`${backendURL}/courses`);
+      if (!response.ok) throw new Error(response);
+      const data = await response.json();
+      setCourses(data);
+    }
+    getCourses();
+  }, [ backendURL, ]);
 
   useEffect(() => {
     if (!backendURL) return;
@@ -43,7 +55,7 @@ const EventList = () => {
       }).catch(() => {
         setEvents([]);
       });
-  }, []);
+  }, [ backendURL, ]);
 
   useEffect(() => {
     const now = new Date();
@@ -101,12 +113,16 @@ const EventList = () => {
             </button>
           </div>
         { eventType === eventTypes.EVENT ? (
-          <AddEvent setEvents={setEvents} eventType={ eventTypes.EVENT } />
+          <AddEvent
+            eventType={ eventTypes.EVENT }
+            setEvents={ setEvents }
+          />
         ) : eventType === eventTypes.COURSE ? (
           <AddEvent
-            setEvents={ setEvents }
             eventType={ eventTypes.COURSE }
+            setCourses={ setCourses }
             events={ events }
+            courses={ courses }
           />
         ) : (
           <div/>
