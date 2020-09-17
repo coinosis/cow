@@ -4,6 +4,11 @@ import { Link, SectionTitle } from './helpers';
 import AddEvent from './addEvent';
 import { useT, useFormatDate, } from './i18n';
 
+const eventTypes = {
+  EVENT: Symbol('EVENT'),
+  COURSE: Symbol('COURSE'),
+};
+
 const EventList = () => {
 
   const { name } = useContext(AccountContext);
@@ -12,6 +17,7 @@ const EventList = () => {
   const [upcoming, setUpcoming] = useState([]);
   const [live, setLive] = useState([]);
   const [past, setPast] = useState([]);
+  const [ eventType, setEventType, ] = useState();
   const t = useT();
 
   useEffect(() => {
@@ -79,7 +85,28 @@ const EventList = () => {
           <SectionTitle>
             { t('create_new_event') }
           </SectionTitle>
+          <div css="margin-bottom: 25px;">
+            <button
+              css="margin-right: 15px;"
+              disabled={ eventType === eventTypes.EVENT }
+              onClick={ () => setEventType(eventTypes.EVENT) }
+            >
+              { t('new_event') }
+            </button>
+            <button
+              disabled={ eventType === eventTypes.COURSE }
+              onClick={ () => setEventType(eventTypes.COURSE) }
+            >
+              { t('new_course') }
+            </button>
+          </div>
+        { eventType === eventTypes.EVENT ? (
           <AddEvent setEvents={setEvents} />
+        ) : eventType === eventTypes.COURSE ? (
+          <div>{ t('new_course') }</div>
+        ) : (
+          <div/>
+        ) }
         </div>
       )}
       <EventSection
