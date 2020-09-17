@@ -2,6 +2,7 @@ import React from 'react';
 import Markdown from 'react-markdown';
 import { eventStates, userStates, } from './event';
 import { useT, } from './i18n';
+import { Card, } from './helpers';
 
 const EventInfo = ({ event, userState, eventState }) => {
   const t = useT();
@@ -55,21 +56,15 @@ const EventInfo = ({ event, userState, eventState }) => {
         </iframe>
       </div>
       ) }
-      <div
-        css={`
-          margin: 20px;
-          background: #f8f8f8;
-          padding: 10px;
-          border-radius: 4px;
-          border: 1px solid #e8e8e8;
-          box-shadow: 1px 1px #e8e8e8;
-        `}
-      >
+    { event.presentation && (
+      <Card>{ `${ t('presentation_link') }: ${ event.presentation }` }</Card>
+    ) }
+      <Card>
         <Markdown
           source={ event.description }
           linkTarget="_blank"
         />
-      </div>
+      </Card>
     </div>
   );
 }

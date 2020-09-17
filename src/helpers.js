@@ -416,3 +416,12 @@ export const convertDates = event => {
   event.afterEnd = new Date(event.afterEnd);
   return event;
 }
+
+export const Card = styled.div`
+  margin: 20px;
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 1px 1px #e8e8e8;
+`
