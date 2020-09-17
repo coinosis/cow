@@ -9,7 +9,7 @@ const strings = { es: esStrings, en: enStrings };
 
 export const useT = () => {
   const { language: accountLanguage } = useContext(AccountContext);
-  const language = accountLanguage || 'es';
+  const language = accountLanguage || 'en';
   return string => {
     const translation = strings[language][string];
     return translation || strings.es[string];
@@ -25,12 +25,12 @@ export const useFormatDate = () => {
 
 export const useLocale = () => {
   const { language } = useContext(AccountContext);
-  if (language === 'en') return enLocale;
-  return esLocale;
+  if (language === 'es') return esLocale;
+  return enLocale;
 }
 
 export const useDateFormat = () => {
   const { language } = useContext(AccountContext);
-  if (language === 'en') return "MMMM d, yyyy, h:mm aa";
-  return "dd 'de' MMMM 'de' yyyy, h:mm aa";
+  if (language === 'es') return "dd 'de' MMMM 'de' yyyy, h:mm aa";
+  return "MMMM d, yyyy, h:mm aa";
 }
