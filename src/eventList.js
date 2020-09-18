@@ -173,12 +173,9 @@ const EventSection = ({ title, events, courses, }) => {
                 <tr key={event._id}>
                   <td>
                     { course && (
-                      <>
-                        <Link to={course.url}>
-                          {course.name}
-                        </Link>
-                        {':'}
-                      </>
+                      <Link to={course.url}>
+                        [{course.name}]
+                      </Link>
                     ) }
                     <Link to={event.url}>
                       {event.name}
