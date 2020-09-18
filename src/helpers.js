@@ -409,6 +409,14 @@ export const convertDates = event => {
   return event;
 }
 
+export const Big = styled.div`
+  display: flex;
+  justify-content: center;
+  font-size: 32px;
+  flex-grow: 1;
+  text-align: center;
+`
+
 export const Card = styled.div`
   margin: 20px;
   background: #f8f8f8;

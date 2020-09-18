@@ -5,10 +5,9 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useParams } from 'react-router-dom';
 import abi from '../contracts/ProxyEvent.abi.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
-import { Link, Loading, NoContract, convertDates, useGetUser } from './helpers';
+import { Big, Link, Loading, NoContract, useGetUser, } from './helpers';
 import Account from './account';
 import Attendance from './attendance';
 import Distribute from './distribute';
@@ -46,14 +45,12 @@ const contractStates = {
 
 export const ContractContext = createContext();
 
-const Event = () => {
+const Event = ({ event }) => {
 
-  const { eventURL } = useParams();
   const web3 = useContext(Web3Context);
   const { account, name: userName } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [contract, setContract] = useState();
-  const [event, setEvent] = useState();
   const [signature, setSignature] = useState();
   const [attendeeAddresses, setAttendeeAddresses] = useState();
   const [attendees, setAttendees] = useState();
@@ -280,32 +277,28 @@ const Event = () => {
   }, [ web3, abi ]);
 
   useEffect(() => {
-    fetch(`${backendURL}/event/${eventURL}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(response.status);
-        }
-        return response.json();
-      }).then(event => {
-        if (event.version === 2) {
-          if (event.feeWei == 0) {
-            setUserState(userStates.REGISTERED);
-            setContractState(contractStates.CONTRACT_CREATED);
-          } else {
-            setContractRaw(event.address);
-          }
-        } else if (event.version === 1 || event.version === 0) {
-          setAttendees(event.attendees);
-          setEventState(eventStates.CALL_ENDED);
-          setUserState(userStates.UNREGISTERED); // TODO
-          setContractState(contractStates.DISTRIBUTION_MADE);
-        }
-        const eventWithDates = convertDates(event);
-        setEvent(eventWithDates);
-      }).catch(err => {
-        console.error(err);
-      });
-  }, [ backendURL, eventURL, setContractRaw, ]);
+    if (!event) return;
+    if (event.version === 2) {
+      if (event.feeWei == 0) {
+        setUserState(userStates.REGISTERED);
+        setContractState(contractStates.CONTRACT_CREATED);
+      } else {
+        setContractRaw(event.address);
+      }
+    } else if (event.version === 1 || event.version === 0) {
+      setAttendees(event.attendees);
+      setEventState(eventStates.CALL_ENDED);
+      setUserState(userStates.UNREGISTERED); // TODO
+      setContractState(contractStates.DISTRIBUTION_MADE);
+    }
+  }, [
+    event,
+    setEventState,
+    setUserState,
+    setContractState,
+    setContractRaw,
+    setAttendees,
+  ]);
 
   if (event === undefined) return <Loading/>;
 
@@ -540,17 +533,9 @@ const Title = ({ text, now, start, end, eventState }) => {
     >
       <div css="display: flex">
         <Link to="/" css={'width: 60px'}>← {t('back')}</Link>
-        <div
-          css={`
-            display: flex;
-            justify-content: center;
-            font-size: 32px;
-            flex-grow: 1;
-            text-align: center;
-          `}
-        >
+        <Big>
           {text}
-        </div>
+        </Big>
         <div css={'width: 60px'}/>
       </div>
       <div

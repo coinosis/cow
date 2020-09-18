@@ -6,7 +6,7 @@ import { environment, Loading } from './helpers';
 import settings from '../settings.json';
 import Header from './header';
 import EventList from './eventList';
-import Event from './event';
+import Entity from './entity';
 import Profile from './profile';
 
 export const Web3Context = createContext();
@@ -74,8 +74,8 @@ const Coinosis = () => {
             <BrowserRouter>
               <Header setLanguage={setLanguageRaw} />
               <Switch>
-                <Route path="/:eventURL([a-z1-9-]{1}[a-z0-9-]{0,59})">
-                  <Event/>
+                <Route path="/:url([a-z1-9-]{1}[a-z0-9-]{0,59})">
+                  <Entity/>
                 </Route>
                 <Route path="/:account(0x[0-9a-f]{40})">
                   <Profile/>
