@@ -135,6 +135,7 @@ const Meet = ({
               'tileview',
               'settings',
               'fullscreen',
+              'livestream'
             ],
             SETTINGS_SECTIONS: [ 'language', ],
             SHOW_CHROME_EXTENSION_BANNER: false,
