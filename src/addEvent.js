@@ -580,11 +580,16 @@ const CourseFields = ({ events, courses, setSelected, }) => {
 
   const t = useT();
   const { account } = useContext(AccountContext);
-  const ownFutureEvents = events.filter(event =>
-    event.organizer === account
-      && new Date() < new Date(event.end)
-      && !courses.some(course => course.events.includes(event.url))
-  );
+  const [ ownEvents, setOwnEvents, ] = useState([]);
+
+  useEffect(() => {
+    const ownEvents = events.filter(event =>
+      event.organizer === account
+        && new Date() < new Date(event.end)
+        && !courses.some(course => course.events.includes(event.url))
+    );
+    setOwnEvents(ownEvents);
+  }, [ events, account, courses, setOwnEvents, ]);
 
   const select = elem => {
     if (elem.checked) {
@@ -611,7 +616,7 @@ const CourseFields = ({ events, courses, setSelected, }) => {
         label={ t('select_events') + ':' }
         element={
           <div>
-            { ownFutureEvents.map(event => (
+            { ownEvents.map(event => (
               <div
                 key={ event.url }
                 css={`
