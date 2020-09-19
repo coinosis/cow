@@ -4,7 +4,7 @@ import { BackendContext, } from './coinosis';
 import { Loading, convertDates, } from './helpers';
 import { useT, } from './i18n';
 import Event from './event';
-import Series from './course';
+import Series from './series';
 
 export const entityTypes = {
   EVENT: Symbol('EVENT'),
