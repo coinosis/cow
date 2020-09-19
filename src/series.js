@@ -4,6 +4,7 @@ import Markdown from 'react-markdown';
 import { BackendContext, Web3Context, AccountContext, } from './coinosis';
 import { useT } from './i18n';
 import abi from '../contracts/ProxyEvent.abi.json';
+import Title from './title';
 
 const Series = ({ series }) => {
 
@@ -49,7 +50,11 @@ const Series = ({ series }) => {
 
   return (
     <div>
-      <Big>{ series.name }</Big>
+      <Title
+        text={ series.name }
+        backURL="/"
+        backName={ t('main_page') }
+      />
       <Card>
         <div
           css={`

@@ -17,6 +17,8 @@ const Entity = () => {
   const backendURL = useContext(BackendContext);
   const [ entity, setEntity, ] = useState();
   const [ entityType, setEntityType, ] = useState();
+  const [ series, setSeries, ] = useState();
+  const [ parent, setParent, ] = useState();
   const t = useT();
 
   useEffect(() => {
@@ -42,13 +44,32 @@ const Entity = () => {
     getEntity();
   }, [ backendURL, url, setEntity, setEntityType, ]);
 
-  if (entity === undefined) {
-    return <Loading/>
-  }
+  useEffect(() => {
+    if (!backendURL) return;
+    const getSeries = async () => {
+      const response = await fetch(`${ backendURL }/series`);
+      const series = await response.json();
+      setSeries(series);
+    }
+    getSeries();
+  }, [ backendURL, setSeries, ]);
+
+  useEffect(() => {
+    if (!series || !entity) return;
+    if (entityType !== entityTypes.EVENT) return;
+    const parent = series.find(aSeries => aSeries.events.includes(entity.url))
+          || { url: '/', name: t('main_page') };
+    setParent(parent);
+  }, [ entityType, series, entity, setParent, ]);
+
+  if (
+    entity === undefined
+      || ( entityType === entityTypes.EVENT && parent === undefined )
+  ) return <Loading/>
 
   if (entityType === entityTypes.EVENT) {
     return (
-      <Event event={entity} />
+      <Event event={entity} backURL={ parent.url } backName={ parent.name } />
     );
   }
 

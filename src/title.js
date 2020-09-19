@@ -4,7 +4,7 @@ import { differenceInDays, formatDistance } from 'date-fns'
 import { useT, useLocale, } from './i18n';
 import { eventStates } from './event';
 
-const Title = ({ text, now, start, end, eventState }) => {
+const Title = ({ text, now, start, end, eventState, backURL, backName, }) => {
 
   const [close, setClose] = useState();
   const [subtitle, setSubtitle] = useState();
@@ -52,11 +52,16 @@ const Title = ({ text, now, start, end, eventState }) => {
       `}
     >
       <div css="display: flex">
-        <Link to="/" css={'width: 60px'}>← {t('back')}</Link>
+        <Link
+          to={ backURL }
+          css={`width: 33.33%;`}
+        >
+          ← { backName }
+        </Link>
         <Big>
           {text}
         </Big>
-        <div css={'width: 60px'}/>
+        <div css={`width: 33.33%;`}/>
       </div>
       <div
         css={`

@@ -45,7 +45,7 @@ const contractStates = {
 
 export const ContractContext = createContext();
 
-const Event = ({ event }) => {
+const Event = ({ event, backURL, backName, }) => {
 
   const web3 = useContext(Web3Context);
   const { account, name: userName } = useContext(AccountContext);
@@ -352,6 +352,8 @@ const Event = ({ event }) => {
           start={event.start}
           end={event.end}
           eventState={eventState}
+          backURL={ backURL }
+          backName={ backName }
         />
       ) }
       { event.feeWei > 0 && (eventState < eventStates.CALL_STARTED
