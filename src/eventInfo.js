@@ -57,7 +57,22 @@ const EventInfo = ({ event, userState, eventState }) => {
       </div>
       ) }
     { event.presentation && (
-      <Card>{ `${ t('presentation_link') }: ${ event.presentation }` }</Card>
+      <Card>
+        { t('presentation_link') }{`: `}
+        <a
+          href={ event.presentation }
+          target="_blank"
+          rel="noreferrer"
+          css={`
+            color: black;
+            &:visited {
+              color: black;
+            };
+          `}
+        >
+          { event.presentation }
+        </a>
+      </Card>
     ) }
       <Card>
         <Markdown
