@@ -616,7 +616,7 @@ const SeriesFields = ({ events, series, setSelected, }) => {
         label={ t('select_events') + ':' }
         element={
           <div>
-            { ownEvents.map(event => (
+            { ownEvents.length ? ownEvents.map(event => (
               <div
                 key={ event.url }
                 css={`
@@ -639,7 +639,7 @@ const SeriesFields = ({ events, series, setSelected, }) => {
                   { event.name }
                 </span>
               </div>
-            )) }
+            )) : t('no_own_events') }
           </div>
         }
       />

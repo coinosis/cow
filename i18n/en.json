@@ -49,6 +49,7 @@
   "new_event": "new event",
   "new_series": "new event series",
   "no_deposit": "no deposit",
+  "no_own_events": "you haven't created any events.",
   "not_found": "not found",
   "on_behalf_of": "on behalf of",
   "one_person_only": "has to be made by one person only,",
