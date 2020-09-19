@@ -16,7 +16,6 @@ const Series = ({ series }) => {
   useEffect(() => {
     if (!series) return;
     const getEvents = async () => {
-      console.log(series);
       for (const url of series.events) {
         const response = await fetch(`${ backendURL }/event/${ url }`);
         const event = await response.json();
