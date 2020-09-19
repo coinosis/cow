@@ -17,9 +17,9 @@ import {
 import settings from '../settings.json';
 import { useT, useLocale, useDateFormat, } from './i18n';
 import testDescription from './assets/testDescription.txt';
-import { eventTypes } from './eventList';
+import { entityTypes } from './entity';
 
-const AddEvent = ({ eventType, setEvents, setCourses, events, courses, }) => {
+const AddEvent = ({ eventType, setEvents, setSeries, events, series, }) => {
 
   const post = usePost();
   const web3 = useContext(Web3Context);
@@ -62,7 +62,7 @@ const AddEvent = ({ eventType, setEvents, setCourses, events, courses, }) => {
   useEffect(() => {
     if (!settings[environment].addEvent.prepopulate) return;
     const seed = Math.random();
-    const eventName = eventType === eventTypes.EVENT ? 'event' : 'course';
+    const eventName = eventType === entityTypes.EVENT ? 'event' : 'series';
     preSetName({ target: { value: `${eventName} ${seed}` } });
     setDescription(testDescription);
     setFeeETH(`${(seed * 10).toFixed(3)}`);
@@ -77,14 +77,14 @@ const AddEvent = ({ eventType, setEvents, setCourses, events, courses, }) => {
           && url !== ''
           && description !== ''
           && userName !== null;
-    if (eventType === eventTypes.EVENT) {
+    if (eventType === entityTypes.EVENT) {
       const valid =
             commonValid
             && ( (Number(feeETH) != 0 && Number(fee) != 0) || noDeposit )
             && start !== ''
             && end !== '';
       setFormValid(valid);
-    } else if (eventType === eventTypes.COURSE) {
+    } else if (eventType === entityTypes.SERIES) {
       const valid = commonValid && selectedEvents.length;
       setFormValid(valid);
     }
@@ -285,7 +285,7 @@ const AddEvent = ({ eventType, setEvents, setCourses, events, courses, }) => {
     t,
   ]);
 
-  const addCourse = useCallback(async () => {
+  const addSeries = useCallback(async () => {
     const object = {
       name,
       url,
@@ -294,23 +294,23 @@ const AddEvent = ({ eventType, setEvents, setCourses, events, courses, }) => {
       organizer: account,
     };
     setStatus(t('sign_with_metamask'));
-    post('courses', object, (err, data) => {
+    post('series', object, (err, data) => {
       if (err) {
         console.log(err);
         return;
       }
-      setCourses(prev => [ ...prev, data, ]);
+      setSeries(prev => [ ...prev, data, ]);
       setName('');
       setUrl('');
       setDescription('');
       setSelectedEvents([]);
-      setStatus(t('course_created'));
-    }, 'post', () => setStatus(t('storing_course_metadata')));
+      setStatus(t('series_created'));
+    }, 'post', () => setStatus(t('storing_series_metadata')));
   }, [ name, url, description, selectedEvents, account, ]);
 
   const add = useCallback(async () => {
-    if (eventType === eventTypes.COURSE) {
-      addCourse();
+    if (eventType === entityTypes.SERIES) {
+      addSeries();
       return;
     }
     if (noDeposit) {
@@ -381,7 +381,7 @@ const AddEvent = ({ eventType, setEvents, setCourses, events, courses, }) => {
               />
             }
           />
-          { eventType === eventTypes.EVENT ? (
+          { eventType === entityTypes.EVENT ? (
             <EventFields
               presentation={presentation}
               setPresentation={setPresentation}
@@ -402,9 +402,9 @@ const AddEvent = ({ eventType, setEvents, setCourses, events, courses, }) => {
               preSetMinutesAfter={preSetMinutesAfter}
             />
           ) : (
-            <CourseFields
+            <SeriesFields
               events={ events }
-              courses={ courses }
+              series={ series }
               setSelected={ setSelectedEvents }
             />
           ) }
@@ -576,7 +576,7 @@ const EventFields = ({
   );
 }
 
-const CourseFields = ({ events, courses, setSelected, }) => {
+const SeriesFields = ({ events, series, setSelected, }) => {
 
   const t = useT();
   const { account } = useContext(AccountContext);
@@ -586,10 +586,10 @@ const CourseFields = ({ events, courses, setSelected, }) => {
     const ownEvents = events.filter(event =>
       event.organizer === account
         && new Date() < new Date(event.end)
-        && !courses.some(course => course.events.includes(event.url))
+        && !series.some(aSeries => aSeries.events.includes(event.url))
     );
     setOwnEvents(ownEvents);
-  }, [ events, account, courses, setOwnEvents, ]);
+  }, [ events, account, series, setOwnEvents, ]);
 
   const select = elem => {
     if (elem.checked) {

@@ -3,18 +3,14 @@ import { AccountContext, BackendContext } from './coinosis';
 import { Link, SectionTitle } from './helpers';
 import AddEvent from './addEvent';
 import { useT, useFormatDate, } from './i18n';
-
-export const eventTypes = {
-  EVENT: Symbol('EVENT'),
-  COURSE: Symbol('COURSE'),
-};
+import { entityTypes } from './entity';
 
 const EventList = () => {
 
   const { name } = useContext(AccountContext);
   const backendURL = useContext(BackendContext);
   const [events, setEvents] = useState([]);
-  const [ courses, setCourses, ] = useState([]);
+  const [ series, setSeries, ] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
   const [live, setLive] = useState([]);
   const [past, setPast] = useState([]);
@@ -23,13 +19,13 @@ const EventList = () => {
 
   useEffect(() => {
     if (!backendURL) return;
-    const getCourses = async () => {
-      const response = await fetch(`${backendURL}/courses`);
+    const getSeries = async () => {
+      const response = await fetch(`${backendURL}/series`);
       if (!response.ok) throw new Error(response);
       const data = await response.json();
-      setCourses(data);
+      setSeries(data);
     }
-    getCourses();
+    getSeries();
   }, [ backendURL, ]);
 
   useEffect(() => {
@@ -81,12 +77,12 @@ const EventList = () => {
       <EventSection
         title={t('events_happening_now')}
         events={live}
-        courses={ courses }
+        series={ series }
       />
       <EventSection
         title={t('upcoming_events')}
         events={upcoming}
-        courses={ courses }
+        series={ series }
       />
       { name && (
         <div
@@ -102,29 +98,29 @@ const EventList = () => {
           <div css="margin-bottom: 25px;">
             <button
               css="margin-right: 15px;"
-              disabled={ eventType === eventTypes.EVENT }
-              onClick={ () => setEventType(eventTypes.EVENT) }
+              disabled={ eventType === entityTypes.EVENT }
+              onClick={ () => setEventType(entityTypes.EVENT) }
             >
               { t('new_event') }
             </button>
             <button
-              disabled={ eventType === eventTypes.COURSE }
-              onClick={ () => setEventType(eventTypes.COURSE) }
+              disabled={ eventType === entityTypes.SERIES }
+              onClick={ () => setEventType(entityTypes.SERIES) }
             >
-              { t('new_course') }
+              { t('new_series') }
             </button>
           </div>
-        { eventType === eventTypes.EVENT ? (
+        { eventType === entityTypes.EVENT ? (
           <AddEvent
-            eventType={ eventTypes.EVENT }
+            eventType={ entityTypes.EVENT }
             setEvents={ setEvents }
           />
-        ) : eventType === eventTypes.COURSE ? (
+        ) : eventType === entityTypes.SERIES ? (
           <AddEvent
-            eventType={ eventTypes.COURSE }
-            setCourses={ setCourses }
+            eventType={ entityTypes.SERIES }
+            setSeries={ setSeries }
             events={ events }
-            courses={ courses }
+            series={ series }
           />
         ) : (
           <div/>
@@ -134,13 +130,13 @@ const EventList = () => {
       <EventSection
         title={t('past_events')}
         events={past}
-        courses={ courses }
+        series={ series }
       />
     </div>
   );
 }
 
-const EventSection = ({ title, events, courses, }) => {
+const EventSection = ({ title, events, series, }) => {
 
   const formatDate = useFormatDate();
 
@@ -166,23 +162,23 @@ const EventSection = ({ title, events, courses, }) => {
         <table>
           <tbody>
             {events.map(event => {
-              const course = courses.find(course =>
-                course.events.includes(event.url)
+              const aSeries = series.find(aSeries =>
+                aSeries.events.includes(event.url)
               );
               return (
                 <tr key={event._id}>
                   <td>
-                    { course && (
-                      <Link to={course.url}>
-                        [{course.name}]
+                    { aSeries && (
+                      <Link to={ aSeries.url } css="color: #004000;">
+                        [{ aSeries.name }]
                       </Link>
                     ) }
-                    <Link to={event.url}>
-                      {event.name}
+                    <Link to={ event.url }>
+                      { event.name }
                     </Link>
                   </td>
                   <td>
-                    {formatDate(event.startDate)}
+                    { formatDate(event.startDate) }
                   </td>
                 </tr>
               );

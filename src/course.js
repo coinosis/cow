@@ -5,7 +5,7 @@ import { BackendContext, Web3Context, AccountContext, } from './coinosis';
 import { useT } from './i18n';
 import abi from '../contracts/ProxyEvent.abi.json';
 
-const Course = ({ course }) => {
+const Series = ({ series }) => {
 
   const [ events, setEvents, ] = useState([]);
   const backendURL = useContext(BackendContext);
@@ -14,8 +14,10 @@ const Course = ({ course }) => {
   const { account } = useContext(AccountContext);
 
   useEffect(() => {
+    if (!series) return;
     const getEvents = async () => {
-      for (const url of course.events) {
+      console.log(series);
+      for (const url of series.events) {
         const response = await fetch(`${ backendURL }/event/${ url }`);
         const event = await response.json();
         setEvents(prev => {
@@ -27,7 +29,7 @@ const Course = ({ course }) => {
       }
     }
     getEvents();
-  }, [ course, backendURL, setEvents, ]);
+  }, [ series, backendURL, setEvents, ]);
 
   const register = useCallback(async () => {
     for (const event of events) {
@@ -48,14 +50,14 @@ const Course = ({ course }) => {
 
   return (
     <div>
-      <Big>{ course.name }</Big>
+      <Big>{ series.name }</Big>
       <Card>
         <div
           css={`
             font-size: 23px;
           `}
         >
-          { t('courses_events') }
+          { t('series_events') }
         </div>
         <div css="margin: 20px 10px;">
           { events.map(event => (
@@ -66,15 +68,15 @@ const Course = ({ course }) => {
         </div>
         <div>
           <button onClick={ register }>
-            { t('register_full_course') }
+            { t('register_full_series') }
           </button>
         </div>
       </Card>
       <Card>
-        <Markdown source={ course.description } linkTarget="_blank" />
+        <Markdown source={ series.description } linkTarget="_blank" />
       </Card>
     </div>
   );
 }
 
-export default Course;
+export default Series;

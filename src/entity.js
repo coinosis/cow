@@ -4,11 +4,11 @@ import { BackendContext, } from './coinosis';
 import { Loading, convertDates, } from './helpers';
 import { useT, } from './i18n';
 import Event from './event';
-import Course from './course';
+import Series from './course';
 
 export const entityTypes = {
   EVENT: Symbol('EVENT'),
-  COURSE: Symbol('COURSE'),
+  SERIES: Symbol('SERIES'),
 }
 
 const Entity = () => {
@@ -20,26 +20,27 @@ const Entity = () => {
   const t = useT();
 
   useEffect(() => {
+    setEntity();
     const getEntity = async () => {
       const eventResponse = await fetch(`${ backendURL }/event/${ url }`);
       if (eventResponse.ok) {
         const event = await eventResponse.json();
         const eventWithDates = convertDates(event);
-        setEntity(eventWithDates);
         setEntityType(entityTypes.EVENT);
+        setEntity(eventWithDates);
         return;
       }
-      const courseResponse = await fetch(`${ backendURL }/course/${ url }`);
-      if (courseResponse.ok) {
-        const course = await courseResponse.json();
-        setEntity(course);
-        setEntityType(entityTypes.COURSE);
+      const seriesResponse = await fetch(`${ backendURL }/series/${ url }`);
+      if (seriesResponse.ok) {
+        const series = await seriesResponse.json();
+        setEntityType(entityTypes.SERIES);
+        setEntity(series);
         return;
       }
       setEntity(null);
     }
     getEntity();
-  }, [ backendURL, url, ]);
+  }, [ backendURL, url, setEntity, setEntityType, ]);
 
   if (entity === undefined) {
     return <Loading/>
@@ -51,9 +52,9 @@ const Entity = () => {
     );
   }
 
-  if (entityType === entityTypes.COURSE) {
+  if (entityType === entityTypes.SERIES) {
     return (
-      <Course course={entity} />
+      <Series series={entity} />
     );
   }
 
