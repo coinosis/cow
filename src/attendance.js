@@ -12,6 +12,7 @@ import {
   Loading,
   useConversions,
   sleep,
+  usePost,
 } from './helpers';
 import settings from '../settings.json';
 import Account from './account';
@@ -75,6 +76,7 @@ const Attendance = ({
   const [registerState, setRegisterState] = useState();
   const [txType, setTxType] = useState();
   const [ email, setEmail, ] = useState();
+  const post = usePost();
 
   useEffect(() => {
     if (!box) return;
@@ -309,8 +311,16 @@ const Attendance = ({
   ]);
 
   const paypal = useCallback(() => {
-    console.log('coming soon');
-  }, []);
+    const fee = Number(web3.utils.fromWei(feeWei)).toFixed(2);
+    const object = { value: fee };
+    post('paypal/orders', object, (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log(data);
+    });
+  }, [ feeWei, post, ]);
 
   const sendEther = useCallback(async () => {
     setPaymentMode(paymentModes.ETHER);
