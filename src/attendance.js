@@ -238,7 +238,10 @@ const Attendance = ({
     } while (true);
   }, [ backendURL ]);
 
-  const payU = useCallback(() => {
+  const payu = useCallback(() => {
+    setPaymentMode(paymentModes.PAYU);
+    setPullState(transactionStates.PENDING);
+    setTxType();
     const payUGateway = settings[environment].payU.gateway;
     const environmentId = settings[environment].id
     const counter = pullPayments ? pullPayments.length : 0;
@@ -288,6 +291,9 @@ const Attendance = ({
       console.error(err);
     });
   }, [
+    setPaymentMode,
+    setPullState,
+    setTxType,
     web3,
     eventName,
     event,
@@ -301,13 +307,6 @@ const Attendance = ({
     formSubmit,
     pullPayments,
   ]);
-
-  const payu = useCallback(() => {
-    setPaymentMode(paymentModes.PAYU);
-    setPullState(transactionStates.PENDING);
-    setTxType();
-    payU();
-  }, [ setPaymentMode, setPullState, setTxType, payU ]);
 
   const paypal = useCallback(() => {
     console.log('coming soon');
