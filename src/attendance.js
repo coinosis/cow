@@ -37,6 +37,7 @@ const transactionStates = {
 const paymentModes = {
   ETHER: 1,
   PAYU: 2,
+  PAYPAL: 3,
 };
 
 const txTypes = {
@@ -301,12 +302,16 @@ const Attendance = ({
     pullPayments,
   ]);
 
-  const attend = useCallback(() => {
+  const payu = useCallback(() => {
     setPaymentMode(paymentModes.PAYU);
     setPullState(transactionStates.PENDING);
     setTxType();
     payU();
   }, [ setPaymentMode, setPullState, setTxType, payU ]);
+
+  const paypal = useCallback(() => {
+    console.log('coming soon');
+  }, []);
 
   const sendEther = useCallback(async () => {
     setPaymentMode(paymentModes.ETHER);
@@ -388,7 +393,8 @@ const Attendance = ({
         feeUSDWei={feeUSDWei}
         feeWei={feeWei}
         sendEther={sendEther}
-        attend={attend}
+        payu={ payu }
+        paypal={ paypal }
         setPaymentMode={setPaymentModePreview}
         userState={userState}
         registerForState={registerForState}
@@ -686,7 +692,8 @@ const PaymentOptions = ({
   feeUSDWei,
   feeWei,
   sendEther,
-  attend,
+  payu,
+  paypal,
   setPaymentMode,
   userState,
   registerForState,
@@ -816,11 +823,15 @@ const PaymentOptions = ({
             <button
               onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}
               onMouseOut={() => { setPaymentMode() }}
-              onClick={attend}
+              onClick={ payu }
             >
               {t('pay_with_payu')}
             </button>
-            <button>
+            <button
+              onMouseOver={ () => { setPaymentMode(paymentModes.PAYPAL) } }
+              onMouseOut={ () => { setPaymentMode() } }
+              onClick={ paypal }
+            >
               { t('pay_with_paypal') }
             </button>
           </div>
