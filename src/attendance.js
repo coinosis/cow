@@ -763,23 +763,68 @@ const PaymentOptions = ({
         css={`
           display: flex;
           width: 50%;
-          justify-content: space-around;
+          justify-content: center;
         `}
       >
-        <button
-          onMouseOver={() => { setPaymentMode(paymentModes.ETHER) }}
-          onMouseOut={() => { setPaymentMode() }}
-          onClick={sendEther}
-        >
-          {t('send_xdai')}
-        </button>
-        <button
-          onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}
-          onMouseOut={() => { setPaymentMode() }}
-          onClick={attend}
-        >
-          {t('send_fiat')}
-        </button>
+        <Group>
+          <div
+            css={`
+              text-align: center;
+              font-weight: bold;
+            `}
+          >
+            { t('crypto') }
+          </div>
+          <div
+            css={`
+              margin: auto;
+            `}
+          >
+            <button
+              onMouseOver={() => { setPaymentMode(paymentModes.ETHER) }}
+              onMouseOut={() => { setPaymentMode() }}
+              onClick={sendEther}
+            >
+              {t('send_xdai')}
+            </button>
+          </div>
+        </Group>
+        <div
+          css={`
+            border: 1px solid black;
+            border-radius: 5px;
+          `}
+        />
+        <Group>
+          <div
+            css={`
+              text-align: center;
+              font-weight: bold;
+           `}
+          >
+            { t('fiat') }
+          </div>
+          <div
+            css={`
+              margin: auto;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              height: 50px;
+            `}
+          >
+            <button
+              onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}
+              onMouseOut={() => { setPaymentMode() }}
+              onClick={attend}
+            >
+              {t('pay_with_payu')}
+            </button>
+            <button>
+              { t('pay_with_paypal') }
+            </button>
+          </div>
+        </Group>
       </div>
       <div css="margin: 10px">
         {t('deposit_explanation')}
@@ -787,5 +832,13 @@ const PaymentOptions = ({
     </div>
   );
 }
+
+const Group = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  align-items: center;
+  height: 100px;
+`
 
 export default Attendance;
