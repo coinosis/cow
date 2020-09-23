@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import abi from '../contracts/ProxyEvent.abi.json';
 import { Web3Context, AccountContext, BackendContext } from './coinosis';
-import { Loading, NoContract, useGetUser, } from './helpers';
+import { Loading, NoContract, useGetUser, shorten, } from './helpers';
 import Account from './account';
 import Attendance from './attendance';
 import Distribute from './distribute';
@@ -475,7 +475,7 @@ const Event = ({ event, backURL, backName, }) => {
             <Meet
               id={event._id}
               eventName={event.name}
-              userName={userName}
+              userName={ userName || shorten(account) }
               setJitsters={setJitsters}
               eventState={ eventState }
               streamName={ event.streamName }

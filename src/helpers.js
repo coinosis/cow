@@ -64,7 +64,7 @@ export const ToolTip = ({ value, show, position="top" }) => {
   );
 }
 
-const shorten = address => {
+export const shorten = address => {
   const prefix = address.substring(0, 6);
   const postfix = address.substring(address.length - 4);
   return `${prefix}...${postfix}`;
