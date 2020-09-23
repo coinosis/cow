@@ -311,6 +311,8 @@ const Event = ({ event, backURL, backName, }) => {
           start={event.start}
           end={event.end}
           eventState={eventState}
+          backURL={ backURL }
+          backName={ backName }
         />
         <div
           css={`
@@ -334,6 +336,8 @@ const Event = ({ event, backURL, backName, }) => {
           start={event.start}
           end={event.end}
           eventState={eventState}
+          backURL={ backURL }
+          backName={ backName }
         />
         <EventInfo event={event} />
         <NoContract currency={event.currency} />
