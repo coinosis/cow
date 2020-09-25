@@ -14,14 +14,13 @@ npm install
 
 ### run
 
-cow is run by means of the `npm run start:dev` command. However, in orded to support processing PayU transactions, you need to provide a public callback URL as an argument to that command:
+`npm run start:dev [loclx-id]`
 
-1. install [ngrok](https://ngrok.com/). You don't need a user account.
-2. run `ngrok http 3000`
-3. copy the https forwarding public url shown by ngrok
-4. run `npm run start:dev <ngrok-url>`
+The optional `loclx-id` argument is only needed if running locally; it's the one you specified when you ran [owl](https://github.com/coinosis/owl).
 
-After cow is running, point your web3-enabled browser to `http://localhost:9000`. Optionally, install [AutoFill](http://www.tohodo.com/autofill/help.html) to help you fill out credit card forms. Import the autocomplete data from `autofill.csv`
+After cow is running, point your web3-enabled browser to `http://localhost:9000`.
+
+Optionally, install [AutoFill](http://www.tohodo.com/autofill/help.html) to help you fill out credit card forms. Import the autocomplete data from [this file](https://github.com/coinosis/cow/blob/dev/autofill.csv).
 
 ### submit your changes
 
