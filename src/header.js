@@ -10,9 +10,13 @@ import {
   faTelegram,
   faGithub,
 } from '@fortawesome/free-brands-svg-icons';
+import gitcoin from './assets/gitcoin.png';
 import { AccountContext } from './coinosis';
 import Account from './account';
 import { useT } from './i18n';
+
+const gitcoinURL = 'https://gitcoin.co/grants/1147/'
+      + 'coinosis-get-crypto-for-sharing-your-knowledge';
 
 const Header = ({ setLanguage }) => {
 
@@ -39,7 +43,9 @@ const Header = ({ setLanguage }) => {
         <div
           css={`
             margin: 8px 0;
+            display: flex;
             justify-content: flex-start;
+            align-items: center;
           `}
         >
           <Icon
@@ -50,6 +56,7 @@ const Header = ({ setLanguage }) => {
           <Icon icon={faMedium} href="https://medium.com/coinosis" />
           <Icon icon={faTelegram} href="https://t.me/coinosisdapp" />
           <Icon icon={faGithub} href="https://github.com/coinosis" />
+          <Icon icon={ gitcoin } href={ gitcoinURL } fa={ false } />
         </div>
         <div
           css={`
@@ -108,7 +115,7 @@ const HeaderItem = styled.div`
   display: flex;
 `
 
-const Icon = ({ icon, href }) => {
+const Icon = ({ icon, href, fa=true }) => {
   return (
     <a
       href={href}
@@ -122,7 +129,8 @@ const Icon = ({ icon, href }) => {
         };
       `}
     >
-      <FontAwesomeIcon icon={icon} />
+      { fa && <FontAwesomeIcon icon={ icon } /> }
+      { !fa && <img src={ icon } /> }
     </a>
   );
 }
