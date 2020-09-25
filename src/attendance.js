@@ -312,15 +312,15 @@ const Attendance = ({
 
   const paypal = useCallback(() => {
     const fee = Number(web3.utils.fromWei(feeWei)).toFixed(2);
-    const object = { value: fee };
-    post('paypal/orders', object, (err, data) => {
+    const object = { value: fee, locale: language, };
+    post('paypal/orders', object, (err, approveURL) => {
       if (err) {
         console.log(err);
         return;
       }
-      console.log(data);
+      window.open(approveURL);
     });
-  }, [ feeWei, post, ]);
+  }, [ feeWei, language, post, ]);
 
   const sendEther = useCallback(async () => {
     setPaymentMode(paymentModes.ETHER);
