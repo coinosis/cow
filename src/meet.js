@@ -116,7 +116,7 @@ const Meet = ({
           config={{
             prejoinPageEnabled: false,
             startAudioOnly: !settings[environment].jitsi.video,
-            startWithAudioMuted: false,
+            startWithAudioMuted: !settings[environment].jitsi.audio,
             fileRecordingsEnabled: false,
             remoteVideoMenu: {
               disableKick: true,
