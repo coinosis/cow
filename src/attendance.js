@@ -47,6 +47,7 @@ const txTypes = {
   PULL: 2,
   PUSH: 3,
   REGISTER_FOR: 4,
+  PAYPAL: 5,
 };
 
 const Attendance = ({
@@ -71,6 +72,8 @@ const Attendance = ({
   const [pullState, setPullState] = useState();
   const [pushPayments, setPushPayments] = useState();
   const [pushState, setPushState] = useState();
+  const [ paypalPayments, setPaypalPayments, ] = useState();
+  const [ paypalState, setPaypalState, ] = useState();
   const [registerForTxs, setRegisterForTxs] = useState();
   const [registerForState, setRegisterForState] = useState();
   const [registerTxs, setRegisterTxs] = useState();
@@ -99,6 +102,7 @@ const Attendance = ({
       setPullPayments();
       setPushPayments();
       setRegisterForTxs();
+      setPaypalPayments();
       return;
     }
     if (transaction.pull) {
@@ -123,6 +127,9 @@ const Attendance = ({
         return transaction.push;
       });
     }
+    if (transaction.paypal) {
+      setPaypalPayments(transaction.paypal);
+    }
     if (transaction.register) {
       setRegisterForTxs(prev => {
         if (
@@ -140,22 +147,24 @@ const Attendance = ({
     setPullPayments,
     setPushPayments,
     setRegisterTxs,
+    setPaypalPayments,
   ]);
 
   useEffect(() => {
-    fetchTransaction();
-    if (pullPayments) {
+    if (paypalPayments) {
+      setPaymentMode(paymentModes.PAYPAL);
+    } else if (pullPayments) {
       setPaymentMode(paymentModes.PAYU);
     }
-  }, [ fetchTransaction, pullPayments ]);
+  }, [ pullPayments, paypalPayments, setPaymentMode, ]);
 
-  const setTransactionFetcher = useCallback(() => {
+  useEffect(() => {
     fetchTransaction();
     const transactionInterval = setInterval(fetchTransaction, 3000);
     return () => {
       clearInterval(transactionInterval);
     };
-  }, [ fetchTransaction ]);
+  }, [ fetchTransaction, ]);
 
   useEffect(() => {
     if (!pullPayments) return;
@@ -180,6 +189,18 @@ const Attendance = ({
       return state;
     });
   }, [ pushPayments ]);
+
+  useEffect(() => {
+    if (!paypalPayments) return;
+    const states = Object.keys(paypalPayments).map(key =>
+      paypalPayments[key].state
+    );
+    const state = states.find(state => state === transactionStates.APPROVED)
+          || states.find(state => state === transactionStates.PENDING)
+          || states.find(state => state === transactionStates.REJECTED)
+          || transactionStates.PENDING;
+    setPaypalState(state)
+  }, [ paypalPayments, setPaypalState, ]);
 
   useEffect(() => {
     if (!registerForTxs) return;
@@ -288,7 +309,6 @@ const Attendance = ({
     }).then(hash => {
       object.signature = hash;
       const formWindow = formSubmit(payUGateway, object);
-      setTransactionFetcher();
       awaitClosable(formWindow, referenceCode);
     }).catch(err => {
       console.error(err);
@@ -312,6 +332,9 @@ const Attendance = ({
   ]);
 
   const paypal = useCallback(() => {
+    setPaymentMode(paymentModes.PAYPAL);
+    setPaypalState(transactionStates.PENDING);
+    setTxType();
     const fee = Number(web3.utils.fromWei(feeWei)).toFixed(2);
     const object = {
       event,
@@ -423,6 +446,7 @@ const Attendance = ({
         pullState={pullState}
         pushState={pushState}
         registerForState={registerForState}
+        paypalState={ paypalState }
         txType={txType}
         setTxType={setTxType}
       />
@@ -587,14 +611,15 @@ const PaymentProcess = ({
   pullState,
   pushState,
   registerForState,
+  paypalState,
   txType,
   setTxType,
 }) => {
 
   if (!paymentMode && !paymentModePreview) return null;
 
-  const [ ids, setIDs ] = useState([]);
-  const [ states, setStates ] = useState([]);
+  const [ ids, setIDs, ] = useState([]);
+  const [ states, setStates, ] = useState([]);
   const [ actualMode, setActualMode, ] = useState();
 
   useEffect(() => {
@@ -609,7 +634,9 @@ const PaymentProcess = ({
     if (actualMode === paymentModes.ETHER) {
       setIDs([ txTypes.REGISTER, ]);
     } else if (actualMode === paymentModes.PAYU) {
-      setIDs([ txTypes.PULL, txTypes.PUSH, txTypes.REGISTER_FOR ]);
+      setIDs([ txTypes.PULL, txTypes.PUSH, txTypes.REGISTER_FOR, ]);
+    } else if (actualMode === paymentModes.PAYPAL) {
+      setIDs([ txTypes.PAYPAL, 'link', txTypes.REGISTER_FOR, ]);
     }
   }, [ actualMode, setIDs, ]);
 
@@ -624,8 +651,19 @@ const PaymentProcess = ({
       setStates([ registerState, ]);
     } else if (actualMode === paymentModes.PAYU) {
       setStates([ pullState, pushState, registerForState, ]);
+    } else if (actualMode === paymentModes.PAYPAL) {
+      setStates([ paypalState, null, registerForState, ]);
     }
-  }, [ actualMode, paymentModePreview, setStates, ]);
+  }, [
+    actualMode,
+    paymentModePreview,
+    setStates,
+    registerState,
+    pullState,
+    pushState,
+    registerForState,
+    paypalState,
+  ]);
 
   return (
     <div
@@ -668,6 +706,7 @@ const PaymentProcess = ({
 
 const TransactionIcon = ({ state, setTxType, id, selected }) => {
   if (!id) return null;
+  if (id === 'link') return '======';
   const icon = state === transactionStates.PENDING
         || state === transactionStates.SUBMITTED
         ? loadingIcon
