@@ -147,6 +147,7 @@ const Attendance = ({
     setPullPayments,
     setPushPayments,
     setRegisterTxs,
+    setRegisterForTxs,
     setPaypalPayments,
   ]);
 
@@ -188,7 +189,7 @@ const Attendance = ({
       }
       return state;
     });
-  }, [ pushPayments ]);
+  }, [ pushPayments, setRegisterForState, ]);
 
   useEffect(() => {
     if (!paypalPayments) return;
@@ -200,15 +201,15 @@ const Attendance = ({
           || states.find(state => state === transactionStates.REJECTED)
           || transactionStates.PENDING;
     setPaypalState(state)
-    if (state === transactionStates.APPROVED) {
+    if (state === transactionStates.APPROVED && !registerForTxs) {
       setRegisterForState(transactionStates.PENDING);
     }
-  }, [ paypalPayments, setPaypalState, setRegisterForState, ]);
+  }, [ paypalPayments, setPaypalState, setRegisterForState, registerForTxs, ]);
 
   useEffect(() => {
     if (!registerForTxs) return;
     setRegisterForState(registerForTxs[registerForTxs.length - 1].state);
-  }, [ registerForTxs ]);
+  }, [ registerForTxs, setRegisterForState, ]);
 
   useEffect(() => {
     if (!registerTxs) return;
