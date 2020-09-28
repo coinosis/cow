@@ -313,7 +313,12 @@ const Attendance = ({
 
   const paypal = useCallback(() => {
     const fee = Number(web3.utils.fromWei(feeWei)).toFixed(2);
-    const object = { value: fee, locale: language, };
+    const object = {
+      event,
+      user: account,
+      value: fee,
+      locale: language,
+    };
     post('paypal/orders', object, (err, approveURL) => {
       if (err) {
         console.log(err);
@@ -321,7 +326,7 @@ const Attendance = ({
       }
       window.open(approveURL);
     });
-  }, [ feeWei, language, post, ]);
+  }, [ feeWei, language, post, event, account, ]);
 
   const sendEther = useCallback(async () => {
     setPaymentMode(paymentModes.ETHER);
