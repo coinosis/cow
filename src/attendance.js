@@ -24,6 +24,7 @@ import arrowIcon from './assets/arrow.png';
 import payuIcon from './assets/payu.png';
 import coinosisIcon from './assets/coinosis.png';
 import contractIcon from './assets/contract.png';
+import paypalIcon from './assets/paypal.png';
 import { useT } from './i18n';
 
 const transactionStates = {
@@ -639,8 +640,10 @@ const PaymentProcess = ({
       { actualMode === paymentModes.PAYU
         && <img src={payuIcon} width="150" />
       }
+      { actualMode === paymentModes.PAYPAL
+        && <img src={ paypalIcon } width="150" /> }
       <TransactionIcon
-        setTxType={setTxType}
+        setTxType={ setTxType }
         id={ ids[1] }
         selected={ txType === ids[1] }
         state={ states[1] }
