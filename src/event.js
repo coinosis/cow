@@ -74,11 +74,11 @@ const Event = ({ event, backURL, backName, }) => {
   }, [ setNow ]);
 
   const getClaps = useCallback(async () => {
-    if (!event) return;
+    if (!event || !attending) return;
     const response = await fetch(`${backendURL}/claps/${event.url}/${account}`);
     const claps = await response.json();
     setOwnClaps(claps);
-  }, [ backendURL, event, account, setOwnClaps ]);
+  }, [ backendURL, event, attending, account, setOwnClaps, ]);
 
   useEffect(() => {
     const clapInterval = setInterval(getClaps, 3000);
