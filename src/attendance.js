@@ -200,7 +200,10 @@ const Attendance = ({
           || states.find(state => state === transactionStates.REJECTED)
           || transactionStates.PENDING;
     setPaypalState(state)
-  }, [ paypalPayments, setPaypalState, ]);
+    if (state === transactionStates.APPROVED) {
+      setRegisterForState(transactionStates.PENDING);
+    }
+  }, [ paypalPayments, setPaypalState, setRegisterForState, ]);
 
   useEffect(() => {
     if (!registerForTxs) return;
@@ -454,6 +457,7 @@ const Attendance = ({
         txType={txType}
         pullPayments={pullPayments}
         pushPayments={pushPayments}
+        paypalPayments={ paypalPayments }
         registerForTxs={registerForTxs}
         registerTxs={registerTxs}
         userName={user}
@@ -468,6 +472,7 @@ const PaymentInfo = ({
   txType,
   pullPayments,
   pushPayments,
+  paypalPayments,
   registerForTxs,
   registerTxs,
   userName,
@@ -497,6 +502,16 @@ const PaymentInfo = ({
       setTo(t('coinosis'));
       if (pushPayments && pushPayments.length) {
         setTx(pushPayments[pushPayments.length - 1]);
+      } else {
+        setTx({});
+      }
+    } else if (txType === txTypes.PAYPAL) {
+      setFrom(userName);
+      setTo(t('paypal'));
+      if (paypalPayments && Object.keys(paypalPayments).length) {
+        const values = Object.values(paypalPayments);
+        const latest = values.sort((a, b) => b.date - a.date)[0];
+        setTx(latest);
       } else {
         setTx({});
       }
