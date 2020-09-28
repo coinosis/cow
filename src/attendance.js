@@ -587,6 +587,40 @@ const PaymentProcess = ({
 
   if (!paymentMode && !paymentModePreview) return null;
 
+  const [ ids, setIDs ] = useState([]);
+  const [ states, setStates ] = useState([]);
+  const [ actualMode, setActualMode, ] = useState();
+
+  useEffect(() => {
+    if (paymentModePreview) {
+      setActualMode(paymentModePreview);
+    } else {
+      setActualMode(paymentMode);
+    }
+  }, [ paymentModePreview, setActualMode, paymentMode, ]);
+
+  useEffect(() => {
+    if (actualMode === paymentModes.ETHER) {
+      setIDs([ txTypes.REGISTER, ]);
+    } else if (actualMode === paymentModes.PAYU) {
+      setIDs([ txTypes.PULL, txTypes.PUSH, txTypes.REGISTER_FOR ]);
+    }
+  }, [ actualMode, setIDs, ]);
+
+  useEffect(() => {
+    if (!actualMode) return;
+    if (paymentModePreview) {
+      setTxType(null);
+      setStates([]);
+      return;
+    }
+    if (actualMode === paymentModes.ETHER) {
+      setStates([ registerState, ]);
+    } else if (actualMode === paymentModes.PAYU) {
+      setStates([ pullState, pushState, registerForState, ]);
+    }
+  }, [ actualMode, paymentModePreview, setStates, ]);
+
   return (
     <div
       css={`
@@ -598,59 +632,34 @@ const PaymentProcess = ({
       <img src={userIcon} width="150" />
       <TransactionIcon
         setTxType={setTxType}
-        id={
-          paymentMode === paymentModes.ETHER
-            ? txTypes.REGISTER
-            : txTypes.PULL
-        }
-        selected={
-          paymentModePreview
-            ? false
-            : paymentMode === paymentModes.ETHER
-            ? txType === txTypes.REGISTER
-            : txType === txTypes.PULL
-        }
-        state={
-          paymentModePreview
-            ? ''
-            : paymentMode === paymentModes.ETHER
-            ? registerState
-            : paymentMode === paymentModes.PAYU
-            ? pullState
-            : ''
-        }
+        id={ ids[0] }
+        selected={ txType === ids[0] }
+        state={ states[0] }
       />
-      { (
-        paymentModePreview === paymentModes.PAYU
-          || (paymentMode === paymentModes.PAYU && !paymentModePreview)
-      ) && (
-        <>
-          <img src={payuIcon} width="150" />
-          <TransactionIcon
-            setTxType={setTxType}
-            id={txTypes.PUSH}
-            selected={paymentModePreview ? false : txType === txTypes.PUSH}
-            state={paymentModePreview ? '' : pushState}
-          />
-          <img src={coinosisIcon} width="150" />
-          <TransactionIcon
-            setTxType={setTxType}
-            id={txTypes.REGISTER_FOR}
-            selected={
-              paymentModePreview
-                ? false
-                : txType === txTypes.REGISTER_FOR
-            }
-            state={paymentModePreview ? '' : registerForState}
-          />
-        </>
-      ) }
+      { actualMode === paymentModes.PAYU
+        && <img src={payuIcon} width="150" />
+      }
+      <TransactionIcon
+        setTxType={setTxType}
+        id={ ids[1] }
+        selected={ txType === ids[1] }
+        state={ states[1] }
+      />
+      { actualMode !== paymentModes.ETHER
+        && <img src={coinosisIcon} width="150" /> }
+      <TransactionIcon
+        setTxType={setTxType}
+        id={ ids[2] }
+        selected={ txType === ids[2] }
+        state={ states[2] }
+      />
       <img src={contractIcon} width="150" />
     </div>
   );
 }
 
 const TransactionIcon = ({ state, setTxType, id, selected }) => {
+  if (!id) return null;
   const icon = state === transactionStates.PENDING
         || state === transactionStates.SUBMITTED
         ? loadingIcon
