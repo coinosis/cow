@@ -26,7 +26,8 @@ const Meet = ({
 
   useEffect(() => {
     if (!api) return;
-    if (eventState === eventStates.EVENT_STARTED) {
+    if (eventState >= eventStates.EVENT_STARTED
+        && eventState < eventStates.EVENT_ENDED) {
       api.executeCommand('startRecording', {
         mode: 'stream',
         youtubeStreamKey: streamName,
@@ -36,7 +37,7 @@ const Meet = ({
 
   useEffect(() => {
     if (!api) return;
-    if (eventState === eventStates.EVENT_ENDED) {
+    if (eventState >= eventStates.EVENT_ENDED) {
       api.executeCommand('stopRecording', 'stream');
     }
   }, [ eventState, api, ])
