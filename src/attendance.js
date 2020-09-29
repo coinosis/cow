@@ -339,11 +339,9 @@ const Attendance = ({
     setPaymentMode(paymentModes.PAYPAL);
     setPaypalState(transactionStates.PENDING);
     setTxType();
-    const fee = Number(web3.utils.fromWei(feeWei)).toFixed(2);
     const object = {
       event,
       user: account,
-      value: fee,
       locale: language,
     };
     post('paypal/orders', object, (err, data) => {
@@ -355,7 +353,7 @@ const Attendance = ({
       const paypalWindow = window.open(approveURL);
       awaitClosable(paypalWindow, referenceCode);
     });
-  }, [ feeWei, language, post, event, account, ]);
+  }, [ language, post, event, account, ]);
 
   const sendEther = useCallback(async () => {
     setPaymentMode(paymentModes.ETHER);
