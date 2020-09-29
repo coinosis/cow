@@ -20,6 +20,11 @@ const Meet = ({
   const [ api, setAPI ] = useState();
 
   useEffect(() => {
+    if (!api || !userName) return;
+    api.executeCommand('displayName', userName);
+  }, [ api, userName, ]);
+
+  useEffect(() => {
     if (!api) return;
     if (eventState === eventStates.EVENT_STARTED) {
       api.executeCommand('startRecording', {
@@ -27,7 +32,7 @@ const Meet = ({
         youtubeStreamKey: streamName,
       });
     }
-  }, [ eventState, userName, api, ]);
+  }, [ eventState, api, streamName, ]);
 
   useEffect(() => {
     if (!api) return;
