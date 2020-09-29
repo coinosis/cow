@@ -254,7 +254,7 @@ const Attendance = ({
   }, []);
 
   const awaitClosable = useCallback(async (formWindow, referenceCode) => {
-    await sleep(20000);
+    await sleep(10000);
     do {
       await sleep(1000);
       const response = await fetch(`${backendURL}/closable/${referenceCode}`);
@@ -346,12 +346,14 @@ const Attendance = ({
       value: fee,
       locale: language,
     };
-    post('paypal/orders', object, (err, approveURL) => {
+    post('paypal/orders', object, (err, data) => {
       if (err) {
         console.log(err);
         return;
       }
-      window.open(approveURL);
+      const { referenceCode, approveURL, } = data;
+      const paypalWindow = window.open(approveURL);
+      awaitClosable(paypalWindow, referenceCode);
     });
   }, [ feeWei, language, post, event, account, ]);
 
