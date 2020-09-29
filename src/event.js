@@ -230,23 +230,19 @@ const Event = ({ event, backURL, backName, }) => {
   }, [ event, getAttendeeAddresses, ]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const getAttendees = async () => {
       if (!attendeeAddresses || !attendeeAddresses.length) {
         setAttendees([]);
         return;
       }
-      if (attendees && attendees.length === attendeeAddresses.length) {
-        return;
-      }
-      const nextAttendees = attendees ? [ ...attendees ] : [];
+      const nextAttendees = [];
       for (const address of attendeeAddresses) {
-        if (nextAttendees.map(a => a.address).includes(address)) continue;
         const attendee = await getUser(address);
         nextAttendees.push(attendee);
       }
       setAttendees(nextAttendees);
     };
-    fetchUsers();
+    getAttendees();
   }, [ attendeeAddresses, setAttendees, ]);
 
   useEffect(() => {
