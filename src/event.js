@@ -339,8 +339,8 @@ const Event = ({ event, backURL, backName, }) => {
           backURL={ backURL }
           backName={ backName }
         />
-        <EventInfo event={event} />
         <NoContract currency={event.currency} />
+        <EventInfo event={event} />
       </div>
     );
   }
