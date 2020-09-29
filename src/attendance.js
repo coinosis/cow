@@ -902,18 +902,18 @@ const PaymentOptions = ({
             `}
           >
             <button
-              onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}
-              onMouseOut={() => { setPaymentMode() }}
-              onClick={ payu }
-            >
-              {t('pay_with_payu')}
-            </button>
-            <button
               onMouseOver={ () => { setPaymentMode(paymentModes.PAYPAL) } }
               onMouseOut={ () => { setPaymentMode() } }
               onClick={ paypal }
             >
               { t('pay_with_paypal') }
+            </button>
+            <button
+              onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}
+              onMouseOut={() => { setPaymentMode() }}
+              onClick={ payu }
+            >
+              {t('pay_with_payu')}
             </button>
           </div>
         </Group>
