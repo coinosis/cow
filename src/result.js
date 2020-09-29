@@ -484,7 +484,7 @@ const Participant = ({
   const [showFraction, setShowFraction] = useState(false);
 
   useEffect(() => {
-    const percentage = 100 * +claps / +totalClaps;
+    const percentage = 100 * +claps / +totalClaps || 0;
     setPercentage(percentage.toFixed(1) + ' %');
     setFraction(claps + ' / ' + totalClaps);
     const balance = reward - registrationFeeWei;
