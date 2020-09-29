@@ -26,11 +26,8 @@ const Account = ({ large }) => {
   const updateAccounts = useCallback(async _accounts => {
     const accounts = _accounts || await web3.eth.getAccounts();
     if (accounts.length) {
-      setAccount(prev => {
-        if (!prev) return accounts[0];
-        if (accounts[0] === prev) return prev;
-        return accounts[0];
-      });
+      const checksumAccount = web3.utils.toChecksumAddress(accounts[0]);
+      setAccount(checksumAccount);
     } else {
       setAccount(null);
       setName(null);
