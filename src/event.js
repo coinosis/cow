@@ -300,6 +300,12 @@ const Event = ({ event, backURL, backName, }) => {
     setAttendees,
   ]);
 
+  useEffect(() => {
+    if (!account) {
+      setAttending(false);
+    }
+  }, [ account, setAttending, ]);
+
   if (event === undefined) return <Loading/>;
 
   if (web3 === null || account === null) {
