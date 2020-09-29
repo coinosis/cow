@@ -92,6 +92,20 @@ const Meet = ({
       });
     });
 
+    api.on('displayNameChange', jitster => {
+      setJitsters(prev => {
+        if (!prev) return prev;
+        const index = prev.findIndex(j => j.id === jitster.id);
+        if (index === -1) return prev;
+        const record = prev[index];
+        if (record.displayName.startsWith('0x')) {
+          const next = [ ...prev ];
+          next[index].displayName = jitster.displayname;
+          return next;
+        } else return prev;
+      });
+    });
+
     api.on('videoConferenceLeft', () => {
       api.dispose();
     });
