@@ -1,5 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState, } from 'react';
-import Jitsi from 'react-jitsi';
+import React, { useContext, useEffect, useState, } from 'react';
 import { environment, Loading } from './helpers';
 import settings from '../settings.json';
 import { useT } from './i18n';
@@ -18,49 +17,101 @@ const Meet = ({
   const t = useT();
   const { language } = useContext(AccountContext);
   const [ api, setAPI ] = useState();
+  const [ loaded, setLoaded, ] = useState(false);
 
   useEffect(() => {
-    if (!api || !userName) return;
+    if (!id || !userName) return;
+    const options = {
+      roomName: `${ id }-${ settings[environment].id }`,
+      width: '100%',
+      height: '800px',
+      parentNode: document.getElementById('jitsi'),
+      configOverwrite: {
+        prejoinPageEnabled: false,
+        startAudioOnly: !settings[environment].jitsi.video,
+        startWithAudioMuted: !settings[environment].jitsi.audio,
+        fileRecordingsEnabled: false,
+        remoteVideoMenu: {
+          disableKick: true,
+        },
+        defaultLanguage: language,
+      },
+      interfaceConfigOverwrite: {
+        DEFAULT_BACKGROUND: '#476047',
+        TOOLBAR_BUTTONS: [
+          'microphone',
+          'camera',
+          'desktop',
+          'chat',
+          'raisehand',
+          'videoquality',
+          'tileview',
+          'settings',
+          'fullscreen',
+        ],
+        SETTINGS_SECTIONS: [ 'language', ],
+        SHOW_CHROME_EXTENSION_BANNER: false,
+        ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 5000,
+        LANG_DETECTION: false,
+      },
+      noSSL: false,
+      onload: () => { setLoaded(true); },
+      userInfo: {
+        displayName: userName,
+      }
+    };
+    const api = new JitsiMeetExternalAPI('meet.jit.si', options);
+    setAPI(api);
+  }, [ id, setAPI, userName, setLoaded, ]);
+
+  useEffect(() => {
+    if (!loaded) return;
     api.executeCommand('displayName', userName);
-  }, [ api, userName, ]);
+  }, [ loaded, api, userName, ]);
 
   useEffect(() => {
-    if (!api) return;
+    if (!loaded) return;
     if (eventState >= eventStates.EVENT_STARTED
         && eventState < eventStates.EVENT_ENDED) {
-      api.executeCommand('startRecording', {
-        mode: 'stream',
-        youtubeStreamKey: streamName,
-      });
+      setTimeout(() => {
+        console.log('starting stream...');
+        api.executeCommand('startRecording', {
+          mode: 'stream',
+          youtubeStreamKey: streamName,
+        });
+      }, 3000);
     }
-  }, [ eventState, api, streamName, ]);
+  }, [ loaded, eventState, api, streamName, ]);
 
   useEffect(() => {
-    if (!api) return;
+    if (!loaded) return;
     if (eventState >= eventStates.EVENT_ENDED) {
-      api.executeCommand('stopRecording', 'stream');
+      setTimeout(() => {
+        console.log('stopping stream...');
+        api.executeCommand('stopRecording', 'stream');
+      }, 3000);
     }
-  }, [ eventState, api, ])
+  }, [ loaded, eventState, api, ])
 
-  const handleAPI = useCallback(api => {
-
-    setAPI(api);
+  useEffect(() => {
+    if (!loaded) return;
     api.executeCommand('subject', eventName);
+  }, [ loaded, api, eventName, ]);
 
+  useEffect(() => {
+    if (!loaded) return;
     api.on('videoConferenceJoined', me  => {
       setJitsters(prevJitsters => {
         if (!prevJitsters) return [ me ];
         return [ ...prevJitsters, me ];
       });
     });
-
     api.on('participantJoined', jitster => {
       setJitsters(prevJitsters => {
         if (!prevJitsters) return [ jitster ];
         return [ ...prevJitsters, jitster ];
       });
     });
-
     api.on('dominantSpeakerChanged', ({ id }) => {
       setJitsters(prevJitsters => {
         if (!prevJitsters) return prevJitsters;
@@ -78,7 +129,6 @@ const Meet = ({
         return nextJitsters;
       });
     });
-
     api.on('participantLeft', ({ id }) => {
       setJitsters(prevJitsters => {
         if (!prevJitsters) return prevJitsters;
@@ -92,7 +142,6 @@ const Meet = ({
         return nextJitsters;
       });
     });
-
     api.on('displayNameChange', jitster => {
       setJitsters(prev => {
         if (!prev) return prev;
@@ -106,12 +155,10 @@ const Meet = ({
         } else return prev;
       });
     });
-
     api.on('videoConferenceLeft', () => {
       api.dispose();
     });
-
-  }, [ setAPI, eventName, setJitsters, ]);
+  }, [ loaded, api, setJitsters, ]);
 
   return (
     <div
@@ -121,47 +168,7 @@ const Meet = ({
       `}
     >
       { settings[environment].jitsi.enabled && (
-        <Jitsi
-          domain="meet.jit.si"
-          roomName={`${id}-${settings[environment].id}`}
-          displayName={userName}
-          userInfo={{ displayName: userName }}
-          noSSL={false}
-          loadingComponent={Loading}
-          onAPILoad={handleAPI}
-          containerStyle={{
-            width: '100%',
-            height: '800px',
-          }}
-          config={{
-            prejoinPageEnabled: false,
-            startAudioOnly: !settings[environment].jitsi.video,
-            startWithAudioMuted: !settings[environment].jitsi.audio,
-            fileRecordingsEnabled: false,
-            remoteVideoMenu: {
-              disableKick: true,
-            },
-            defaultLanguage: language,
-          }}
-          interfaceConfig={{
-            DEFAULT_BACKGROUND: '#476047',
-            TOOLBAR_BUTTONS: [
-              'microphone',
-              'camera',
-              'desktop',
-              'chat',
-              'raisehand',
-              'videoquality',
-              'tileview',
-              'settings',
-              'fullscreen',
-            ],
-            SETTINGS_SECTIONS: [ 'language', ],
-            SHOW_CHROME_EXTENSION_BANNER: false,
-            ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 5000,
-            LANG_DETECTION: false,
-          }}
-        />
+        <div id="jitsi" />
       )}
       <div
         css={`
