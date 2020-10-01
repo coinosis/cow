@@ -52,12 +52,11 @@ const Title = ({ text, now, start, end, eventState, backURL, backName, }) => {
       `}
     >
       <div css="display: flex">
-        <Link
-          to={ backURL }
-          css={`width: 33.33%;`}
-        >
-          ← { backName }
-        </Link>
+        <div css={`width: 33.33%;`}>
+          <Link to={ backURL }>
+            ← { backName }
+          </Link>
+        </div>
         <Big>
           {text}
         </Big>
