@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -33,6 +34,11 @@ module.exports = {
       template: 'src/assets/legal.html',
       filename: 'legal.html',
       chunks: ['legal'],
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: 'src/assets/external_api.js', to: 'jitsi.js' }
+      ],
     }),
   ],
   devServer: {

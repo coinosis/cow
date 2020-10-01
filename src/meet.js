@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, } from 'react';
-import { environment, Loading } from './helpers';
+import { environment } from './helpers';
 import settings from '../settings.json';
 import { useT } from './i18n';
 import { AccountContext } from './coinosis';
@@ -21,7 +21,7 @@ const Meet = ({
 
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = 'https://meet.jit.si/external_api.js';
+    script.src = './jitsi.js';
     script.async = false;
     document.body.appendChild(script);
     return () => {
