@@ -20,7 +20,17 @@ const Meet = ({
   const [ loaded, setLoaded, ] = useState(false);
 
   useEffect(() => {
-    if (!id || !userName) return;
+    const script = document.createElement('script');
+    script.src = 'https://meet.jit.si/external_api.js';
+    script.async = false;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!id || !userName || !window.JitsiMeetExternalAPI) return;
     const options = {
       roomName: `${ id }-${ settings[environment].id }`,
       width: '100%',
@@ -60,9 +70,9 @@ const Meet = ({
         displayName: userName,
       }
     };
-    const api = new JitsiMeetExternalAPI('meet.jit.si', options);
+    const api = new window.JitsiMeetExternalAPI('meet.jit.si', options);
     setAPI(api);
-  }, [ id, setAPI, userName, setLoaded, ]);
+  }, [ id, setAPI, userName, setLoaded, window.JitsiMeetExternalAPI, ]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -79,7 +89,7 @@ const Meet = ({
           mode: 'stream',
           youtubeStreamKey: streamName,
         });
-      }, 3000);
+      }, 5000);
     }
   }, [ loaded, eventState, api, streamName, ]);
 
@@ -89,7 +99,7 @@ const Meet = ({
       setTimeout(() => {
         console.log('stopping stream...');
         api.executeCommand('stopRecording', 'stream');
-      }, 3000);
+      }, 5000);
     }
   }, [ loaded, eventState, api, ])
 
