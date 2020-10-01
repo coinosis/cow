@@ -347,7 +347,12 @@ const Event = ({ event, backURL, backName, }) => {
     );
   }
 
-  if (attendees === undefined) return <Loading/>;
+  if (
+    attendees === undefined
+      || eventState === undefined
+      || contractState === undefined
+      || userState === undefined
+  ) return <Loading/>;
 
   return (
     <ContractContext.Provider value={{ contract, version: event.version }}>
