@@ -16,7 +16,7 @@ const Meet = ({
 
   const t = useT();
   const { language } = useContext(AccountContext);
-  const [ api, setAPI ] = useState();
+  const [ api, setAPI, ] = useState();
   const [ loaded, setLoaded, ] = useState(false);
 
   useEffect(() => {
@@ -70,8 +70,10 @@ const Meet = ({
         displayName: userName,
       }
     };
-    const api = new window.JitsiMeetExternalAPI('meet.jit.si', options);
-    setAPI(api);
+    setAPI(prev => {
+      if (prev) return prev;
+      return new window.JitsiMeetExternalAPI('meet.jit.si', options);
+    });
   }, [ id, setAPI, userName, setLoaded, window.JitsiMeetExternalAPI, ]);
 
   useEffect(() => {
