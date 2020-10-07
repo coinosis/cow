@@ -904,6 +904,7 @@ const PaymentOptions = ({
             <button
               onMouseOver={ () => { setPaymentMode(paymentModes.PAYPAL) } }
               onMouseOut={ () => { setPaymentMode() } }
+              disabled
               onClick={ paypal }
             >
               { t('pay_with_paypal') }
@@ -912,6 +913,7 @@ const PaymentOptions = ({
               onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}
               onMouseOut={() => { setPaymentMode() }}
               onClick={ payu }
+              disabled
             >
               {t('pay_with_payu')}
             </button>
