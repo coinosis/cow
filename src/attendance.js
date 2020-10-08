@@ -913,7 +913,6 @@ const PaymentOptions = ({
               onMouseOver={() => { setPaymentMode(paymentModes.PAYU) }}
               onMouseOut={() => { setPaymentMode() }}
               onClick={ payu }
-              disabled
             >
               {t('pay_with_payu')}
             </button>
