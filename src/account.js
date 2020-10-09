@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { MetaMaskButton } from 'rimble-ui';
 import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
 import { Loading, ExternalLink, sleep, usePost, } from './helpers.js';
 import unlockNifty from './assets/unlockNifty.gif';
@@ -121,12 +122,13 @@ const Account = ({ large }) => {
               disabled={ signingUp }
             />
           </div>
-          <button
+          <MetaMaskButton.Outline
+            size="small"
             onClick={ signup }
             disabled={ unsavedName === '' || signingUp }
           >
             { t('save') }
-          </button>
+          </MetaMaskButton.Outline>
           <LoadingIcon loading={ signingUp } />
         </div>
         <div
