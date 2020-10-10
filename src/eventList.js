@@ -130,11 +130,13 @@ const EventList = () => {
         ) }
         </div>
       )}
-      <EventSection
-        title={t('past_events')}
-        events={past}
-        series={ series }
-      />
+      <Card>
+        <EventSection
+          title={t('past_events')}
+          events={past}
+          series={ series }
+        />
+      </Card>
     </div>
   );
 }
