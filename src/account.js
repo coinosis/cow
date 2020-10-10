@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { Input } from 'rimble-ui';
 import { MetaMaskButton } from 'rimble-ui';
 import { Web3Context, AccountContext, BackendContext } from './coinosis.js';
 import { Loading, ExternalLink, sleep, usePost, } from './helpers.js';
@@ -115,7 +116,8 @@ const Account = ({ large }) => {
               margin-right: 5px;
             `}
           >
-            <input
+            <Input
+              height='2rem'
               value={unsavedName}
               onChange={e => setUnsavedNameRaw(e.target.value)}
               placeholder={ t('whats_your_name') }
