@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { Button, Card } from "rimble-ui";
 import { AccountContext, BackendContext } from './coinosis';
 import { Link, SectionTitle } from './helpers';
 import AddEvent from './addEvent';
@@ -92,24 +93,26 @@ const EventList = () => {
           align-items: center;
         `}
         >
-          <SectionTitle>
-            { t('create_new_event') }
-          </SectionTitle>
-          <div css="margin-bottom: 25px;">
-            <button
-              css="margin-right: 15px;"
-              disabled={ eventType === entityTypes.EVENT }
-              onClick={ () => setEventType(entityTypes.EVENT) }
-            >
-              { t('new_event') }
-            </button>
-            <button
-              disabled={ eventType === entityTypes.SERIES }
-              onClick={ () => setEventType(entityTypes.SERIES) }
-            >
-              { t('new_series') }
-            </button>
-          </div>
+          <Card width={"auto"} maxWidth={"420px"} mx={"auto"} px={[3, 3, 4]}>
+            <SectionTitle>
+              { t('create_new_event') }
+            </SectionTitle>
+            <div css="margin-bottom: 25px;">
+              <Button mainColor="DarkCyan"
+                css="margin-right: 15px;"
+                disabled={ eventType === entityTypes.EVENT }
+                onClick={ () => setEventType(entityTypes.EVENT) }
+              >
+                { t('new_event') }
+              </Button>
+              <Button.Outline mainColor="DarkCyan"
+                disabled={ eventType === entityTypes.SERIES }
+                onClick={ () => setEventType(entityTypes.SERIES) }
+              >
+                { t('new_series') }
+              </Button.Outline>
+            </div>
+          </Card>
         { eventType === entityTypes.EVENT ? (
           <AddEvent
             eventType={ entityTypes.EVENT }
