@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Card } from "rimble-ui";
+import { Button, Card, Heading } from "rimble-ui";
 import { AccountContext, BackendContext } from './coinosis';
-import { Link, SectionTitle } from './helpers';
+import { Link } from './helpers';
 import AddEvent from './addEvent';
 import { useT, useFormatDate, } from './i18n';
 import { entityTypes } from './entity';
@@ -93,26 +93,24 @@ const EventList = () => {
           align-items: center;
         `}
         >
-          <Card width={"auto"} maxWidth={"420px"} mx={"auto"} px={[3, 3, 4]}>
-            <SectionTitle>
-              { t('create_new_event') }
-            </SectionTitle>
-            <div css="margin-bottom: 25px;">
-              <Button mainColor="DarkCyan"
-                css="margin-right: 15px;"
-                disabled={ eventType === entityTypes.EVENT }
-                onClick={ () => setEventType(entityTypes.EVENT) }
-              >
-                { t('new_event') }
-              </Button>
-              <Button.Outline mainColor="DarkCyan"
-                disabled={ eventType === entityTypes.SERIES }
-                onClick={ () => setEventType(entityTypes.SERIES) }
-              >
-                { t('new_series') }
-              </Button.Outline>
-            </div>
-          </Card>
+          <Heading as = {"h1"} >
+            { t('create_new_event') }
+          </Heading>
+          <div css="margin-bottom: 25px;">
+            <Button mainColor="DarkCyan"
+              css="margin-right: 15px;"
+              disabled={ eventType === entityTypes.EVENT }
+              onClick={ () => setEventType(entityTypes.EVENT) }
+            >
+              { t('new_event') }
+            </Button>
+            <Button.Outline mainColor="DarkCyan"
+              disabled={ eventType === entityTypes.SERIES }
+              onClick={ () => setEventType(entityTypes.SERIES) }
+            >
+              { t('new_series') }
+            </Button.Outline>
+          </div>
         { eventType === entityTypes.EVENT ? (
           <AddEvent
             eventType={ entityTypes.EVENT }
@@ -153,9 +151,9 @@ const EventSection = ({ title, events, series, }) => {
         align-items: center;
       `}
     >
-      <SectionTitle>
+      <Heading as={"h1"}>
         {title}
-      </SectionTitle>
+      </Heading>
       <div
         css={`
           display: flex;
