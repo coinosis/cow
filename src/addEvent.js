@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useCallback, useState } from 'react';
+import { Input } from 'rimble-ui';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
@@ -340,7 +341,8 @@ const AddEvent = ({ eventType, setEvents, setSeries, events, series, }) => {
           <Field
             label={`${t('event_name')}:`}
             element={
-              <input
+              <Input
+                height='2rem'
                 value={name}
                 onChange={preSetName}
                 css={`
@@ -358,7 +360,8 @@ const AddEvent = ({ eventType, setEvents, setSeries, events, series, }) => {
                 `}
               >
                 coinosis.co/
-                <input
+                <Input
+                  height='2rem'
                   value={url}
                   onChange={preSetUrl}
                   css={`
@@ -456,7 +459,7 @@ const EventFields = ({
       <Field
         label={`${ t('presentation_link') }:`}
         element={
-          <input
+          <Input
             value={ presentation }
             onChange={ elem => setPresentation(elem.target.value) }
             css="width: 500px;"
@@ -472,7 +475,7 @@ const EventFields = ({
               display: flex;
             `}
           >
-            <input
+            <Input
               value={feeETH}
               onChange={setFeeETHRaw}
               type="text"
@@ -481,7 +484,7 @@ const EventFields = ({
             />
             <div css="margin-left: 5px">xDAI</div>
             <div css="margin-left: 20px">(</div>
-            <input
+            <Input
               value={fee}
               onChange={setFeeRaw}
               type="text"
@@ -499,7 +502,7 @@ const EventFields = ({
               `}
               onClick={ () => { setNoDepositRaw(!noDeposit) } }
             >
-              <input
+              <Input
                 type="checkbox"
                 checked={ noDeposit }
                 onChange={ () => { setNoDepositRaw(!noDeposit) } }
@@ -547,7 +550,7 @@ const EventFields = ({
       <Field
         label={t('start_call')}
         element={
-          <input
+          <Input
             value={minutesBefore}
             onChange={preSetMinutesBefore}
             type="text"
@@ -561,7 +564,7 @@ const EventFields = ({
       <Field
         label={t('and_end_it')}
         element={
-          <input
+          <Input
             value={minutesAfter}
             onChange={preSetMinutesAfter}
             type="text"
@@ -623,7 +626,7 @@ const SeriesFields = ({ events, series, setSelected, }) => {
                   cursor: pointer;
                 `}
               >
-                <input
+                <Input
                   type="checkbox"
                   id={ event.url }
                   onChange={ e => select(e.target) }
