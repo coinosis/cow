@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState, } from 'react';
-import { environment } from './helpers';
+import { environment, sleep, } from './helpers';
 import settings from '../settings.json';
 import { useT } from './i18n';
-import { AccountContext } from './coinosis';
+import { AccountContext, BackendContext, } from './coinosis';
 import { eventStates, } from './event';
 
 const Meet = ({
@@ -12,12 +12,15 @@ const Meet = ({
   setJitsters,
   eventState,
   streamName,
+  streamID,
 }) => {
 
   const t = useT();
   const { language } = useContext(AccountContext);
+  const backendURL = useContext(BackendContext);
   const [ api, setAPI, ] = useState();
   const [ loaded, setLoaded, ] = useState(false);
+  const [ streamStatus, setStreamStatus, ] = useState();
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -82,9 +85,24 @@ const Meet = ({
   }, [ loaded, api, userName, ]);
 
   useEffect(() => {
-    if (!loaded) return;
+    if (!backendURL || !streamID) return;
+    const getStatus = async () => {
+      while (true) {
+        const query = `${ backendURL }/youtube/stream/${ streamID }`;
+        const response = await fetch(query);
+        const status = await response.json();
+        setStreamStatus(status);
+        await sleep(3000);
+      }
+    }
+    getStatus();
+  }, [ backendURL, streamID, setStreamStatus, sleep, ]);
+
+  useEffect(() => {
+    if (!loaded || !streamStatus) return;
     if (eventState >= eventStates.EVENT_STARTED
-        && eventState < eventStates.EVENT_ENDED) {
+        && eventState < eventStates.EVENT_ENDED
+        && streamStatus !== 'active') {
       setTimeout(() => {
         console.log('starting stream...');
         api.executeCommand('startRecording', {
@@ -93,7 +111,7 @@ const Meet = ({
         });
       }, 5000);
     }
-  }, [ loaded, eventState, api, streamName, ]);
+  }, [ loaded, streamStatus, eventState, api, streamName, ]);
 
   useEffect(() => {
     if (!loaded) return;

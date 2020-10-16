@@ -486,6 +486,7 @@ const Event = ({ event, backURL, backName, }) => {
               setJitsters={setJitsters}
               eventState={ eventState }
               streamName={ event.streamName }
+              streamID={ event.streamID }
             />
           ) }
       </div>
