@@ -241,7 +241,7 @@ export const NoContract = ({ currency }) => {
         setRPCData({
           'Network Name': 'xDai',
           'New RPC URL': 'https://xdai.poanetwork.dev',
-          ChainID: 100,
+          ChainID: 0x64,
           Symbol: 'xDai',
           'Block Explorer URL': 'https://blockscout.com/poa/xdai',
         });
